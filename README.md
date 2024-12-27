@@ -1,1 +1,1 @@
-# lms-virtual-learning-environment
+# LMS
