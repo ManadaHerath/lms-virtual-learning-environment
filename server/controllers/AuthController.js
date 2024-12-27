@@ -95,14 +95,14 @@ const AuthController = {
       
     // Generate Access Token (short-lived)
     const accessToken = jwt.sign(
-      { nic: user.nic, email: req.body.email },
+      { nic: user.nic, email: req.body.email,userType:"student" },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "15m" } // Expires in 15 minutes
     );
 
     // Generate Refresh Token (long-lived)
     const refreshToken = jwt.sign(
-      { nic: user.nic, email: req.body.email },
+      { nic: user.nic, email: req.body.email,userType:"student" },
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "7d" } // Expires in 7 days
     );
