@@ -1,0 +1,19 @@
+const express = require('express');
+const db = require('./config/dbconfig');
+const AuthRoute=require('./routes/AuthRoute')
+const cors = require('cors');
+const app = express();
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+// Middlewares in here
+//Middleware for cross platform
+app.use(cors());
+// Middleware to parse incoming JSON requests
+app.use(express.json());
+app.use('/user', AuthRoute);
+
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
