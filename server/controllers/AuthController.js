@@ -62,14 +62,7 @@ const AuthController = {
 
       const result = await UserModel.create(newUser);
 
-      const token = createToken(result.insertId);
-
-      res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: maxAge * 1000,
-        sameSite: "strict",
-      });
+      
 
       res.status(201).json({
         success: true,
@@ -86,28 +79,48 @@ const AuthController = {
   // Login user
   loginUser: async (req, res) => {
     try {
-      const user = await UserModel.findByEmail(req.body.email);
+      const userData = await UserModel.findByEmail(req.body.email);
+      
 
-      if (!user) {
-        return res.status(400).json({ success: false, message: "User not found" });
+      if (!userData.success) {
+        return res.status(400).json({ success: false, message: userData.data });
       }
-
+      const user=userData.data;
+      
       const isMatch = await bcrypt.compare(req.body.password, user.password);
 
       if (!isMatch) {
         return res.status(400).json({ success: false, message: "Invalid Email or Password" });
       }
+      
+    // Generate Access Token (short-lived)
+    const accessToken = jwt.sign(
+      { nic: user.nic, email: req.body.email },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "15m" } // Expires in 15 minutes
+    );
 
-      const token = createToken(user.nic);
+    // Generate Refresh Token (long-lived)
+    const refreshToken = jwt.sign(
+      { nic: user.nic, email: req.body.email },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" } // Expires in 7 days
+    );
 
-      res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: maxAge * 1000,
-        sameSite: "strict",
-      });
+    // Store Refresh Token in HttpOnly cookie
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "strict",
+    });
 
-      res.status(200).json({ message: "Login successful", success: true });
+    // Send Access Token to client
+    res.status(200).json({
+      message: "Login successful",
+      success: true,
+      accessToken,
+    });
     } catch (error) {
       res.status(500).send({ message: `Error in login: ${error.message}` });
     }
