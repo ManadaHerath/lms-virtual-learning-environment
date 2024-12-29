@@ -3,10 +3,20 @@ const pool = require("../config/dbconfig");
 const UserModel = {
   // Find user by email
   findByEmail: async (email) => {
-    const query = "SELECT * FROM User WHERE email = ?";
+    const query = "select userLogin(?);";
     try {
       const [result] = await pool.query(query, [email]);
-      return result[0]; // Return the first user found (or null if not found)
+     
+      const dynamicKey = Object.keys(result[0])[0]; 
+
+      // Access the value of the dynamic key, which is an object
+      const { data, success } = result[0][dynamicKey]; // Destructure to extract data and success
+
+      return { data, success }; // Return the JSON object
+      // const key = Object.keys(result[0])[0]; // Get the dynamic key
+      // const userLoginResult = JSON.parse(result[0][key]); // Parse the JSON string
+      
+       // Return the first user found (or null if not found)
     } catch (err) {
       throw err;
     }

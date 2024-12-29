@@ -1,11 +1,11 @@
 import React from 'react'
 import Login from './user/Login'
-
+import Signup from './user/SignUp'
 function App() {
   return (
     <div>
 
-      <Login/>
+      <Signup/>
     </div>
   )
 }
