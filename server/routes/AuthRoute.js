@@ -22,5 +22,21 @@ router.post("/login", AuthController.loginUser);
 // Logout route
 router.get("/logout", AuthController.logoutUser);
 
+router.get("/courses", async (req, res) => {
+  const { batch, type } = req.query; // Extract filters from query parameters
+  try {
+    const courses = await AuthController.getAllCourses(batch, type);
+    res.status(200).json(courses);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Failed to fetch courses" });
+  }
+});
+
+
+
+// Route to fetch course details by ID
+router.get("/courses/:courseId", AuthController.getCourseById);
+
 
 module.exports = router;
