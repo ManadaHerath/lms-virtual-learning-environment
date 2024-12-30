@@ -23,6 +23,18 @@ const SectionController = {
       res.status(500).json({ message: 'Error fetching sections.' });
     }
   },
+  createSection:async(req,res)=>{
+    const courseId=req.body.courseId;
+    const sectionData=req.body.sectionData;
+    try {
+      const id =await Section.createSectionByCourseId(courseId,sectionData);
+      
+      res.status(200).json({sectionId:id});
+    } catch (error) {
+      console.log(error)
+      res.status(400);
+    }
+  }
 };
 
 module.exports = SectionController;

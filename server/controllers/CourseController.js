@@ -10,7 +10,7 @@ const CourseController={
               description,
               price,
               duration,
-              progress,
+              
               started_at,
               ended_at,
             } = req.body;
@@ -24,7 +24,7 @@ const CourseController={
               image_url: imageUrl,
               price,
               duration,
-              progress,
+              
               started_at,
               ended_at,
             });
