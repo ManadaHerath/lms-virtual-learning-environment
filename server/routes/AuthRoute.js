@@ -1,6 +1,9 @@
 const express = require("express");
 const AuthController = require("../controllers/AuthController");
 const upload = require("../config/multer");
+const UserController = require("../controllers/UserController");
+const AuthMiddleware = require("../middleware/Authmiddleware");
+
 
 const router = express.Router();
 
@@ -37,6 +40,21 @@ router.get("/courses", async (req, res) => {
 
 // Route to fetch course details by ID
 router.get("/courses/:courseId", AuthController.getCourseById);
+
+// User profile route
+router.get("/profile", AuthMiddleware(["student", "admin"]), UserController.getProfile);
+
+// Update profile route
+router.put("/editprofile", AuthMiddleware(["student", "admin"]), UserController.updateProfile);
+
+// Update or remove profile picture
+router.put(
+  "/profile/picture",
+  AuthMiddleware(["student", "admin"]),
+  upload.single("image"), // Handle image upload
+  UserController.updateProfilePicture
+);
+
 
 
 module.exports = router;
