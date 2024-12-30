@@ -4,8 +4,8 @@ import Signup from './user/SignUp'
 function App() {
   return (
     <div>
-
-      <Signup/>
+      <Login></Login>
+      {/* <Signup/> */}
     </div>
   )
 }
