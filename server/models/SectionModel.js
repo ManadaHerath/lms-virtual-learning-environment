@@ -30,7 +30,7 @@ const Section = {
         const [result]=await connection.execute(insertQuery, [
           sectionData.title,
           sectionData.description,
-          sectionData.course_id,
+          course_id,
           sectionData.week_id,
           sectionData.order_id,
           sectionData.type_id,
