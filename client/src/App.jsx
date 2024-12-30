@@ -4,7 +4,11 @@ import CourseList from "./user/CourseList";
 import CourseDetail from "./user/CourseDetail";
 import UploadCourse from "./admin/create_course";
 import CartPage from "./user/CartPage";
+
+import CoursePage from "./user/course";
+
 import Login from './user/Login'
+
 
 function App() {
   return (
@@ -18,6 +22,7 @@ function App() {
         <Route path="/courses/:courseId" element={<CourseDetail />} />
         <Route path="/upload-course" element={<UploadCourse/>} />
         <Route path="/cart" element={<CartPage/>} />
+        <Route path="/course/:courseId" element={<CoursePage />} />
       </Routes>
     </Router>
   );
