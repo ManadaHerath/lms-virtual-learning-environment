@@ -225,7 +225,28 @@ const UserModel = {
       console.error(err.message);
       throw err;
     }
+  },
+
+  // UserModel.js
+
+// Get all courses a user is enrolled in
+getEnrolledCourses: async (nic) => {
+  
+  const query = `
+    SELECT c.course_id, c.price, CONCAT(c.course_type, ' ', c.batch) AS name, c.image_url
+    FROM Course c
+    JOIN Enrollment e ON c.course_id = e.course_id
+    WHERE e.nic = ?
+  `;
+  try {
+    const [courses] = await pool.query(query, [nic]);
+    
+    return courses;
+  } catch (err) {
+    throw err;
   }
+},
+
 
 };
 
