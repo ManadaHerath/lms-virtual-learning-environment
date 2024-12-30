@@ -1,6 +1,7 @@
 const express = require("express");
 const AuthController = require("../controllers/AuthController");
 const upload = require("../config/multer");
+const AuthMiddleware = require("../middleware/Authmiddleware");
 
 const router = express.Router();
 
@@ -32,6 +33,18 @@ router.get("/courses", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch courses" });
   }
 });
+
+
+router.get(
+  "/enrolled-courses",
+  (req, res, next) => {
+    console.log('in routes');
+    next(); // Ensure the next middleware is called
+  },
+  AuthMiddleware(["student"]),
+  AuthController.getEnrolledCourses
+);
+
 
 
 

@@ -4,6 +4,7 @@ import CourseList from "./user/CourseList";
 import CourseDetail from "./user/CourseDetail";
 import UploadCourse from "./admin/create_course";
 import CartPage from "./user/CartPage";
+import MyCourses from './user/mycourses';
 
 import CoursePage from "./user/course";
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/upload-course" element={<UploadCourse/>} />
         <Route path="/cart" element={<CartPage/>} />
         <Route path="/course/:courseId" element={<CoursePage />} />
+        <Route path="/mycourses" element={<MyCourses />} />
       </Routes>
     </Router>
   );

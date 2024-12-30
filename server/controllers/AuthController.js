@@ -158,6 +158,32 @@ const AuthController = {
     }
   },
 
+
+  getEnrolledCourses: async (req, res) => {
+    try {
+      const userNic = req.user.nic; // Retrieved from AuthMiddleware
+      const result = await UserModel.getEnrolledCoursesByNIC(userNic);
+
+      if (result.success) {
+        res.status(200).json({
+          success: true,
+          data: result.data,
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: result.message,
+        });
+      }
+    } catch (error) {
+      console.error("Error in EnrollmentController:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal Server Error",
+      });
+    }
+  },
+
 };
 
 module.exports = AuthController;
