@@ -1,12 +1,30 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', { email, password });
+    try {
+      const res = await axios.post('http://localhost:3000/user/login', {
+        "email":email,
+        "password":password
+    },{withCredentials:true});
+    
+    if(res.data.success){
+      sessionStorage.setItem('accessToken',res.data.accessToken);
+      
+      prompt(res.data.message);
+    }else{
+      
+      prompt(res.data.message);
+    }
+    } catch (error) {
+      
+    }
+    
   };
 
   return (
