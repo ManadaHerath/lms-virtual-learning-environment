@@ -9,7 +9,7 @@ import CoursePage from "./user/course";
 
 import Login from './user/Login'
 
-
+import AdminLogin from "./user/AdminLogin";
 function App() {
   return (
 
@@ -18,6 +18,7 @@ function App() {
     <Router>
       <Routes>
       <Route path="/user/login" element={<Login />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/" element={<CourseList />} />
         <Route path="/courses/:courseId" element={<CourseDetail />} />
         <Route path="/upload-course" element={<UploadCourse/>} />

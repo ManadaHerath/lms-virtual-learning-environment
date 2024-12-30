@@ -6,7 +6,7 @@ const SectionController = {
     const { courseId } = req.params;
     try {
       const sections = await Section.getSectionsByCourseId(courseId);
-
+      
       // Group sections by week
       const weeks = sections.reduce((acc, section) => {
         const { week_id, ...rest } = section;

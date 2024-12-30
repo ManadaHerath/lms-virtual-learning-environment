@@ -5,7 +5,7 @@ const Section = {
   getSectionsByCourseId: async (courseId) => {
     const query = `
       SELECT 
-        s.id, s.title, s.description, s.content_url, s.mark_as_done, 
+        s.id, s.title, s.description, s.content_url, 
         s.week_id, s.order_id 
       FROM Section s 
       WHERE s.course_id = ?
