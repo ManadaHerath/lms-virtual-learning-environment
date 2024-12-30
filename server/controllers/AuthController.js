@@ -83,14 +83,15 @@ const AuthController = {
       
 
       if (!userData.success) {
-        return res.status(400).json({ success: false, message: userData.data });
+        
+        return res.status(200).json({ success: false, message: userData.data.message });
       }
       const user=userData.data;
       
       const isMatch = await bcrypt.compare(req.body.password, user.password);
 
       if (!isMatch) {
-        return res.status(400).json({ success: false, message: "Invalid Email or Password" });
+        return res.status(200).json({ success: false, message: "Invalid Email or Password" });
       }
       
     // Generate Access Token (short-lived)

@@ -9,7 +9,17 @@ app.use(cookieParser());
 const ExtendSessionRoute=require("./routes/ExtendSessionRoute")
 // Middlewares in here
 //Middleware for cross platform
-app.use(cors());
+
+const allowedOrigins = ['http://localhost:5173','http://localhost:5174'];
+app.use(cors({ origin: (origin, callback) => {
+  if (!origin || allowedOrigins.includes(origin)) {
+    callback(null, origin); 
+  } else {
+    callback(new Error('Not allowed by CORS'));
+  }
+},
+credentials: true,// Allow credentials (cookies, etc.)
+}));
 // Middleware to parse incoming JSON requests
 app.use(express.json());
 app.use('/user', AuthRoute);
