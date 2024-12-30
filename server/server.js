@@ -3,6 +3,7 @@ const db = require('./config/dbconfig');
 const AuthRoute=require('./routes/AuthRoute')
 const AdminAuthRoute=require('./routes/AdminAuthRoute');
 const SectionRoute=require('./routes/sectionRoute');
+const TypeRoute=require('./routes/TypeRoute');
 const cors = require('cors');
 const app = express();
 const cookieParser = require('cookie-parser');
@@ -27,6 +28,8 @@ app.use('/user', AuthRoute);
 app.use('/session',ExtendSessionRoute);
 app.use('/admin',AdminAuthRoute);
 app.use('/course',SectionRoute);
+
+app.use('/type',TypeRoute);
 
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
