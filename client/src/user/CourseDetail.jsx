@@ -19,26 +19,16 @@ const CourseDetail = () => {
     fetchCourse();
   }, [courseId]);
 
-  // Add course to cart
-  const addToCart = () => {
+  const addToCart = (course) => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const courseToAdd = {
-      course_id: course.course_id,
-      name: course.name,
-      image_url: course.image_url,
-      course_type: course.course_type,
-      batch: course.batch,
-    };
-
-    // Check if course is already in the cart
-    const courseExists = cart.some(item => item.course_id === course.course_id);
-    if (!courseExists) {
-      cart.push(courseToAdd); // Add to cart
-      localStorage.setItem("cart", JSON.stringify(cart)); // Save cart to localStorage
-      alert("Course added to cart");
-    } else {
-      alert("This course is already in your cart");
-    }
+    cart.push({
+      courseId: course.course_id,
+      name: `${course.course_type} - ${course.batch}`,
+      price: course.price,
+      image_url:course.image_url, // Add price here
+    });
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Course added to cart!");
   };
 
   if (!course) {
@@ -53,9 +43,10 @@ const CourseDetail = () => {
         className="w-full h-64 object-cover rounded-lg mb-4"
       />
       <h1 className="text-2xl font-bold mb-2">{course.course_type} - {course.batch}</h1>
+      <p className="mb-2">Price: ${course.price}</p> {/* Display price */}
       <p className="mb-4">{course.description}</p>
       <button
-        onClick={addToCart}
+        onClick={() => addToCart(course)}
         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
       >
         Add to Cart
