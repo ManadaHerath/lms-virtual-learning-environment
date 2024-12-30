@@ -9,16 +9,7 @@ import Login from './user/Login'
 function App() {
   return (
 
-    <div>
-
-     
-      {/* <Signup/> */}
- 
-
-      <UploadCourse/>
-
-    </div>
-  )
+    
 
     <Router>
       <Routes>
