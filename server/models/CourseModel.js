@@ -12,7 +12,7 @@ const CourseModel={
         INSERT INTO Course (course_type, batch, month,image_url, description,price,duration,progress,started_at,ended_at )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
-      await connection.execute(insertQuery, [
+      const [result]=await connection.execute(insertQuery, [
         courseData.course_type,
         courseData.batch,
         courseData.month,
@@ -25,15 +25,15 @@ const CourseModel={
         courseData.ended_at
         
       ]);
-  
+      
   
       
   
       await connection.commit();
-      return result;
+      return result.insertId;
     } catch (error) {
       await connection.rollback();
-      console.error('Transaction failed:', error.message);
+      console.error('Error on Course added', error.message);
       throw error;
     } finally {
       await connection.release();
