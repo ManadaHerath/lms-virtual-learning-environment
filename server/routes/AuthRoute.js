@@ -47,6 +47,12 @@ router.get("/profile", AuthMiddleware(["student", "admin"]), UserController.getP
 // Update profile route
 router.put("/editprofile", AuthMiddleware(["student", "admin"]), UserController.updateProfile);
 
+// AuthRoutes.js
+
+// Get enrolled courses for the authenticated user
+router.get("/enrolled", AuthMiddleware(["student", "admin"]), AuthController.getEnrolledCourses);
+
+
 // Update or remove profile picture
 router.put(
   "/profile/picture",

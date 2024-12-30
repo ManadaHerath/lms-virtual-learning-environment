@@ -135,6 +135,7 @@ const AuthController = {
 
   getAllCourses: async (batch, type) => {
     try {
+      
       const courses = await UserModel.getAllCourses(batch, type);
       return courses;
     } catch (err) {
@@ -157,6 +158,28 @@ const AuthController = {
       res.status(500).json({ error: "Failed to fetch course details" });
     }
   },
+
+
+  // AuthController.js
+
+// Get all courses a user has enrolled in
+getEnrolledCourses: async (req, res) => {
+  const { nic } = req.user; // Get user nic from the request's payload (AuthMiddleware)
+  
+
+  try {
+    const courses = await UserModel.getEnrolledCourses(nic);
+    
+    if (!courses.length) {
+      return res.status(404).json({ error: "No enrolled courses found" });
+    }
+    res.status(200).json(courses);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Failed to fetch enrolled courses" });
+  }
+},
+
 
 };
 
