@@ -132,6 +132,32 @@ const AuthController = {
     res.cookie("jwt", "", { maxAge: 1 });
     res.status(200).send({ message: "Logged out successfully", success: true });
   },
+
+  getAllCourses: async (batch, type) => {
+    try {
+      const courses = await UserModel.getAllCourses(batch, type);
+      return courses;
+    } catch (err) {
+      throw err;
+    }
+  },
+  
+
+  // Get course details by ID
+  getCourseById: async (req, res) => {
+    const { courseId } = req.params;
+    try {
+      const course = await UserModel.getCourseById(courseId);
+      if (!course) {
+        return res.status(404).json({ error: "Course not found" });
+      }
+      res.status(200).json(course);
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ error: "Failed to fetch course details" });
+    }
+  },
+
 };
 
 module.exports = AuthController;

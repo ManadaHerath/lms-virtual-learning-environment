@@ -99,6 +99,45 @@ const UserModel = {
       connection.release(); // Release the connection
     }
   },
+
+
+  getAllCourses: async (batch, type) => {
+    let query = "SELECT course_id,price, CONCAT(course_type, ' ', batch) AS name, image_url FROM Course";
+    const queryParams = [];
+  
+    if (batch || type) {
+      query += " WHERE";
+      if (batch) {
+        query += " batch = ?";
+        queryParams.push(batch);
+      }
+      if (type) {
+        if (queryParams.length) query += " AND";
+        query += " course_type = ?";
+        queryParams.push(type);
+      }
+    }
+  
+    try {
+      const [courses] = await pool.query(query, queryParams);
+      return courses;
+    } catch (err) {
+      throw err;
+    }
+  },
+  
+
+  // Fetch course details by ID
+  getCourseById: async (courseId) => {
+    const query = "SELECT course_id, course_type, batch, description, price, image_url FROM Course WHERE course_id = ?;";
+    try {
+      const [course] = await pool.query(query, [courseId]);
+      return course[0];
+    } catch (err) {
+      throw err;
+    }
+  },
+
 };
 
 module.exports = UserModel;
