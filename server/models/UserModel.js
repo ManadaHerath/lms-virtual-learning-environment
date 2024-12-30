@@ -138,6 +138,95 @@ const UserModel = {
     }
   },
 
+  getUserProfile: async (nic) => {
+    const query = `
+      SELECT 
+        u.nic, u.first_name, u.last_name, u.email, u.telephone, u.date_of_birth, 
+        u.batch, u.image_url, u.status,
+        a.street_address, a.city, a.province, a.postal_code, a.country
+      FROM User u
+      LEFT JOIN Address a ON u.address_id = a.address_id
+      WHERE u.nic = ?
+    `;
+
+    try {
+      const [rows] = await pool.query(query, [nic]);
+      return rows.length ? rows[0] : null; // Return the first row or null if not found
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  updateUserProfile: async (nic, updatedData) => {
+    const {
+      first_name,
+      last_name,
+      email,
+      telephone,
+      street_address,
+      city,
+      province,
+      postal_code,
+      country,
+    } = updatedData;
+
+    try {
+      // Start transaction
+      const connection = await pool.getConnection();
+      await connection.beginTransaction();
+
+      // Update Address table
+      const updateAddressQuery = `
+        UPDATE Address
+        SET street_address = ?, city = ?, province = ?, postal_code = ?, country = ?
+        WHERE address_id = (SELECT address_id FROM User WHERE nic = ?)
+      `;
+      await connection.query(updateAddressQuery, [
+        street_address,
+        city,
+        province,
+        postal_code,
+        country,
+        nic,
+      ]);
+
+      // Update User table
+      const updateUserQuery = `
+        UPDATE User
+        SET first_name = ?, last_name = ?, email = ?, telephone = ?
+        WHERE nic = ?
+      `;
+      const [result] = await connection.query(updateUserQuery, [
+        first_name,
+        last_name,
+        email,
+        telephone,
+        nic,
+      ]);
+
+      await connection.commit(); // Commit transaction
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  },
+
+  updateProfilePicture: async (nic, imageUrl) => {
+    const query = `
+      UPDATE User
+      SET image_url = ?
+      WHERE nic = ?
+    `;
+    try {
+      const [result] = await pool.query(query, [imageUrl, nic]);
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  }
+
 };
 
 module.exports = UserModel;
