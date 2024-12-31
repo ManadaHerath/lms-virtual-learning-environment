@@ -138,6 +138,183 @@ const UserModel = {
     }
   },
 
+  getUserProfile: async (nic) => {
+    const query = `
+      SELECT 
+        u.nic, u.first_name, u.last_name, u.email, u.telephone, u.date_of_birth, 
+        u.batch, u.image_url, u.status,
+        a.street_address, a.city, a.province, a.postal_code, a.country
+      FROM User u
+      LEFT JOIN Address a ON u.address_id = a.address_id
+      WHERE u.nic = ?
+    `;
+
+    try {
+      const [rows] = await pool.query(query, [nic]);
+      return rows.length ? rows[0] : null; // Return the first row or null if not found
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  updateUserProfile: async (nic, updatedData) => {
+    const {
+      first_name,
+      last_name,
+      email,
+      telephone,
+      street_address,
+      city,
+      province,
+      postal_code,
+      country,
+    } = updatedData;
+
+    try {
+      // Start transaction
+      const connection = await pool.getConnection();
+      await connection.beginTransaction();
+
+      // Update Address table
+      const updateAddressQuery = `
+        UPDATE Address
+        SET street_address = ?, city = ?, province = ?, postal_code = ?, country = ?
+        WHERE address_id = (SELECT address_id FROM User WHERE nic = ?)
+      `;
+      await connection.query(updateAddressQuery, [
+        street_address,
+        city,
+        province,
+        postal_code,
+        country,
+        nic,
+      ]);
+
+      // Update User table
+      const updateUserQuery = `
+        UPDATE User
+        SET first_name = ?, last_name = ?, email = ?, telephone = ?
+        WHERE nic = ?
+      `;
+      const [result] = await connection.query(updateUserQuery, [
+        first_name,
+        last_name,
+        email,
+        telephone,
+        nic,
+      ]);
+
+      await connection.commit(); // Commit transaction
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  },
+
+  updateProfilePicture: async (nic, imageUrl) => {
+    const query = `
+      UPDATE User
+      SET image_url = ?
+      WHERE nic = ?
+    `;
+    try {
+      const [result] = await pool.query(query, [imageUrl, nic]);
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  },
+
+  // UserModel.js
+
+// Get all courses a user is enrolled in
+getEnrolledCourses: async (nic) => {
+  
+  const query = `
+    SELECT c.course_id, c.price, CONCAT(c.course_type, ' ', c.batch) AS name, c.image_url
+    FROM Course c
+    JOIN Enrollment e ON c.course_id = e.course_id
+    WHERE e.nic = ?
+  `;
+  try {
+    const [courses] = await pool.query(query, [nic]);
+    
+    return courses;
+  } catch (err) {
+    throw err;
+  }
+},
+
+
+// Add this method to your UserModel.js
+
+enrollCourse: async (nic, courseId) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction(); // Start transaction
+
+    // Fetch the course fee (price) from the Course table
+    const courseSql = `
+      SELECT price FROM Course WHERE course_id = ?
+    `;
+    const [courseResult] = await connection.query(courseSql, [courseId]);
+
+    if (courseResult.length === 0) {
+      throw new Error("Course not found");
+    }
+
+    const courseFee = courseResult[0].price;
+    console.log(courseFee);
+
+    // Insert into Enrollment table
+    const enrollmentSql = `
+      INSERT INTO Enrollment (nic, course_id)
+      VALUES (?, ?)
+    `;
+    const [enrollmentResult] = await connection.query(enrollmentSql, [nic, courseId]);
+    const enrollment_id = enrollmentResult.insertId;
+
+    // Insert into Payment table with 'pending' status and the course fee as amount
+    const paymentSql = `
+      INSERT INTO Payment (enrollment_id, payment_status, amount)
+      VALUES (?, 'pending', ?)
+    `;
+    await connection.query(paymentSql, [enrollment_id, courseFee]);
+
+    await connection.commit(); // Commit transaction
+    return enrollmentResult;
+  } catch (error) {
+    await connection.rollback(); // Rollback on error
+    throw error;
+  } finally {
+    connection.release();
+  }
+},
+
+
+
+// In UserModel.js
+
+// Check if user is already enrolled in the course
+checkEnrollment: async (nic, courseId) => {
+  const query = `
+    SELECT 1 FROM Enrollment
+    WHERE nic = ? AND course_id = ?
+  `;
+  try {
+    const [result] = await pool.query(query, [nic, courseId]);
+    console.log(result);
+    return result.length > 0; // Return true if the user is already enrolled
+  } catch (err) {
+    throw err;
+  }
+},
+
+
+
+
 };
 
 module.exports = UserModel;

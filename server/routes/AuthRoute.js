@@ -1,6 +1,9 @@
 const express = require("express");
 const AuthController = require("../controllers/AuthController");
 const upload = require("../config/multer");
+const UserController = require("../controllers/UserController");
+const AuthMiddleware = require("../middleware/Authmiddleware");
+
 
 const router = express.Router();
 
@@ -38,5 +41,36 @@ router.get("/courses", async (req, res) => {
 // Route to fetch course details by ID
 router.get("/courses/:courseId", AuthController.getCourseById);
 
+// User profile route
+router.get("/profile", AuthMiddleware(["student", "admin"]), UserController.getProfile);
+
+// Update profile route
+router.put("/editprofile", AuthMiddleware(["student", "admin"]), UserController.updateProfile);
+
+// AuthRoutes.js
+
+// Get enrolled courses for the authenticated user
+router.get("/enrolled", AuthMiddleware(["student", "admin"]), AuthController.getEnrolledCourses);
+
+
+// Update or remove profile picture
+router.put(
+  "/profile/picture",
+  AuthMiddleware(["student", "admin"]),
+  upload.single("image"), // Handle image upload
+  UserController.updateProfilePicture
+);
+
+
+// Enroll in a course
+router.post("/enroll/:courseId", AuthMiddleware(["student", "admin"]), (req, res, next) => {
+  // Log the incoming request details for the /enroll/:courseId route
+  console.log(`Incoming request to enroll in course with ID: ${req.params.courseId}`);
+  console.log(`Request body:`, req.body);
+  
+  
+  // Call the next handler (which will be the AuthController.enrollCourse)
+  next();
+}, AuthController.enrollCourse);
 
 module.exports = router;

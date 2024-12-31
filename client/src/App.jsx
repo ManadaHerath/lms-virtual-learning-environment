@@ -6,8 +6,10 @@ import UploadCourse from "./admin/create_course";
 import CartPage from "./user/CartPage";
 
 import CoursePage from "./user/course";
+import Profile from "./user/Profile";
+import Login from './user/Login';
+import MyCourse from './user/mycourse';
 
-import Login from './user/Login'
 
 import AdminLogin from "./user/AdminLogin";
 function App() {
@@ -24,6 +26,8 @@ function App() {
         <Route path="/upload-course" element={<UploadCourse/>} />
         <Route path="/cart" element={<CartPage/>} />
         <Route path="/course/:courseId" element={<CoursePage />} />
+        <Route path="/user/profile" element={<Profile />} />
+        <Route path="/user/mycourse" element={<MyCourse />} />
       </Routes>
     </Router>
   );
