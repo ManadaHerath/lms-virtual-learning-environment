@@ -248,6 +248,73 @@ getEnrolledCourses: async (nic) => {
 },
 
 
+// Add this method to your UserModel.js
+
+enrollCourse: async (nic, courseId) => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction(); // Start transaction
+
+    // Fetch the course fee (price) from the Course table
+    const courseSql = `
+      SELECT price FROM Course WHERE course_id = ?
+    `;
+    const [courseResult] = await connection.query(courseSql, [courseId]);
+
+    if (courseResult.length === 0) {
+      throw new Error("Course not found");
+    }
+
+    const courseFee = courseResult[0].price;
+    console.log(courseFee);
+
+    // Insert into Enrollment table
+    const enrollmentSql = `
+      INSERT INTO Enrollment (nic, course_id)
+      VALUES (?, ?)
+    `;
+    const [enrollmentResult] = await connection.query(enrollmentSql, [nic, courseId]);
+    const enrollment_id = enrollmentResult.insertId;
+
+    // Insert into Payment table with 'pending' status and the course fee as amount
+    const paymentSql = `
+      INSERT INTO Payment (enrollment_id, payment_status, amount)
+      VALUES (?, 'pending', ?)
+    `;
+    await connection.query(paymentSql, [enrollment_id, courseFee]);
+
+    await connection.commit(); // Commit transaction
+    return enrollmentResult;
+  } catch (error) {
+    await connection.rollback(); // Rollback on error
+    throw error;
+  } finally {
+    connection.release();
+  }
+},
+
+
+
+// In UserModel.js
+
+// Check if user is already enrolled in the course
+checkEnrollment: async (nic, courseId) => {
+  const query = `
+    SELECT 1 FROM Enrollment
+    WHERE nic = ? AND course_id = ?
+  `;
+  try {
+    const [result] = await pool.query(query, [nic, courseId]);
+    console.log(result);
+    return result.length > 0; // Return true if the user is already enrolled
+  } catch (err) {
+    throw err;
+  }
+},
+
+
+
+
 };
 
 module.exports = UserModel;

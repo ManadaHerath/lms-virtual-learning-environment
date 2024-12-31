@@ -147,6 +147,8 @@ const AuthController = {
   // Get course details by ID
   getCourseById: async (req, res) => {
     const { courseId } = req.params;
+    
+    
     try {
       const course = await UserModel.getCourseById(courseId);
       if (!course) {
@@ -177,6 +179,40 @@ getEnrolledCourses: async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: "Failed to fetch enrolled courses" });
+  }
+},
+
+
+ // In AuthController.js
+
+enrollCourse: async (req, res) => {
+  const { courseId } = req.params;
+  const { nic } = req.user; // Get user nic from JWT token
+
+  try {
+    // Check if user is already enrolled in the course
+    const isEnrolled = await UserModel.checkEnrollment(nic, courseId);
+
+    
+
+    if (isEnrolled) {
+      console.log('kasun');
+      return res.status(400).json({
+        success: false,
+        message: "You are already enrolled in this course.",
+      });
+    }
+
+    const result = await UserModel.enrollCourse(nic, courseId);
+    console.log(result);
+    res.status(200).json({
+      success: true,
+      message: "Course enrolled successfully!",
+      enrollmentId: result.insertId,
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Failed to enroll in course" });
   }
 },
 
