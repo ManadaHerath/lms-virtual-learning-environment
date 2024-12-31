@@ -62,5 +62,15 @@ router.put(
 );
 
 
+// Enroll in a course
+router.post("/enroll/:courseId", AuthMiddleware(["student", "admin"]), (req, res, next) => {
+  // Log the incoming request details for the /enroll/:courseId route
+  console.log(`Incoming request to enroll in course with ID: ${req.params.courseId}`);
+  console.log(`Request body:`, req.body);
+  
+  
+  // Call the next handler (which will be the AuthController.enrollCourse)
+  next();
+}, AuthController.enrollCourse);
 
 module.exports = router;
