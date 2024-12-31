@@ -250,10 +250,23 @@ getEnrolledCourses: async (nic) => {
 
 // Add this method to your UserModel.js
 
- enrollCourse : async (nic, courseId) => {
+enrollCourse: async (nic, courseId) => {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction(); // Start transaction
+
+    // Fetch the course fee (price) from the Course table
+    const courseSql = `
+      SELECT price FROM Course WHERE course_id = ?
+    `;
+    const [courseResult] = await connection.query(courseSql, [courseId]);
+
+    if (courseResult.length === 0) {
+      throw new Error("Course not found");
+    }
+
+    const courseFee = courseResult[0].price;
+    console.log(courseFee);
 
     // Insert into Enrollment table
     const enrollmentSql = `
@@ -263,12 +276,12 @@ getEnrolledCourses: async (nic) => {
     const [enrollmentResult] = await connection.query(enrollmentSql, [nic, courseId]);
     const enrollment_id = enrollmentResult.insertId;
 
-    // Insert into Payment table with 'pending' status and amount 0
+    // Insert into Payment table with 'pending' status and the course fee as amount
     const paymentSql = `
       INSERT INTO Payment (enrollment_id, payment_status, amount)
-      VALUES (?, 'pending', 0)
+      VALUES (?, 'pending', ?)
     `;
-    await connection.query(paymentSql, [enrollment_id]);
+    await connection.query(paymentSql, [enrollment_id, courseFee]);
 
     await connection.commit(); // Commit transaction
     return enrollmentResult;
@@ -279,6 +292,7 @@ getEnrolledCourses: async (nic) => {
     connection.release();
   }
 },
+
 
 
 // In UserModel.js

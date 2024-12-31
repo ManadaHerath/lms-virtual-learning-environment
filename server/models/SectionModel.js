@@ -2,18 +2,52 @@
 const db = require('../config/dbconfig');
 const pool=db
 const Section = {
-  getSectionsByCourseId: async (courseId) => {
-    const query = `
-      SELECT 
-        s.id, s.title, s.description, s.content_url,  
-        s.week_id, s.order_id 
-      FROM Section s 
-      WHERE s.course_id = ?
-      ORDER BY s.week_id, s.order_id
-    `;
-    const [rows] = await db.execute(query, [courseId]);
-    return rows;
+  getSectionsByCourseId: async (courseId, nic) => {
+    const connection = await pool.getConnection();
+    try {
+      const userQuery = `
+        SELECT e.enrollment_id, p.payment_status 
+        FROM Enrollment e 
+        LEFT JOIN Payment p ON e.enrollment_id = p.enrollment_id 
+        WHERE e.course_id = ? AND e.nic = ?
+      `;
+      const [userResult] = await connection.execute(userQuery, [courseId, nic]);
+  
+      if (userResult.length === 0) {
+        return { error: "User not enrolled in this course" };
+      }
+  
+      const { enrollment_id, payment_status } = userResult[0];
+  
+      const sectionsQuery = payment_status === 'completed'
+        ? `
+            SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id 
+            FROM Section s 
+            WHERE s.course_id = ? 
+            ORDER BY s.week_id, s.order_id
+          `
+        : `
+            SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id 
+            FROM Section s 
+            WHERE s.course_id = ? AND s.week_id = 1
+            ORDER BY s.order_id
+          `;
+  
+      const [sections] = await connection.execute(sectionsQuery, [courseId]);
+  
+      return {
+        enrollment_id,
+        payment_status,
+        sections,
+      };
+    } catch (error) {
+      console.error('Error fetching sections:', error);
+      throw error;
+    } finally {
+      connection.release();
+    }
   },
+  
   createSectionByCourseId:async (course_id,sectionData)=>{
     
         
