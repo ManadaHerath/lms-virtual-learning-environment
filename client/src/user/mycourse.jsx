@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const EnrolledCourses = () => {
   const [courses, setCourses] = useState([]);  // Ensure it's initialized as an empty array
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
@@ -28,7 +30,6 @@ const EnrolledCourses = () => {
         }
 
         const data = await response.json();
-        console.log(data.c);
         setCourses(data || []);  // Ensure data.courses is handled correctly
       } catch (err) {
         setError(err.message);
@@ -48,6 +49,10 @@ const EnrolledCourses = () => {
     return <div className="p-4 text-red-500">Error: {error}</div>;
   }
 
+  const handleCourseClick = (courseId) => {
+    navigate(`/course/${courseId}`); // Navigate to the course detail page
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Enrolled Courses</h1>
@@ -58,7 +63,8 @@ const EnrolledCourses = () => {
           {courses.map((course) => (
             <div
               key={course.course_id}
-              className="bg-white shadow-lg rounded-lg overflow-hidden transform transition-all hover:scale-105"
+              onClick={() => handleCourseClick(course.course_id)} // Trigger the navigation on click
+              className="bg-white shadow-lg rounded-lg overflow-hidden transform transition-all hover:scale-105 cursor-pointer"
             >
               <img
                 src={course.image_url || "/default-course-image.jpg"}
