@@ -7,6 +7,7 @@ const SectionController = {
     const {nic} = req.user; // Assuming `nic` is included in the token payload
   
     try {
+
       const result = await Section.getSectionsByCourseId(courseId, nic);
   
       if (result.error) {

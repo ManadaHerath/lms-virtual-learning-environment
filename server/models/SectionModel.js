@@ -2,6 +2,7 @@
 const db = require('../config/dbconfig');
 const pool=db
 const Section = {
+
   getSectionsByCourseId: async (courseId, nic) => {
     const connection = await pool.getConnection();
     try {
@@ -46,6 +47,7 @@ const Section = {
     } finally {
       connection.release();
     }
+
   },
   
   createSectionByCourseId:async (course_id,sectionData)=>{
