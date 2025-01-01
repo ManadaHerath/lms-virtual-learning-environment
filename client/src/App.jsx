@@ -10,6 +10,8 @@ import Profile from "./user/Profile";
 import Login from './user/Login';
 import MyCourse from './user/mycourse';
 import CreateSection from "./admin/CreateSection";
+import PaymentHistory from "./user/PaymentHistory";
+
 
 import AdminLogin from "./user/AdminLogin";
 function App() {
@@ -31,6 +33,9 @@ function App() {
         <Route path="/admin/create_section" element={<CreateSection />} />
       </Routes>
     </Router>
+
+
+
   );
 
 }
