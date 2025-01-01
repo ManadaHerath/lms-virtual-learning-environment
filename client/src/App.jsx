@@ -10,7 +10,6 @@ import Profile from "./user/Profile";
 import Login from "./user/Login";
 import MyCourse from "./user/mycourse";
 import PaymentHistory from "./user/PaymentHistory";
-import AdminLogin from "./admin/AdminLogin";
 import AdminLog from "./admin/AdminLog";
 import AdminLayout from "./admin/AdminLayout";
 import AdminDashboard from "./admin/AdminDashboard";
@@ -21,6 +20,7 @@ import store from "./app/store";
 import AdminProtectedRoute from "./admin/AdminProtectedRoute";
 import SignUp from "./user/SignUp";
 import AdminCoursePage from "./admin/AdminCoursePage";
+import CreateSection from "./admin/CreateSection";
 
 function App() {
   return (
