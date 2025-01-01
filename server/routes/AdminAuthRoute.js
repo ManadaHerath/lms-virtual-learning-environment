@@ -8,8 +8,11 @@ const SectionController=require("../controllers/SectionController")
 
 
 // Define rout es
+// Admin Authentication Routes
 router.post("/login", AdminController.adminLogin);
 router.post("/signup",AuthMiddleware(["admin"]),AdminController.createAdmin);
+router.post("/logout", AuthMiddleware(["admin"]), AdminController.adminLogout);
+
 router.post('/upload-course', upload.single('image'), (req, res, next) => {
     console.log('Upload course endpoint hit');
     console.log('Uploaded file details:', req.file);
@@ -19,5 +22,13 @@ router.post('/upload-section',AuthMiddleware(["admin"]),SectionController.create
 router.get('/course/:courseId/sections',AuthMiddleware(['admin']),SectionController.getSectionsForAdmin);
 router.get('/course/:courseId/:weekId/maxorder',AuthMiddleware(['admin']),SectionController.getMaxOrderByCourseId);
 router.post('/section',AuthMiddleware(['admin']),SectionController.createSection)
+
+// Student Management Routes
+// Get all students
+router.get('/students', AuthMiddleware(["admin"]), AdminController.getStudents);
+// Get student by ID
+router.get('/students/:id', AuthMiddleware(["admin"]), AdminController.getStudentById);
+// Update student status by ID
+router.patch('/students/:id', AuthMiddleware(["admin"]), AdminController.updateStudentStatus);
 
 module.exports = router;

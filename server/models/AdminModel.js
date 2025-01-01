@@ -94,6 +94,42 @@ const AdminModel = {
       throw err;
     }
   },
+
+  // Student Management Models
+  // Get all students
+  getStudents: async () => {
+    try {
+      const [students] = await pool.query("SELECT * FROM Student");
+      return students;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Get student by ID
+  getStudentById: async (id) => {
+    try {
+      const [student] = await pool.query("SELECT * FROM Student WHERE id = ?", [
+        id,
+      ]);
+      return student;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Update student status by ID
+  updateStudentStatus: async (id, status) => {
+    try {
+      const [result] = await pool.query(
+        "UPDATE Student SET status = ? WHERE id = ?",
+        [status, id]
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 module.exports = AdminModel;
