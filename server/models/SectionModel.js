@@ -108,6 +108,7 @@ const Section = {
         await connection.release();
       }
   },
+
   getMaxOrderByCourseId:async (courseId,weekId)=>{
     
    
@@ -123,9 +124,61 @@ const Section = {
     } finally {
       connection.release();
     }
+  },
   
   
+
+
+  // models/sectionModel.js
+
+ // Assuming you're using MySQL pool connection
+
+// Function to update the status of the section
+updateSectionStatus : async (enrollmentId, sectionId, markAsDone) => {
+  const connection = await pool.getConnection();
+  try {
+    const query = `
+      UPDATE UserSection 
+      SET mark_as_done = ? 
+      WHERE enrollment_id = ? AND section_id = ?
+    `;
+    const [result] = await connection.execute(query, [
+      markAsDone ? 1 : 0, // Toggle between 0 and 1
+      enrollmentId,
+      sectionId,
+    ]);
+    return result;
+  } catch (error) {
+    console.error("Error updating section status:", error);
+    throw error;
+  } finally {
+    connection.release();
+
   }
+},
+
+// Function to get the updated section status
+getUpdatedSectionStatus : async (enrollmentId, sectionId) => {
+  const connection = await pool.getConnection();
+  try {
+    const query = `
+      SELECT * FROM UserSection 
+      WHERE enrollment_id = ? AND section_id = ?
+    `;
+    const [updatedSection] = await connection.execute(query, [
+      enrollmentId,
+      sectionId,
+    ]);
+    return updatedSection;
+  } catch (error) {
+    console.error("Error fetching updated section status:", error);
+    throw error;
+  } finally {
+    connection.release();
+  }
+},
+
+  
 };
 
 module.exports = Section;

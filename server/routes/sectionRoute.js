@@ -6,6 +6,9 @@ const AuthMiddleware=require('../middleware/Authmiddleware');
 const router = express.Router();
 
 router.get('/:courseId/sections',AuthMiddleware(["student", "admin"]), SectionController.getSectionsByCourse);
+// Update section status
+router.patch("/:enrollmentId/section/:sectionId", SectionController.updateSectionStatus);
+
 
 
 module.exports = router;
