@@ -10,4 +10,5 @@ router.get('/:courseId/sections',AuthMiddleware(["student", "admin"]), SectionCo
 router.patch("/:enrollmentId/section/:sectionId", SectionController.updateSectionStatus);
 
 
+
 module.exports = router;

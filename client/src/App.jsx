@@ -15,6 +15,7 @@ import SignUp from "./user/SignUp";
 
 
 import AdminLogin from "./user/AdminLogin";
+import AdminCoursePage from "./admin/AdminCoursePage";
 function App() {
   return (
 
@@ -31,8 +32,12 @@ function App() {
         <Route path="/course/:courseId" element={<CoursePage />} />
         <Route path="/user/profile" element={<Profile />} />
         <Route path="/user/mycourse" element={<MyCourse />} />
+
+
         <Route path="/user/signup" element={<SignUp />} />
-        <Route path="/admin/create_section" element={<CreateSection />} />
+        <Route path="/admin/create_section/:courseId/:weekId" element={<CreateSection />} />
+          <Route path="/admin/course/:courseId" element={<AdminCoursePage />} />
+
       </Routes>
     </Router>
 

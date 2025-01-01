@@ -49,11 +49,30 @@ const Section = {
     }
 
   },
+  getSectionsForAdmin:async({courseId})=>{
+   
+    const connection = await pool.getConnection();
+    const query=`SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id 
+            FROM Section s 
+            WHERE s.course_id = ? 
+            ORDER BY s.week_id, s.order_id`
   
-  createSectionByCourseId:async (course_id,sectionData)=>{
+  try {
+    const [sections]=await connection.execute(query,[courseId]);
+    
+    return {sections};
+  } catch (error) {
+    throw error;
+  } finally {
+    connection.release();
+  }
+
+}
+  ,
+  
+  createSectionByCourseId:async (sectionData)=>{
     
         
- 
       const connection = await pool.getConnection();
       try {
         await connection.beginTransaction();
@@ -65,12 +84,12 @@ const Section = {
         `;
         const [result]=await connection.execute(insertQuery, [
           sectionData.title,
-          sectionData.description,
-          sectionData.course_id,
-          sectionData.week_id,
-          sectionData.order_id,
-          sectionData.type_id,
-          sectionData.content_url
+  sectionData.description,
+  sectionData.courseId, // Updated to match the property name
+  sectionData.weekId,   // Updated to match the property name
+  sectionData.orderId,  // Updated to match the property name
+  sectionData.typeId,   // Updated to match the property name
+  sectionData.contentUrl
           
           
         ]);
@@ -89,6 +108,25 @@ const Section = {
         await connection.release();
       }
   },
+
+  getMaxOrderByCourseId:async (courseId,weekId)=>{
+    
+   
+      const connection = await pool.getConnection();
+      const query=`select order_id from Section where course_id=? and week_id=? order by order_id desc limit 1;`
+    
+    try {
+      const [maxOrder]=await connection.execute(query,[courseId,weekId]);
+     
+      return maxOrder;
+    } catch (error) {
+      throw error;
+    } finally {
+      connection.release();
+    }
+  },
+  
+  
 
 
   // models/sectionModel.js
@@ -115,6 +153,7 @@ updateSectionStatus : async (enrollmentId, sectionId, markAsDone) => {
     throw error;
   } finally {
     connection.release();
+
   }
 },
 
