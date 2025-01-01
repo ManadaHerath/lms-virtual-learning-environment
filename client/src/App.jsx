@@ -11,6 +11,7 @@ import Login from './user/Login';
 import MyCourse from './user/mycourse';
 import CreateSection from "./admin/CreateSection";
 import PaymentHistory from "./user/PaymentHistory";
+import SignUp from "./user/SignUp";
 
 
 import AdminLogin from "./user/AdminLogin";
@@ -30,6 +31,7 @@ function App() {
         <Route path="/course/:courseId" element={<CoursePage />} />
         <Route path="/user/profile" element={<Profile />} />
         <Route path="/user/mycourse" element={<MyCourse />} />
+        <Route path="/user/signup" element={<SignUp />} />
         <Route path="/admin/create_section" element={<CreateSection />} />
       </Routes>
     </Router>
