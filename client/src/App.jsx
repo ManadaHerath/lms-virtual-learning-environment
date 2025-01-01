@@ -4,11 +4,11 @@ import CourseList from "./user/CourseList";
 import CourseDetail from "./user/CourseDetail";
 import UploadCourse from "./admin/create_course";
 import CartPage from "./user/CartPage";
-
 import CoursePage from "./user/course";
 import Profile from "./user/Profile";
 import Login from './user/Login';
 import MyCourse from './user/mycourse';
+import PaymentHistory from "./user/PaymentHistory";
 
 
 import AdminLogin from "./user/AdminLogin";
@@ -28,6 +28,7 @@ function App() {
         <Route path="/course/:courseId" element={<CoursePage />} />
         <Route path="/user/profile" element={<Profile />} />
         <Route path="/user/mycourse" element={<MyCourse />} />
+        <Route path="/user/payments" element={<PaymentHistory />} />
       </Routes>
     </Router>
   );

@@ -66,6 +66,20 @@ const UserController = {
       console.error(err.message);
       res.status(500).json({ success: false, message: "Failed to update profile picture" });
     }
+  },
+
+  getPaymentHistory: async (req, res) => {
+    try {
+      const { nic } = req.user; // Extract NIC from JWT payload (added by AuthMiddleware)
+
+      // Call the model to get payment history
+      const payments = await UserModel.getPaymentHistory(nic);
+
+      res.status(200).json({ success: true, payments });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ success: false, message: "Failed to fetch payment history" });
+    }
   }
 
 };

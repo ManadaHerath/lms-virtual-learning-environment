@@ -1,14 +1,6 @@
 CREATE DATABASE  IF NOT EXISTS defaultdb;
 USE `defaultdb`;
 
-SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
-
---
--- GTID state at the beginning of the backup 
---
-
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e7aa16e-c398-11ef-a18c-beb1d8909a1a:1-91';
 
 --
 -- Table structure for table `Address`
@@ -88,7 +80,6 @@ CREATE TABLE `Course` (
   `description` text,
   `price` decimal(10,2) NOT NULL,
   `duration` int NOT NULL,
-  `progress` decimal(5,2) DEFAULT '0.00',
   `started_at` date NOT NULL,
   `ended_at` date DEFAULT NULL,
   PRIMARY KEY (`course_id`),
@@ -112,7 +103,7 @@ CREATE TABLE `Enrollment` (
   KEY `nic` (`nic`),
   CONSTRAINT `Enrollment_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `Course` (`course_id`),
   CONSTRAINT `Enrollment_ibfk_2` FOREIGN KEY (`nic`) REFERENCES `User` (`nic`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,11 +132,16 @@ DROP TABLE IF EXISTS `Payment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Payment` (
+  `payment_id` int NOT NULL AUTO_INCREMENT,
   `enrollment_id` int NOT NULL,
   `payment_status` enum('pending','completed','failed') NOT NULL,
+  `payment_type` enum('online','physical') NOT NULL,
   `amount` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`enrollment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `payment_date` date DEFAULT NULL,
+  PRIMARY KEY (`payment_id`),
+  KEY `fk_enrollment_id` (`enrollment_id`),
+  CONSTRAINT `fk_enrollment_id` FOREIGN KEY (`enrollment_id`) REFERENCES `Enrollment` (`enrollment_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -199,13 +195,12 @@ CREATE TABLE `Section` (
   `order_id` int NOT NULL,
   `type_id` int NOT NULL,
   `content_url` varchar(255) DEFAULT NULL,
-  `mark_as_done` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `type_id` (`type_id`),
   KEY `course_id` (`course_id`),
   CONSTRAINT `Section_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `Type` (`type_id`),
   CONSTRAINT `Section_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `Course` (`course_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,7 +213,6 @@ DROP TABLE IF EXISTS `Type`;
 CREATE TABLE `Type` (
   `type_id` int NOT NULL AUTO_INCREMENT,
   `type` varchar(100) NOT NULL,
-  `type_icon` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`type_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -246,5 +240,23 @@ CREATE TABLE `User` (
   UNIQUE KEY `email` (`email`),
   KEY `address_id` (`address_id`),
   CONSTRAINT `User_ibfk_1` FOREIGN KEY (`address_id`) REFERENCES `Address` (`address_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `UserSection`
+--
+
+DROP TABLE IF EXISTS `UserSection`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `UserSection` (
+  `enrollment_id` int NOT NULL,
+  `section_id` int NOT NULL,
+  `mark_as_done` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`enrollment_id`,`section_id`),
+  KEY `fk_section` (`section_id`),
+  CONSTRAINT `fk_enrollment` FOREIGN KEY (`enrollment_id`) REFERENCES `Enrollment` (`enrollment_id`),
+  CONSTRAINT `fk_section` FOREIGN KEY (`section_id`) REFERENCES `Section` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
