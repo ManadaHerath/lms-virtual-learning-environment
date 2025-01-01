@@ -49,7 +49,38 @@ const SectionController = {
       console.log(error)
       res.status(400);
     }
+  },
+
+
+  // Section update logic
+// controllers/sectionController.js
+
+// Function to update the section status and return the updated value
+updateSectionStatus : async (req, res) => {
+  const { enrollmentId, sectionId } = req.params;
+  const { mark_as_done } = req.body;
+
+  try {
+    // Update section status in the UserSection table
+    const result = await Section.updateSectionStatus(enrollmentId, sectionId, mark_as_done);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Section not found or not updated" });
+    }
+
+    // Fetch the updated section from UserSection to return the new status
+    const updatedSection = await Section.getUpdatedSectionStatus(enrollmentId, sectionId);
+    
+    res.status(200).json({
+      message: "Section updated successfully",
+      updatedSection: updatedSection[0], // Return the updated section with mark_as_done
+    });
+  } catch (error) {
+    console.error("Error updating section status:", error);
+    res.status(500).json({ message: "Failed to update section status" });
   }
+},
+
 };
 
 module.exports = SectionController;

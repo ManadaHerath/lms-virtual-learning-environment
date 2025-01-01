@@ -35,46 +35,45 @@ const AuthController = {
         nic, first_name, last_name, email, password, telephone, street_address,
         city, province, postal_code, country, date_of_birth, batch, status
       } = req.body;
-
-      console.log("Request body:", req.body);
-
+  
+      console.log("Request body received:", req.body);
+  
       // Check if email is already registered
       const existingUser = await UserModel.findByEmail(email);
-      if (existingUser) {
+      if (existingUser.success) {
         return res.status(400).json({
           success: false,
           errors: { email: "Email has already been registered" },
         });
       }
-
-      // Hash the password
+  
+      console.log("Email is unique. Proceeding with password hashing...");
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Upload image and get URL
+  
+      console.log("Password hashed successfully. Handling image upload...");
       const image_url = req.file ? req.file.path : null;
-
-      // Insert user data into the database
+  
+      console.log("Creating user in the database...");
       const newUser = {
         nic, first_name, last_name, email, password: hashedPassword, telephone,
         street_address, city, province, postal_code, country, date_of_birth,
         batch, status, image_url
       };
-
+  
       const result = await UserModel.create(newUser);
-
-      
-
+  
+      console.log("User created successfully:", result);
       res.status(201).json({
         success: true,
         message: "User created successfully",
       });
     } catch (error) {
-      console.error(error);
+      console.error("Error during user creation:", error.message);
       const errors = handleErrors(error);
       res.status(500).json({ success: false, errors });
     }
   },
-
+  
 
   // Login user
   loginUser: async (req, res) => {
