@@ -6,7 +6,7 @@ const api = axios.create({
 });
 
 // Add an interceptor to include the accessToken
-apiClient.interceptors.request.use((config) => {
+api.interceptors.request.use((config) => {
   const accessToken = sessionStorage.getItem('accessToken');
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;

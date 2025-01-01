@@ -20,7 +20,7 @@ const AdminController={
           
         // Generate Access Token (short-lived)
         const accessToken = jwt.sign(
-          { nic: admin.nic, email: req.body.email,userType:"admin" },
+          { nic: admin.nic, email: req.body.email, userType:"admin" },
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: "15m" } // Expires in 15 minutes
         );
@@ -45,6 +45,7 @@ const AdminController={
           message: "Admin Login successful",
           success: true,
           accessToken,
+          userType:"admin",
         });
         } catch (error) {
           res.status(500).send({ message: `Error in login: ${error.message}` });
@@ -94,6 +95,15 @@ const AdminController={
         }
       },
 
+      adminLogout: async (req, res) => {
+        try {
+          res.clearCookie("refreshToken");
+          res.status(200).json({ message: "Admin logged out successfully" });
+        } catch (error) {
+          res.status(500).send({ message: `Error in logout: ${error.message}` });
+        }
+      },
+
 
       async uploadCourse(req, res) {
         try {
@@ -124,6 +134,40 @@ const AdminController={
           });
     
           res.status(201).json({ message: 'Course uploaded successfully', courseId });
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      },
+
+      // Student Management Controllers
+      // Get all students
+      async getStudents(req, res) {
+        try {
+          const students = await AdminModel.getStudents();
+          res.status(200).json({ students });
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      },
+
+      // Get student by ID
+      async getStudentById(req, res) {
+        try {
+          const student = await AdminModel.getStudentById(req.params.id);
+          res.status(200).json({ student });
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Internal server error' });
+        }
+      },
+
+      // Update student status by ID
+      async updateStudentStatus(req, res) {
+        try {
+          const updatedStudent = await AdminModel.updateStudentStatus(req.params.id, req.body.status);
+          res.status(200).json({ message: 'Student status updated successfully', updatedStudent });
         } catch (error) {
           console.error(error);
           res.status(500).json({ error: 'Internal server error' });
