@@ -5,6 +5,8 @@ const upload = require("../config/multer");
 const CourseController=require('../controllers/CourseController')
 const router = express.Router();
 const SectionController=require("../controllers/SectionController")
+
+
 // Define rout es
 router.post("/login", AdminController.adminLogin);
 router.post("/signup",AuthMiddleware(["admin"]),AdminController.createAdmin);
