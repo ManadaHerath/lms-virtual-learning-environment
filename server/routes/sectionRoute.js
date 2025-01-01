@@ -7,4 +7,5 @@ const router = express.Router();
 
 router.get('/:courseId/sections',AuthMiddleware(["student", "admin"]), SectionController.getSectionsByCourse);
 
+
 module.exports = router;
