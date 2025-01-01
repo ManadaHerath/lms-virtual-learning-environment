@@ -45,12 +45,7 @@ const UserModel = {
    
 
     // Check if email already exists
-    const existingUser = await UserModel.findByEmail(email);
-    console.log(existingUser);
-    if (existingUser) {
-      throw new Error("Email already registered");
-      
-    }
+   
 
     const connection = await pool.getConnection();
 
@@ -251,20 +246,19 @@ const UserModel = {
     const connection = await pool.getConnection();
     try {
       await connection.beginTransaction(); // Start transaction
-
+  
       // Fetch the course fee (price) from the Course table
       const courseSql = `
         SELECT price FROM Course WHERE course_id = ?
       `;
       const [courseResult] = await connection.query(courseSql, [courseId]);
-
+  
       if (courseResult.length === 0) {
         throw new Error("Course not found");
       }
-
+  
       const courseFee = courseResult[0].price;
-      console.log(courseFee);
-
+  
       // Insert into Enrollment table
       const enrollmentSql = `
         INSERT INTO Enrollment (nic, course_id)
@@ -272,14 +266,38 @@ const UserModel = {
       `;
       const [enrollmentResult] = await connection.query(enrollmentSql, [nic, courseId]);
       const enrollment_id = enrollmentResult.insertId;
-
+  
       // Insert into Payment table with 'pending' status and the course fee as amount
       const paymentSql = `
         INSERT INTO Payment (enrollment_id, payment_status, amount)
         VALUES (?, 'pending', ?)
       `;
       await connection.query(paymentSql, [enrollment_id, courseFee]);
-
+  
+      // Fetch all section IDs for the given course
+      const sectionsSql = `
+        SELECT id AS section_id 
+        FROM Section 
+        WHERE course_id = ?
+      `;
+      const [sections] = await connection.query(sectionsSql, [courseId]);
+  
+      if (sections.length > 0) {
+        // Prepare the data for batch insertion into UserSection with mark_as_done = 0
+        const userSectionData = sections.map((section) => [
+          enrollment_id,
+          section.section_id,
+          0, // Mark as not done
+        ]);
+  
+        // Insert into UserSection
+        const userSectionSql = `
+          INSERT INTO UserSection (enrollment_id, section_id, mark_as_done)
+          VALUES ?
+        `;
+        await connection.query(userSectionSql, [userSectionData]);
+      }
+  
       await connection.commit(); // Commit transaction
       return enrollmentResult;
     } catch (error) {
@@ -289,7 +307,7 @@ const UserModel = {
       connection.release();
     }
   },
-
+  
 
   // Check if user is already enrolled in the course
   checkEnrollment: async (nic, courseId) => {

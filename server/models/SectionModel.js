@@ -49,11 +49,30 @@ const Section = {
     }
 
   },
+  getSectionsForAdmin:async({courseId})=>{
+   
+    const connection = await pool.getConnection();
+    const query=`SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id 
+            FROM Section s 
+            WHERE s.course_id = ? 
+            ORDER BY s.week_id, s.order_id`
   
-  createSectionByCourseId:async (course_id,sectionData)=>{
+  try {
+    const [sections]=await connection.execute(query,[courseId]);
+    
+    return {sections};
+  } catch (error) {
+    throw error;
+  } finally {
+    connection.release();
+  }
+
+}
+  ,
+  
+  createSectionByCourseId:async (sectionData)=>{
     
         
- 
       const connection = await pool.getConnection();
       try {
         await connection.beginTransaction();
@@ -65,12 +84,12 @@ const Section = {
         `;
         const [result]=await connection.execute(insertQuery, [
           sectionData.title,
-          sectionData.description,
-          sectionData.course_id,
-          sectionData.week_id,
-          sectionData.order_id,
-          sectionData.type_id,
-          sectionData.content_url
+  sectionData.description,
+  sectionData.courseId, // Updated to match the property name
+  sectionData.weekId,   // Updated to match the property name
+  sectionData.orderId,  // Updated to match the property name
+  sectionData.typeId,   // Updated to match the property name
+  sectionData.contentUrl
           
           
         ]);
@@ -88,7 +107,78 @@ const Section = {
       } finally {
         await connection.release();
       }
+  },
+
+  getMaxOrderByCourseId:async (courseId,weekId)=>{
+    
+   
+      const connection = await pool.getConnection();
+      const query=`select order_id from Section where course_id=? and week_id=? order by order_id desc limit 1;`
+    
+    try {
+      const [maxOrder]=await connection.execute(query,[courseId,weekId]);
+     
+      return maxOrder;
+    } catch (error) {
+      throw error;
+    } finally {
+      connection.release();
+    }
+  },
+  
+  
+
+
+  // models/sectionModel.js
+
+ // Assuming you're using MySQL pool connection
+
+// Function to update the status of the section
+updateSectionStatus : async (enrollmentId, sectionId, markAsDone) => {
+  const connection = await pool.getConnection();
+  try {
+    const query = `
+      UPDATE UserSection 
+      SET mark_as_done = ? 
+      WHERE enrollment_id = ? AND section_id = ?
+    `;
+    const [result] = await connection.execute(query, [
+      markAsDone ? 1 : 0, // Toggle between 0 and 1
+      enrollmentId,
+      sectionId,
+    ]);
+    return result;
+  } catch (error) {
+    console.error("Error updating section status:", error);
+    throw error;
+  } finally {
+    connection.release();
+
   }
+},
+
+// Function to get the updated section status
+getUpdatedSectionStatus : async (enrollmentId, sectionId) => {
+  const connection = await pool.getConnection();
+  try {
+    const query = `
+      SELECT * FROM UserSection 
+      WHERE enrollment_id = ? AND section_id = ?
+    `;
+    const [updatedSection] = await connection.execute(query, [
+      enrollmentId,
+      sectionId,
+    ]);
+    return updatedSection;
+  } catch (error) {
+    console.error("Error fetching updated section status:", error);
+    throw error;
+  } finally {
+    connection.release();
+  }
+},
+
+  
 };
 
 module.exports = Section;

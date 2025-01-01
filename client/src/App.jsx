@@ -19,6 +19,8 @@ import StudentManagement from "./admin/StudentManagement";
 import PhysicalPayment from "./admin/PhysicalPayment";
 import store from "./app/store";
 import AdminProtectedRoute from "./admin/AdminProtectedRoute";
+import SignUp from "./user/SignUp";
+import AdminCoursePage from "./admin/AdminCoursePage";
 
 function App() {
   return (
@@ -26,6 +28,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+          <Route path="/user/signup" element={<SignUp />} />
         <Route path="/" element={<CourseList />} />
         <Route path="/courses/:courseId" element={<CourseDetail />} />
         <Route path="/upload-course" element={<UploadCourse />} />
@@ -48,6 +51,8 @@ function App() {
                   <Route path="course" element={<CourseManagement />} />
                   <Route path="student" element={<StudentManagement />} />
                   <Route path="payment" element={<PhysicalPayment />} />
+                  <Route path="/create_section/:courseId/:weekId" element={<CreateSection />} />
+                  <Route path="/course/:courseId" element={<AdminCoursePage />} />
                 </Routes>
               </AdminLayout>
             }

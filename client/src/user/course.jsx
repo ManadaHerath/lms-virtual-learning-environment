@@ -52,13 +52,62 @@ const CoursePage = () => {
     fetchSections();
   }, [courseId]);
 
+  // Function to check if the URL is a YouTube link
   const isYouTubeLink = (url) => url && url.includes("youtube.com");
 
+  // Function to extract the YouTube video ID
   const extractYouTubeVideoId = (url) => {
     const urlParams = new URLSearchParams(new URL(url).search);
     return urlParams.get("v");
   };
 
+  // Function to mark a section as done
+  const handleMarkAsDone = async (sectionId, currentStatus) => {
+    try {
+      const accessToken = sessionStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        throw new Error("User is not authenticated");
+      }
+
+      const newStatus = currentStatus === 1 ? 0 : 1; // Toggle status
+
+      const response = await fetch(
+        `http://localhost:3000/course/${enrollmentId}/section/${sectionId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ mark_as_done: newStatus }), // Send the new status
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update section status");
+      }
+
+      // Parse the updated section from the response
+      const { updatedSection } = await response.json();
+
+      // Optimistically update the UI by using the updated mark_as_done
+      setWeeks((prevWeeks) =>
+        prevWeeks.map((week) => ({
+          ...week,
+          sections: week.sections.map((section) =>
+            section.id === sectionId
+              ? { ...section, mark_as_done: updatedSection.mark_as_done } // Update with the new value from backend
+              : section
+          ),
+        }))
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // Function to handle checkout
   const handleCheckout = () => {
     navigate(`/checkout/${enrollmentId}`);
   };
@@ -105,34 +154,50 @@ const CoursePage = () => {
                 {week.sections.map((section) => (
                   <div
                     key={section.id}
-                    className="p-4 border rounded-lg bg-gray-100"
+                    className="p-4 border rounded-lg bg-gray-100 flex justify-between items-center"
                   >
-                    <h3 className="text-lg font-bold">{section.title}</h3>
-                    <p className="text-sm">{section.description}</p>
+                    <div>
+                      <h3 className="text-lg font-bold">{section.title}</h3>
+                      <p className="text-sm">{section.description}</p>
 
-                    {isYouTubeLink(section.content_url) ? (
-                      <YouTube
-                        videoId={extractYouTubeVideoId(section.content_url)}
-                        opts={{
-                          height: "390",
-                          width: "640",
-                          playerVars: {
-                            autoplay: 0,
-                          },
-                        }}
-                      />
-                    ) : (
-                      section.content_url && (
-                        <a
-                          href={section.content_url}
-                          className="text-blue-500 underline"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View Content
-                        </a>
-                      )
-                    )}
+                      {isYouTubeLink(section.content_url) ? (
+                        <YouTube
+                          videoId={extractYouTubeVideoId(section.content_url)}
+                          opts={{
+                            height: "390",
+                            width: "640",
+                            playerVars: {
+                              autoplay: 0,
+                            },
+                          }}
+                        />
+                      ) : (
+                        section.content_url && (
+                          <a
+                            href={section.content_url}
+                            className="text-blue-500 underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            View Content
+                          </a>
+                        )
+                      )}
+                    </div>
+
+                    {/* Button for Marking Section */}
+                    <button
+                      className={`px-4 py-2 rounded-lg font-semibold ${
+                        section.mark_as_done === 1
+                          ? "bg-green-100 text-black" // Completed
+                          : "bg-blue-100 text-black" // Incomplete
+                      }`}
+                      onClick={() => handleMarkAsDone(section.id, section.mark_as_done)}
+                    >
+                      {section.mark_as_done === 1
+                        ? "Completed"
+                        : "Incomplete"}
+                    </button>
                   </div>
                 ))}
               </div>
