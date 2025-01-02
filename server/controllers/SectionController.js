@@ -81,6 +81,25 @@ updateSectionStatus : async (req, res) => {
   }
 },
 
+unenrollCourse: async (req, res) => {
+  const { enrollmentId } = req.params;
+
+  try {
+    const result = await Section.unenrollCourseById(enrollmentId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+
+    res.status(200).json({ message: "Successfully unenrolled from course" });
+  } catch (error) {
+    console.error("Error unenrolling:", error);
+    res.status(500).json({ message: "Error unenrolling from course" });
+  }
+},
+
+
+
 };
 
 module.exports = SectionController;
