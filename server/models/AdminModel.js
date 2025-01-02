@@ -99,7 +99,7 @@ const AdminModel = {
   // Get all students
   getStudents: async () => {
     try {
-      const [students] = await pool.query("SELECT * FROM Student");
+      const [students] = await pool.query("SELECT * FROM User");
       return students;
     } catch (error) {
       throw error;
@@ -109,7 +109,7 @@ const AdminModel = {
   // Get student by ID
   getStudentById: async (id) => {
     try {
-      const [student] = await pool.query("SELECT * FROM Student WHERE id = ?", [
+      const [student] = await pool.query("SELECT * FROM User WHERE id = ?", [
         id,
       ]);
       return student;
@@ -122,7 +122,7 @@ const AdminModel = {
   updateStudentStatus: async (id, status) => {
     try {
       const [result] = await pool.query(
-        "UPDATE Student SET status = ? WHERE id = ?",
+        "UPDATE User SET status = ? WHERE id = ?",
         [status, id]
       );
       return result;

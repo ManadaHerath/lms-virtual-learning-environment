@@ -34,3 +34,14 @@ export const logoutAPI = async () => {
     throw new Error(error.response?.data?.message || "Failed to log out");
   }
 };
+
+// Check authentication API call
+export const checkAuthAPI = async () => {
+  try {
+    const response = await api.get("/admin/check-auth");
+    return response.data; // Return the response data (e.g., user details)
+  } catch (error) {
+    console.error("Error checking authentication:", error);
+    throw new Error(error.response?.data?.message || "Failed to check authentication");
+  }
+};

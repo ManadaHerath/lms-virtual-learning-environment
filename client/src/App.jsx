@@ -51,8 +51,8 @@ function App() {
                   <Route path="course" element={<CourseManagement />} />
                   <Route path="student" element={<StudentManagement />} />
                   <Route path="payment" element={<PhysicalPayment />} />
-                  <Route path="/create_section/:courseId/:weekId" element={<CreateSection />} />
-                  <Route path="/course/:courseId" element={<AdminCoursePage />} />
+                  <Route path="create_section/:courseId/:weekId" element={<CreateSection />} />
+                  <Route path="course/:courseId" element={<AdminCoursePage />} />
                 </Routes>
               </AdminLayout>
             }

@@ -28,7 +28,6 @@ app.use('/user', AuthRoute);
 app.use('/session',ExtendSessionRoute);
 app.use('/admin',AdminAuthRoute);
 app.use('/course',SectionRoute);
-
 app.use('/type',TypeRoute);
 
 app.listen(3000, () => {

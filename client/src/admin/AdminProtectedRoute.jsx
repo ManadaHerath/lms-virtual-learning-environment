@@ -1,23 +1,38 @@
-// ProtectedRoute.jsx
-import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
+import React, { useEffect } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
+import { checkAuth } from "../features/auth/authSlice";
 
-const AdminProtectedRoute = ({ redirectTo = "/login", role = "admin" }) => {
-  const user  = JSON.parse(sessionStorage.getItem('user'));
+const AdminProtectedRoute = ({ redirectTo = "/admin/login", role = "admin" }) => {
+  const dispatch = useDispatch();
+  const { user, authInitialized, status } = useSelector((state) => state.auth);
 
-  if (!user) {
-    // Redirect to login if no user is logged in
-    return <Navigate to={redirectTo} />;
-  }  
+  useEffect(() => {
+    // Check auth status only if it hasn't been initialized
+    if (!authInitialized) {
+      dispatch(checkAuth());
+    }
+  }, [dispatch, authInitialized]);
 
-  if (user.userType !== role) {
-    // If the user does not have admin role, redirect them
-    return <Navigate to={ redirectTo } />;
+  // Show loading spinner or message while checking authentication
+  if (!authInitialized || status === "loading") {
+    dispatch(checkAuth());
+    return <div>Loading...</div>;
   }
 
-  return <Outlet />; // Render the nested routes if user is authenticated and has the correct role
+  // If no user is logged in, redirect to the login page
+  if (!user) {
+    return <Navigate to={redirectTo} />;
+  }
+
+  // If the user doesn't have the required role, redirect to login
+  if (user.userType !== role) {
+    return <Navigate to={redirectTo} />;
+  }
+
+  // Render the child routes if authenticated and authorized
+  return <Outlet />;
 };
 
 AdminProtectedRoute.propTypes = {
