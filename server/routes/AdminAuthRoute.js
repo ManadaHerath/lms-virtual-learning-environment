@@ -14,7 +14,8 @@ router.post("/signup",AuthMiddleware(["admin"]),AdminController.createAdmin);
 router.post("/logout", AuthMiddleware(["admin"]), AdminController.adminLogout);
 router.get("/check-auth", AuthMiddleware(["admin"]), AdminController.checkAuth);
 
-router.post('/upload-course', upload.single('image'), (req, res, next) => {
+//course management
+router.post('/upload-course',AuthMiddleware(['admin']) ,upload.single('image'), (req, res, next) => {
     console.log('Upload course endpoint hit');
     console.log('Uploaded file details:', req.file);
     next(); // Pass control to AdminController.uploadCourse
@@ -23,6 +24,8 @@ router.post('/upload-section',AuthMiddleware(["admin"]),SectionController.create
 router.get('/course/:courseId/sections',AuthMiddleware(['admin']),SectionController.getSectionsForAdmin);
 router.get('/course/:courseId/:weekId/maxorder',AuthMiddleware(['admin']),SectionController.getMaxOrderByCourseId);
 router.post('/section',AuthMiddleware(['admin']),SectionController.createSection)
+router.get('/course/:courseId',AuthMiddleware(['admin']),CourseController.getCourseById);
+
 
 // Student Management Routes
 // Get all students

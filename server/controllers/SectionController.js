@@ -121,13 +121,36 @@ updateSectionStatus : async (req, res) => {
     const {courseId,weekId}=req.params;
     try {
       const maxOrder=await Section.getMaxOrderByCourseId(courseId,weekId);
-      
-      res.status(200).json({maxOrder:maxOrder[0].order_id,success:true})
+      if(!maxOrder){
+        res.status(200).json({maxOrder:maxOrder[0].order_id,success:true})
+      }
+      else{
+        res.status(200).json({maxOrder:0,success:true})
+      }
     } catch (error) {
       console.log(error)
       res.status(400).json({success:false})
     }
   },
+
+unenrollCourse: async (req, res) => {
+  const { enrollmentId } = req.params;
+
+  try {
+    const result = await Section.unenrollCourseById(enrollmentId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+
+    res.status(200).json({ message: "Successfully unenrolled from course" });
+  } catch (error) {
+    console.error("Error unenrolling:", error);
+    res.status(500).json({ message: "Error unenrolling from course" });
+  }
+},
+
+
 
 };
 

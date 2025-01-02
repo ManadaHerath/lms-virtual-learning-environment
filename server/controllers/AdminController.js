@@ -1,6 +1,7 @@
 const AdminModel = require("../models/AdminModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+
 const AdminController = {
   adminLogin: async (req, res) => {
     try {

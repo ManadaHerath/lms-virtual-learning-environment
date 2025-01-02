@@ -178,6 +178,26 @@ getUpdatedSectionStatus : async (enrollmentId, sectionId) => {
   }
 },
 
+unenrollCourseById: async (enrollmentId) => {
+  const connection = await pool.getConnection();
+  try {
+    const unenrollQuery = `
+      UPDATE Enrollment
+      SET status = 'unenrolled'
+      WHERE enrollment_id = ?
+    `;
+
+    const [result] = await connection.execute(unenrollQuery, [enrollmentId]);
+    return result;
+  } catch (error) {
+    console.error("Error in unenrollCourseById:", error);
+    throw error;
+  } finally {
+    connection.release();
+  }
+},
+
+
   
 };
 

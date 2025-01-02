@@ -109,7 +109,7 @@ const AdminModel = {
   // Get student by ID
   getStudentById: async (id) => {
     try {
-      const [student] = await pool.query("SELECT * FROM User WHERE id = ?", [
+      const [student] = await pool.query("SELECT * FROM User WHERE nic = ?", [
         id,
       ]);
       return student;
@@ -122,7 +122,7 @@ const AdminModel = {
   updateStudentStatus: async (id, status) => {
     try {
       const [result] = await pool.query(
-        "UPDATE User SET status = ? WHERE id = ?",
+        "UPDATE User SET status = ? WHERE nic = ?",
         [status, id]
       );
       return result;

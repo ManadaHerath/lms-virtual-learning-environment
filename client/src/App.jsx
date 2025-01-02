@@ -31,7 +31,7 @@ function App() {
           <Route path="/user/signup" element={<SignUp />} />
         <Route path="/" element={<CourseList />} />
         <Route path="/courses/:courseId" element={<CourseDetail />} />
-        <Route path="/upload-course" element={<UploadCourse />} />
+        
         <Route path="/cart" element={<CartPage />} />
         <Route path="/course/:courseId" element={<CoursePage />} />
         <Route path="/user/profile" element={<Profile />} />
@@ -48,7 +48,8 @@ function App() {
               <AdminLayout>
                 <Routes>
                   <Route path="" element={<AdminDashboard />} />
-                  <Route path="course" element={<CourseManagement />} />
+                  <Route path="courses" element={<CourseManagement />} />
+                  <Route path="/upload-course" element={<UploadCourse />} />
                   <Route path="student" element={<StudentManagement />} />
                   <Route path="payment" element={<PhysicalPayment />} />
                   <Route path="create_section/:courseId/:weekId" element={<CreateSection />} />
