@@ -1,4 +1,5 @@
 const pool = require("../config/dbconfig");
+const { getCourseById } = require("./UserModel");
 const CourseModel={
     createCourse:async(courseData)=>{
         
@@ -41,6 +42,31 @@ const CourseModel={
     }
 
 
+    },
+    getCourseById:async(courseId)=>{
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        
+       
+        const query = `
+          select * from Course where course_id=?
+        `;
+
+        const [result]=await connection.execute(query, [courseId.courseId]);
+        
+    
+        
+    
+        await connection.commit();
+        return result;
+      } catch (error) {
+        await connection.rollback();
+        console.error('Error on Course fetching', error.message);
+        throw error;
+      } finally {
+        await connection.release();
+      }
     }
 
 

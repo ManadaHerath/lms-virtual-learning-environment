@@ -1,4 +1,5 @@
 const CourseModel = require("../models/CourseModel");
+const { getCourseById } = require("./AuthController");
 
 const CourseController={
     createCourse:async(req,res)=>{
@@ -37,6 +38,16 @@ const CourseController={
             res.status(500).json({ error: 'Internal server error' ,success:false});
           }
 
+    },
+    getCourseById:async(req,res)=>{
+      try {
+        const courseId=req.params;
+        const course = await CourseModel.getCourseById(courseId);
+        
+        res.status(200).json({course:course[0] ,success:true});
+      } catch (error) {
+        res.status(500).json({ error: 'Internal server error'+error ,success:false});
+      }
     }
 
 

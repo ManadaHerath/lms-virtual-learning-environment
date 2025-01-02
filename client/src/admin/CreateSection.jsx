@@ -45,7 +45,10 @@ const CreateSection = () => {
         if(result.data.success){
             
             const currentOrder= result.data.maxOrder;
+            console.log(currentOrder)
             setOrderId(currentOrder+1);
+
+            
             
         }else{
             console.error('Error fetching Max order',result.data);
