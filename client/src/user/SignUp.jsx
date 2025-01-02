@@ -16,7 +16,7 @@ const Signup = () => {
     country: "",
     date_of_birth: "",
     batch: "",
-    status: "",
+    
     image: null, // For file upload
   });
 
@@ -70,6 +70,7 @@ const Signup = () => {
           status: "",
           image: null,
         });
+        alert(successMessage);
       } else {
         setErrors(response.data.errors || {});
       }

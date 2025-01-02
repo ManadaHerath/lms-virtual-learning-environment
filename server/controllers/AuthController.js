@@ -33,7 +33,7 @@ const AuthController = {
     try {
       const {
         nic, first_name, last_name, email, password, telephone, street_address,
-        city, province, postal_code, country, date_of_birth, batch, status
+        city, province, postal_code, country, date_of_birth, batch
       } = req.body;
   
       console.log("Request body received:", req.body);
@@ -57,12 +57,12 @@ const AuthController = {
       const newUser = {
         nic, first_name, last_name, email, password: hashedPassword, telephone,
         street_address, city, province, postal_code, country, date_of_birth,
-        batch, status, image_url
+        batch,  image_url
       };
   
       const result = await UserModel.create(newUser);
   
-      console.log("User created successfully:", result);
+      console.log("User created successfully:");
       res.status(201).json({
         success: true,
         message: "User created successfully",
@@ -114,12 +114,17 @@ const AuthController = {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       sameSite: "strict",
     });
-
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 2 * 60 * 60 * 1000, // 7 days
+      sameSite: "strict",
+    });
     // Send Access Token to client
     res.status(200).json({
       message: "Login successful",
       success: true,
-      accessToken,
+      
     });
     } catch (error) {
       res.status(500).send({ message: `Error in login: ${error.message}` });
@@ -195,7 +200,7 @@ enrollCourse: async (req, res) => {
     
 
     if (isEnrolled) {
-      console.log('kasun');
+      
       return res.status(400).json({
         success: false,
         message: "You are already enrolled in this course.",
@@ -203,7 +208,7 @@ enrollCourse: async (req, res) => {
     }
 
     const result = await UserModel.enrollCourse(nic, courseId);
-    console.log(result);
+  
     res.status(200).json({
       success: true,
       message: "Course enrolled successfully!",

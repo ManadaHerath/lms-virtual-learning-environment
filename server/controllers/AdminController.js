@@ -189,14 +189,14 @@ const AdminController = {
   async updateStudentStatus(req, res) {
     try {
       const updatedStudent = await AdminModel.updateStudentStatus(
-        req.params.id,
+        req.body.nic,
         req.body.status
       );
       res
         .status(200)
         .json({
           message: "Student status updated successfully",
-          updatedStudent,
+          
         });
     } catch (error) {
       console.error(error);

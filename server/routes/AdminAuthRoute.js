@@ -33,6 +33,6 @@ router.get('/students', AuthMiddleware(["admin"]), AdminController.getStudents);
 // Get student by ID
 router.get('/students/:id', AuthMiddleware(["admin"]), AdminController.getStudentById);
 // Update student status by ID
-router.patch('/students/:id', AuthMiddleware(["admin"]), AdminController.updateStudentStatus);
+router.patch('/students', AuthMiddleware(["admin"]), AdminController.updateStudentStatus);
 
 module.exports = router;

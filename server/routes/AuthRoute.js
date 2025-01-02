@@ -3,6 +3,7 @@ const AuthController = require("../controllers/AuthController");
 const upload = require("../config/multer");
 const UserController = require("../controllers/UserController");
 const AuthMiddleware = require("../middleware/Authmiddleware");
+const RegistrationController = require("../controllers/RegistrationController");
 
 
 const router = express.Router();
@@ -73,6 +74,9 @@ router.post("/enroll/:courseId", AuthMiddleware(["student", "admin"]), (req, res
 
 // Get payment history
 router.get("/payments", AuthMiddleware(["student", "admin"]), UserController.getPaymentHistory);
+
+//register for a course
+router.post("/register", AuthMiddleware(["student", "admin"]),upload.single("image"), RegistrationController.uploadImage);
 
 
 module.exports = router;
