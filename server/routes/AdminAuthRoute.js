@@ -12,6 +12,7 @@ const SectionController=require("../controllers/SectionController")
 router.post("/login", AdminController.adminLogin);
 router.post("/signup",AuthMiddleware(["admin"]),AdminController.createAdmin);
 router.post("/logout", AuthMiddleware(["admin"]), AdminController.adminLogout);
+router.get("/check-auth", AuthMiddleware(["admin"]), AdminController.checkAuth);
 
 //course management
 router.post('/upload-course',AuthMiddleware(['admin']) ,upload.single('image'), (req, res, next) => {

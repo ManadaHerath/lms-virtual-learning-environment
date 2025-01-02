@@ -2,13 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const AuthMiddleware = (allowedRoles) => {
   return (req, res, next) => {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
-
-    const token = authHeader.split(" ")[1];
+    const token = req.cookies.accessToken;
 
     try {
       const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);

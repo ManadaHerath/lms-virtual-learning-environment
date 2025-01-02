@@ -27,8 +27,6 @@ const AdminLog = () => {
   };
 
   if (status === 'succeeded' && user) {
-    sessionStorage.setItem('accessToken', user.accessToken);
-    sessionStorage.setItem('user', JSON.stringify(user)); // Store the user object
     navigate('/admin');
   }
   

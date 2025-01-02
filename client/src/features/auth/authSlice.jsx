@@ -1,107 +1,155 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginAPI, registerAPI, logoutAPI } from "./authApi";
-import { toast } from 'react-toastify';
+import { loginAPI, registerAPI, logoutAPI, checkAuthAPI } from "./authApi";
+import { toast } from "react-toastify";
 
-// Login thunk
+// Thunks for authentication actions
 export const login = createAsyncThunk(
   "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
       const data = await loginAPI(credentials);
-      return data; // Return user data or token
+      return data;
     } catch (error) {
-      return rejectWithValue(error.message); // Reject with error message
+      return rejectWithValue(error.message);
     }
   }
 );
 
-// Register thunk
 export const register = createAsyncThunk(
   "auth/register",
   async (userData, { rejectWithValue }) => {
     try {
       const data = await registerAPI(userData);
-      return data; // Return user data
+      return data;
     } catch (error) {
-      return rejectWithValue(error.message); // Reject with error message
+      return rejectWithValue(error.message);
     }
   }
 );
 
-// Logout thunk
 export const logout = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
       const data = await logoutAPI();
-      return data; // Return success message or data from server
+      return data;
     } catch (error) {
-      return rejectWithValue(error.message); // Reject with error message
+      return rejectWithValue(error.message);
     }
   }
 );
 
+// Convert checkAuth to createAsyncThunk
+export const checkAuth = createAsyncThunk(
+  "auth/checkAuth",
+  async (_, { rejectWithValue }) => {
+    try {      
+      const response = await checkAuthAPI();
+      return response.user;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const initialState = {
-    user: null,
-    status: 'idle', // loading, success, error states
-    error: null,
-  };
-  
-  const authSlice = createSlice({
-    name: "auth",
-    initialState,
-    reducers: {
-      clearError: (state) => {
-        state.error = null;
-      },
-    },
-    extraReducers: (builder) => {
-      builder
-        .addCase(login.pending, (state) => {
-          state.status = "loading";
-          state.error = null;
-        })
-        .addCase(login.fulfilled, (state, action) => {
-          state.status = "succeeded";
-          state.user = action.payload; // Save user data (e.g., token, profile)
+  user: null,
+  status: "idle",
+  error: null,
+  authInitialized: false,
+};
 
-          // Display a success message using toast
-        toast.success('Successfully logged in!', {
-          position: 'top-right',
-          autoClose: 3000,
-        });
-        })
-        .addCase(login.rejected, (state, action) => {
-          state.status = "failed";
-          state.error = action.payload; // Capture error message
-        })
-        .addCase(register.pending, (state) => {
-          state.status = "loading";
-          state.error = null;
-        })
-        .addCase(register.fulfilled, (state, action) => {
-          state.status = "succeeded";
-          state.user = action.payload; // Save user data
-        })
-        .addCase(register.rejected, (state, action) => {
-          state.status = "failed";
-          state.error = action.payload; // Capture error message
-        })
-        .addCase(logout.pending, (state) => {
-          state.status = "loading";
-        })
-        .addCase(logout.fulfilled, (state) => {
-          state.status = "succeeded";
-          state.user = null; // Clear user data on logout
-        })
-        .addCase(logout.rejected, (state, action) => {
-          state.status = "failed";
-          state.error = action.payload; // Capture error message
-        });
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
     },
-  });
-  
-  export const { clearError } = authSlice.actions;
-  
-  export default authSlice.reducer;
+    // Add manual auth actions
+    authSuccess: (state, action) => {
+      state.user = action.payload;
+      state.authInitialized = true;
+      state.status = "succeeded";
+      state.error = null;
+    },
+    authFailure: (state) => {
+      state.user = null;
+      state.authInitialized = true;
+      state.status = "failed";
+      sessionStorage.removeItem("accessToken");
+    }
+  },
+  extraReducers: (builder) => {
+    builder
+      // Login actions
+      .addCase(login.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload.user;
+        state.authInitialized = true;
+        toast.success("Successfully logged in!");
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
+      // Register actions
+      .addCase(register.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload;
+        state.authInitialized = true;
+        toast.success("Account registered successfully!");
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
+      // CheckAuth actions
+      .addCase(checkAuth.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.user = action.payload;
+        state.authInitialized = true;
+      })
+      .addCase(checkAuth.rejected, (state, action) => {
+        state.status = "failed";
+        state.authInitialized = true;
+        state.error = action.payload;
+        state.user = null;
+        sessionStorage.removeItem("accessToken");
+        toast.error("Session expired. Please log in again.");
+      })
+      // Logout actions
+      .addCase(logout.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.status = "succeeded";
+        sessionStorage.removeItem("accessToken");
+        state.user = null;
+        state.authInitialized = true;
+        toast.success("Logged out successfully.");
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+        toast.error("Logout failed. Please try again.");
+      });
+  },
+});
+
+export const { clearError, authSuccess, authFailure } = authSlice.actions;
+export default authSlice.reducer;
