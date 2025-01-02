@@ -5,7 +5,7 @@ import { fetchStudents, toggleStudentStatus } from "../features/students/Student
 const StudentManagement = () => {
   const dispatch = useDispatch();
   const { list, status, error } = useSelector((state) => state.students);
-
+  console.log(list)
   useEffect(() => {
     dispatch(fetchStudents());
   }, [dispatch]);
@@ -30,19 +30,28 @@ const StudentManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {list.map((student) => (
-            <tr key={student.id}>
-              <td>{student.id}</td>
-              <td>{student.name}</td>
-              <td>{student.active ? "Active" : "Inactive"}</td>
-              <td>
-                <button onClick={() => handleToggleStatus(student.id)}>
-                  Toggle Status
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+  {Array.isArray(list.students) && list.students.length > 0 ? (
+    list.students.map((student) => (
+      <tr key={student.nic}>
+        <td>{student.nic}</td>
+        <td>{student.first_name}</td>
+        <td>{student.status ? "Active" : "Inactive"}</td>
+        <td>
+          <button onClick={() => handleToggleStatus(student.id)}>
+            Toggle Status
+          </button>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="4" className="text-center">
+        No students available
+      </td>
+    </tr>
+  )}
+</tbody>
+
       </table>
     </div>
   );
