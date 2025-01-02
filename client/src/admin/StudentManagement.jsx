@@ -1,18 +1,27 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchStudents, toggleStudentStatus } from "../features/students/StudentSlice";
+import { fetchStudents, deactivateStudentStatus } from "../features/students/StudentSlice";
 
 const StudentManagement = () => {
   const dispatch = useDispatch();
   const { list, status, error } = useSelector((state) => state.students);
-  console.log(list)
+  
   useEffect(() => {
     dispatch(fetchStudents());
   }, [dispatch]);
 
-  const handleToggleStatus = (id) => {
-    dispatch(toggleStudentStatus(id));
+  const handleStatus = (id, status) => {
+    dispatch(deactivateStudentStatus({ id, status }))
+      .unwrap() // Waits for the action to complete
+      .then(() => {
+        // After the status is toggled, fetch the updated list of students
+        dispatch(fetchStudents());
+      })
+      .catch((error) => {
+        console.error("Error toggling status:", error);
+      });
   };
+  
 
   if (status === "loading") return <p>Loading students...</p>;
   if (status === "failed") return <p>Error: {error}</p>;
@@ -35,10 +44,15 @@ const StudentManagement = () => {
       <tr key={student.nic}>
         <td>{student.nic}</td>
         <td>{student.first_name}</td>
-        <td>{student.status ? "Active" : "Inactive"}</td>
+        <td>{student.status}</td>
+        
+        
         <td>
-          <button onClick={() => handleToggleStatus(student.id)}>
-            Toggle Status
+          <button className="px-4" onClick={() => handleStatus(student.nic,'INACTIVE')}>
+            Deactivate
+          </button>
+          <button className="px-4" onClick={() => handleStatus(student.nic,'ACTIVE')}>
+            Activate
           </button>
         </td>
       </tr>

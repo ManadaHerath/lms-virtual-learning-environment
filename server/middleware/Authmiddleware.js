@@ -11,6 +11,7 @@ const AuthMiddleware = (allowedRoles) => {
       if (!allowedRoles.includes(payload.userType)) {
         return res.status(403).json({ success: false, message: "Forbidden: Insufficient permissions" });
       }
+      
 
       req.user = payload; // Attach user info to request
       next(); // Proceed to the next middleware or route handler

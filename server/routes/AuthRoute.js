@@ -4,6 +4,7 @@ const upload = require("../config/multer");
 const UserController = require("../controllers/UserController");
 const QuizController = require("../controllers/QuizController");
 const AuthMiddleware = require("../middleware/Authmiddleware");
+const RegistrationController = require("../controllers/RegistrationController");
 
 
 const router = express.Router();
@@ -75,6 +76,7 @@ router.post("/enroll/:courseId", AuthMiddleware(["student", "admin"]), (req, res
 // Get payment history
 router.get("/payments", AuthMiddleware(["student", "admin"]), UserController.getPaymentHistory);
 
+
 // Routes for quizzes
 // Student routes
 router.get(
@@ -101,6 +103,9 @@ router.get(
   AuthMiddleware(["student", "admin"]), // Accessible to both students and admins
   QuizController.getQuizInfoById
 );
+
+router.post("/register", AuthMiddleware(["student", "admin"]),upload.single("image"), RegistrationController.uploadImage);
+
 
 
 module.exports = router;

@@ -39,7 +39,7 @@ const UploadCourse = () => {
       const response = await api.post('http://localhost:3000/admin/upload-course', data);
 
       alert('Course uploaded successfully!');
-      console.log(response.data);
+     
     } catch (error) {
       console.error(error);
       alert('Error uploading course.');

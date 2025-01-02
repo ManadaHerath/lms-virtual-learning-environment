@@ -45,7 +45,7 @@ const CreateSection = () => {
         if(result.data.success){
             
             const currentOrder= result.data.maxOrder;
-            console.log(currentOrder)
+            
             setOrderId(currentOrder+1);
 
             

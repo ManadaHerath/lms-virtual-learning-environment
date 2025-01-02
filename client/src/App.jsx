@@ -21,23 +21,27 @@ import AdminProtectedRoute from "./admin/AdminProtectedRoute";
 import SignUp from "./user/SignUp";
 import AdminCoursePage from "./admin/AdminCoursePage";
 import CreateSection from "./admin/CreateSection";
+
+import Registration from "./user/Registration";
+
 import CreateQuiz from "./admin/CreateQuiz";
+
 
 function App() {
   return (
     <Provider store={store}>
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path="/user/signup" element={<SignUp />} />
-        <Route path="/" element={<CourseList />} />
-        <Route path="/courses/:courseId" element={<CourseDetail />} />
-        
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/course/:courseId" element={<CoursePage />} />
-        <Route path="/user/profile" element={<Profile />} />
-        <Route path="/user/mycourse" element={<MyCourse />} />
-        <Route path="/user/payments" element={<PaymentHistory />} />
+          <Route path="/" element={<CourseList />} />
+          <Route path="/courses/:courseId" element={<CourseDetail />} />
+          <Route path="/register" element={<Registration />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/course/:courseId" element={<CoursePage />} />
+          <Route path="/user/profile" element={<Profile />} />
+          <Route path="/user/mycourse" element={<MyCourse />} />
+          <Route path="/user/payments" element={<PaymentHistory />} />
 
 
         <Route path="/admin/create-quiz" element={<CreateQuiz />} />
@@ -65,6 +69,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+
     </Provider>
   );
 }
