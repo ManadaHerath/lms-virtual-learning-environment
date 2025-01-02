@@ -7,9 +7,10 @@ const CourseController={
               course_type,
               batch,
               month,
+              weeks,
               description,
               price,
-              duration,
+              
               
               started_at,
               ended_at,
@@ -20,10 +21,11 @@ const CourseController={
               course_type,
               batch,
               month,
+              weeks,
               description,
               image_url: imageUrl,
               price,
-              duration,
+              
               
               started_at,
               ended_at,

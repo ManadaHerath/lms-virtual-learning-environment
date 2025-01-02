@@ -13,7 +13,7 @@ router.post("/login", AdminController.adminLogin);
 router.post("/signup",AuthMiddleware(["admin"]),AdminController.createAdmin);
 router.post("/logout", AuthMiddleware(["admin"]), AdminController.adminLogout);
 
-router.post('/upload-course', upload.single('image'), (req, res, next) => {
+router.post('/upload-course',AuthMiddleware(['admin']) ,upload.single('image'), (req, res, next) => {
     console.log('Upload course endpoint hit');
     console.log('Uploaded file details:', req.file);
     next(); // Pass control to AdminController.uploadCourse

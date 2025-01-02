@@ -43,7 +43,7 @@ const AdminLayout = ({ children }) => {
             </li>
             <li>
               <Link
-                to="/admin/course"
+                to="/admin/courses"
                 className="flex items-center px-4 py-2 hover:bg-gray-700"
               >
                 <FiUsers size={24} className="mr-4" />

@@ -9,17 +9,18 @@ const CourseModel={
   
      
       const insertQuery = `
-        INSERT INTO Course (course_type, batch, month,image_url, description,price,duration,started_at,ended_at )
+        INSERT INTO Course (course_type, batch, month,weeks,image_url, description,price,started_at,ended_at )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       const [result]=await connection.execute(insertQuery, [
         courseData.course_type,
         courseData.batch,
         courseData.month,
+        courseData.weeks,
         courseData.image_url,
         courseData.description,
         courseData.price,
-        courseData.duration,
+        
         
         courseData.started_at,
         courseData.ended_at
