@@ -13,7 +13,7 @@ const CreateQuiz = () => {
 
   const [currentQuestion, setCurrentQuestion] = useState({
     question_text: "",
-    question_image_url: "",
+    question_image: null, // For storing the image file
     question_type: "mcq",
     options: [],
     correct_answer: "",
@@ -26,7 +26,12 @@ const CreateQuiz = () => {
   };
 
   const handleQuestionChange = (e) => {
-    setCurrentQuestion({ ...currentQuestion, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target;
+    if (name === "question_image") {
+      setCurrentQuestion({ ...currentQuestion, question_image: files[0] });
+    } else {
+      setCurrentQuestion({ ...currentQuestion, [name]: value });
+    }
   };
 
   const addOption = () => {
@@ -54,7 +59,7 @@ const CreateQuiz = () => {
     setQuiz({ ...quiz, questions: [...quiz.questions, currentQuestion] });
     setCurrentQuestion({
       question_text: "",
-      question_image_url: "",
+      question_image: null,
       question_type: "mcq",
       options: [],
       correct_answer: "",
@@ -64,16 +69,27 @@ const CreateQuiz = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const accessToken = sessionStorage.getItem("accessToken");
+    const formData = new FormData();
+    formData.append("title", quiz.title);
+    formData.append("description", quiz.description);
+    formData.append("open_time", quiz.open_time);
+    formData.append("close_time", quiz.close_time);
+    formData.append("time_limit_minutes", quiz.time_limit_minutes);
+    formData.append("review_available_time", quiz.review_available_time);
+    formData.append("questions", JSON.stringify(quiz.questions.map((q) => ({
+      ...q,
+      image: q.question_image ? URL.createObjectURL(q.question_image) : null,
+    }))));
 
     try {
+      const accessToken = sessionStorage.getItem("accessToken");
+
       const response = await fetch("http://localhost:3000/admin/create-quiz", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(quiz),
+        body: formData,
       });
 
       const data = await response.json();
@@ -162,11 +178,10 @@ const CreateQuiz = () => {
           className="w-full p-2 border rounded"
         />
         <input
-          type="text"
-          name="question_image_url"
-          value={currentQuestion.question_image_url}
+          type="file"
+          name="question_image"
           onChange={handleQuestionChange}
-          placeholder="Image URL (Optional)"
+          accept="image/*"
           className="w-full p-2 border rounded"
         />
         <select

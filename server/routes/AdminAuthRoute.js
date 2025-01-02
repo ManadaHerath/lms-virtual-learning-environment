@@ -6,6 +6,11 @@ const CourseController=require('../controllers/CourseController')
 const router = express.Router();
 const SectionController=require("../controllers/SectionController")
 const QuizController = require("../controllers/QuizController");
+const multer = require("multer");
+
+// Multer setup for handling image uploads
+const storage = multer.memoryStorage();
+const Upload = multer({ storage });
 
 
 // Define rout es
@@ -36,10 +41,11 @@ router.get('/students/:id', AuthMiddleware(["admin"]), AdminController.getStuden
 // Update student status by ID
 router.patch('/students/:id', AuthMiddleware(["admin"]), AdminController.updateStudentStatus);
 
-// Admin routes
 router.post(
-  "/create-quiz",
-  AuthMiddleware(["admin"]), // Only admins can create quizzes
+  "/admin/create-quiz",
+  AuthMiddleware(["admin"]),
+  Upload.array("images"), // Accept multiple images for questions
   QuizController.createQuiz
 );
+
 module.exports = router;

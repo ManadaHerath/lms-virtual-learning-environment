@@ -1,11 +1,11 @@
 const QuizModel = require("../models/QuizModel");
+const cloudinary = require("../config/cloudinary");
 
 const QuizController = {
   createQuiz: async (req, res) => {
     try {
-      const { title, description, open_time, close_time, time_limit_minutes, review_available_time, questions } = req.body;
-
-      // Create quiz
+      const { title, description, open_time, close_time, time_limit_minutes, review_available_time } = req.body;
+      const questions = JSON.parse(req.body.questions); // Parse questions from stringified JSON
       const quizId = await QuizModel.createQuiz({
         title,
         description,
@@ -15,11 +15,22 @@ const QuizController = {
         review_available_time,
       });
 
-      // Add questions
       for (const question of questions) {
-        const questionId = await QuizModel.addQuestion(quizId, question);
+        let questionImageUrl = null;
 
-        // If the question is MCQ, add options
+        // Upload image to Cloudinary if provided
+        if (question.image) {
+          const uploadResult = await cloudinary.uploader.upload(question.image, {
+            folder: "quiz_images",
+          });
+          questionImageUrl = uploadResult.secure_url;
+        }
+
+        const questionId = await QuizModel.addQuestion(quizId, {
+          ...question,
+          question_image_url: questionImageUrl,
+        });
+
         if (question.question_type === "mcq" && question.options) {
           for (const option of question.options) {
             await QuizModel.addMCQOption(questionId, option);
