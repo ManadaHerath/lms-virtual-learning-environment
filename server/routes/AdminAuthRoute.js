@@ -5,6 +5,7 @@ const upload = require("../config/multer");
 const CourseController=require('../controllers/CourseController')
 const router = express.Router();
 const SectionController=require("../controllers/SectionController")
+const QuizController = require("../controllers/QuizController");
 
 
 // Define rout es
@@ -35,4 +36,10 @@ router.get('/students/:id', AuthMiddleware(["admin"]), AdminController.getStuden
 // Update student status by ID
 router.patch('/students/:id', AuthMiddleware(["admin"]), AdminController.updateStudentStatus);
 
+// Admin routes
+router.post(
+  "/create-quiz",
+  AuthMiddleware(["admin"]), // Only admins can create quizzes
+  QuizController.createQuiz
+);
 module.exports = router;

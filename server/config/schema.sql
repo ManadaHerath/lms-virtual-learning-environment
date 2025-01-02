@@ -172,7 +172,7 @@ DROP TABLE IF EXISTS `QuizResult`;
 CREATE TABLE `QuizResult` (
   `id` int NOT NULL AUTO_INCREMENT,
   `quiz_id` int NOT NULL,
-  `student_nic` char(1) NOT NULL,
+  `student_nic` char(12) NOT NULL,
   `total_marks` int DEFAULT '0',
   `graded` tinyint(1) DEFAULT '0',
   `submitted_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -220,7 +220,7 @@ DROP TABLE IF EXISTS `StudentResponse`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `StudentResponse` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `student_nic` char(1) NOT NULL,
+  `student_nic` char(12) NOT NULL,
   `question_id` int NOT NULL,
   `response_text` text,
   `uploaded_file_url` varchar(255) DEFAULT NULL,
