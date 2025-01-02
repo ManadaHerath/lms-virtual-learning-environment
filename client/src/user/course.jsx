@@ -12,7 +12,6 @@ const CoursePage = () => {
   const [enrollmentId, setEnrollmentId] = useState(null);
   const [error, setError] = useState(null);
 
-  // Fetch sections for the course
   useEffect(() => {
     const fetchSections = async () => {
       try {
@@ -52,16 +51,13 @@ const CoursePage = () => {
     fetchSections();
   }, [courseId]);
 
-  // Function to check if the URL is a YouTube link
   const isYouTubeLink = (url) => url && url.includes("youtube.com");
 
-  // Function to extract the YouTube video ID
   const extractYouTubeVideoId = (url) => {
     const urlParams = new URLSearchParams(new URL(url).search);
     return urlParams.get("v");
   };
 
-  // Function to mark a section as done
   const handleMarkAsDone = async (sectionId, currentStatus) => {
     try {
       const accessToken = sessionStorage.getItem("accessToken");
@@ -70,7 +66,7 @@ const CoursePage = () => {
         throw new Error("User is not authenticated");
       }
 
-      const newStatus = currentStatus === 1 ? 0 : 1; // Toggle status
+      const newStatus = currentStatus === 1 ? 0 : 1;
 
       const response = await fetch(
         `http://localhost:3000/course/${enrollmentId}/section/${sectionId}`,
@@ -80,7 +76,7 @@ const CoursePage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({ mark_as_done: newStatus }), // Send the new status
+          body: JSON.stringify({ mark_as_done: newStatus }),
         }
       );
 
@@ -88,16 +84,14 @@ const CoursePage = () => {
         throw new Error("Failed to update section status");
       }
 
-      // Parse the updated section from the response
       const { updatedSection } = await response.json();
 
-      // Optimistically update the UI by using the updated mark_as_done
       setWeeks((prevWeeks) =>
         prevWeeks.map((week) => ({
           ...week,
           sections: week.sections.map((section) =>
             section.id === sectionId
-              ? { ...section, mark_as_done: updatedSection.mark_as_done } // Update with the new value from backend
+              ? { ...section, mark_as_done: updatedSection.mark_as_done }
               : section
           ),
         }))
@@ -107,9 +101,35 @@ const CoursePage = () => {
     }
   };
 
-  // Function to handle checkout
-  const handleCheckout = () => {
-    navigate(`/checkout/${enrollmentId}`);
+  const handleUnenroll = async () => {
+    try {
+      const accessToken = sessionStorage.getItem("accessToken");
+
+      if (!accessToken) {
+        throw new Error("User is not authenticated");
+      }
+
+      const response = await fetch(
+        `http://localhost:3000/course/${enrollmentId}/unenroll`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to unenroll from the course");
+      }
+
+      const { message } = await response.json();
+      alert(message);
+      navigate("/user/mycourse");
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   if (error) {
@@ -124,26 +144,15 @@ const CoursePage = () => {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Course Details</h1>
-        {paymentStatus === "completed" && (
-          <span className="px-4 py-2 bg-green-100 text-green-700 font-semibold rounded">
-            Paid
-          </span>
+        {paymentStatus === "pending" && (
+          <button
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            onClick={handleUnenroll}
+          >
+            Unenroll
+          </button>
         )}
       </div>
-
-      {paymentStatus === "pending" && (
-        <div className="bg-yellow-100 p-4 rounded mb-4">
-          <p className="text-yellow-800">
-            Your payment is pending. You can only access Week 1 sections.
-          </p>
-          <button
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            onClick={handleCheckout}
-          >
-            Proceed to Checkout
-          </button>
-        </div>
-      )}
 
       {weeks.length > 0 ? (
         <div>
@@ -185,14 +194,15 @@ const CoursePage = () => {
                       )}
                     </div>
 
-                    {/* Button for Marking Section */}
                     <button
                       className={`px-4 py-2 rounded-lg font-semibold ${
                         section.mark_as_done === 1
-                          ? "bg-green-100 text-black" // Completed
-                          : "bg-blue-100 text-black" // Incomplete
+                          ? "bg-green-100 text-black"
+                          : "bg-blue-100 text-black"
                       }`}
-                      onClick={() => handleMarkAsDone(section.id, section.mark_as_done)}
+                      onClick={() =>
+                        handleMarkAsDone(section.id, section.mark_as_done)
+                      }
                     >
                       {section.mark_as_done === 1
                         ? "Completed"
