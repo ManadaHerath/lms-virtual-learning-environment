@@ -1,16 +1,18 @@
 // Frontend: React + Axios + Tailwind CSS
+//add loading
 import React, { useState } from 'react';
 import axios from 'axios';
-
+import api from '../redux/api';
 const UploadCourse = () => {
   const [formData, setFormData] = useState({
     course_type: '',
     batch: '',
     month: '',
+    weeks:'',
     description: '',
     price: '',
-    duration: '',
-    progress: '',
+    
+    
     started_at: '',
     ended_at: '',
     image: null,
@@ -34,11 +36,7 @@ const UploadCourse = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/admin/upload-course', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post('http://localhost:3000/admin/upload-course', data);
 
       alert('Course uploaded successfully!');
       console.log(response.data);
@@ -55,7 +53,7 @@ const UploadCourse = () => {
         <input
           type="text"
           name="course_type"
-          placeholder="Course Type"
+          placeholder="Course Type (THEORY/REVISION/PAPER)"
           onChange={handleChange}
           required
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -76,6 +74,14 @@ const UploadCourse = () => {
           required
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+        <input
+          type="number"
+          name="weeks"
+          placeholder="Weeks"
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
         <textarea
           name="description"
           placeholder="Description"
@@ -91,22 +97,8 @@ const UploadCourse = () => {
           required
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <input
-          type="text"
-          name="duration"
-          placeholder="Duration"
-          onChange={handleChange}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <input
-          type="text"
-          name="progress"
-          placeholder="Progress"
-          onChange={handleChange}
-          required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        
+       
         <input
           type="date"
           name="started_at"

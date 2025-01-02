@@ -38,7 +38,7 @@ const AdminCoursePage = () => {
 
         const { weeks} = await response.json();
         setWeeks(weeks);
-        
+        console.log(weeks);
         setLoading(false);
       } catch (err) {
         setError(err.message);
