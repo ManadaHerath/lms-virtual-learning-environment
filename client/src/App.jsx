@@ -21,7 +21,11 @@ import AdminProtectedRoute from "./admin/AdminProtectedRoute";
 import SignUp from "./user/SignUp";
 import AdminCoursePage from "./admin/AdminCoursePage";
 import CreateSection from "./admin/CreateSection";
+
 import Registration from "./user/Registration";
+
+import CreateQuiz from "./admin/CreateQuiz";
+
 
 function App() {
   return (
@@ -39,29 +43,33 @@ function App() {
           <Route path="/user/mycourse" element={<MyCourse />} />
           <Route path="/user/payments" element={<PaymentHistory />} />
 
-          {/* Admin Routes */}
-          <Route path="/admin/login" element={<AdminLog />} />
-          {/* Protected Admin Routes */}
-          <Route element={<AdminProtectedRoute />}>
-            <Route
-              path="/admin/*"
-              element={
-                <AdminLayout>
-                  <Routes>
-                    <Route path="" element={<AdminDashboard />} />
-                    <Route path="courses" element={<CourseManagement />} />
-                    <Route path="/upload-course" element={<UploadCourse />} />
-                    <Route path="student" element={<StudentManagement />} />
-                    <Route path="payment" element={<PhysicalPayment />} />
-                    <Route path="create_section/:courseId/:weekId" element={<CreateSection />} />
-                    <Route path="course/:courseId" element={<AdminCoursePage />} />
-                  </Routes>
-                </AdminLayout>
-              }
-            />
-          </Route>
-        </Routes>
-      </Router>
+
+        <Route path="/admin/create-quiz" element={<CreateQuiz />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLog />} />
+        {/* Protected Admin Routes */}
+        <Route element={<AdminProtectedRoute />}>
+          <Route
+            path="/admin/*"
+            element={
+              <AdminLayout>
+                <Routes>
+                  <Route path="" element={<AdminDashboard />} />
+                  <Route path="courses" element={<CourseManagement />} />
+                  <Route path="/upload-course" element={<UploadCourse />} />
+                  <Route path="student" element={<StudentManagement />} />
+                  <Route path="payment" element={<PhysicalPayment />} />
+                  <Route path="create_section/:courseId/:weekId" element={<CreateSection />} />
+                  <Route path="course/:courseId" element={<AdminCoursePage />} />
+                </Routes>
+              </AdminLayout>
+            }
+          />
+        </Route>
+      </Routes>
+    </Router>
+
     </Provider>
   );
 }
