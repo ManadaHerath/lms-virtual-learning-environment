@@ -121,8 +121,12 @@ updateSectionStatus : async (req, res) => {
     const {courseId,weekId}=req.params;
     try {
       const maxOrder=await Section.getMaxOrderByCourseId(courseId,weekId);
-      
-      res.status(200).json({maxOrder:maxOrder[0].order_id,success:true})
+      if(!maxOrder){
+        res.status(200).json({maxOrder:maxOrder[0].order_id,success:true})
+      }
+      else{
+        res.status(200).json({maxOrder:0,success:true})
+      }
     } catch (error) {
       console.log(error)
       res.status(400).json({success:false})
