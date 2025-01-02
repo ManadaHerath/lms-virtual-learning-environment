@@ -21,6 +21,7 @@ import AdminProtectedRoute from "./admin/AdminProtectedRoute";
 import SignUp from "./user/SignUp";
 import AdminCoursePage from "./admin/AdminCoursePage";
 import CreateSection from "./admin/CreateSection";
+import CreateQuiz from "./admin/CreateQuiz";
 
 function App() {
   return (
@@ -37,6 +38,9 @@ function App() {
         <Route path="/user/profile" element={<Profile />} />
         <Route path="/user/mycourse" element={<MyCourse />} />
         <Route path="/user/payments" element={<PaymentHistory />} />
+
+
+        <Route path="/admin/create-quiz" element={<CreateQuiz />} />
 
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLog />} />
