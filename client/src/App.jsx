@@ -27,6 +27,7 @@ import UserProtectedRoute from "./user/UserProtectedRoute";
 import Registration from "./user/Registration";
 
 import CreateQuiz from "./admin/CreateQuiz";
+import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
 
 
 function App() {
@@ -35,8 +36,12 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
+
           <Route path="/signup" element={<SignUp />} />
+          
+
           <Route element={<UserProtectedRoute />}>
+          <Route path="/register" element={<Registration />} />
             <Route path="/" element={<CourseList />} />
             <Route path="/courses/:courseId" element={<CourseDetail />} />
             <Route path="/cart" element={<CartPage />} />
@@ -46,6 +51,7 @@ function App() {
             <Route path="/user/payments" element={<PaymentHistory />} />
           </Route>
 
+  <Route path="/admin/create-quiz" element={<CreateQuiz />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLog />} />
           {/* Protected Admin Routes */}
@@ -59,6 +65,8 @@ function App() {
                     <Route path="courses" element={<CourseManagement />} />
                     <Route path="/upload-course" element={<UploadCourse />} />
                     <Route path="student" element={<StudentManagement />} />
+                      <Route path="/student/register/:nic" element={<ApproveRejectRegitration />} />
+                  <Route path="payment" element={<PhysicalPayment />} />
                     <Route path="payment" element={<PhysicalPayment />} />
                     <Route
                       path="create_section/:courseId/:weekId"

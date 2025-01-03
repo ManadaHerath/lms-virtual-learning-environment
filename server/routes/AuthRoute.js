@@ -108,6 +108,8 @@ router.get(
 );
 
 router.post("/register", AuthMiddleware(["student", "admin"]),upload.single("image"), RegistrationController.uploadImage);
+router.put("/register", AuthMiddleware(["student", "admin"]),upload.single("image"), RegistrationController.updateImage);
+router.get('/register', AuthMiddleware(["admin",'student']), RegistrationController.getImageByNIC);
 
 
 

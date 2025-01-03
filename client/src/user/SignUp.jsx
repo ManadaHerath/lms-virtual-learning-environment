@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nic: "",
     first_name: "",
@@ -53,24 +54,9 @@ const Signup = () => {
       );
       if (response.data.success) {
         setSuccessMessage(response.data.message);
-        setFormData({
-          nic: "",
-          first_name: "",
-          last_name: "",
-          email: "",
-          password: "",
-          telephone: "",
-          street_address: "",
-          city: "",
-          province: "",
-          postal_code: "",
-          country: "",
-          date_of_birth: "",
-          batch: "",
-          status: "",
-          image: null,
-        });
+        
         alert(successMessage);
+        navigate(`/login`);
       } else {
         setErrors(response.data.errors || {});
       }

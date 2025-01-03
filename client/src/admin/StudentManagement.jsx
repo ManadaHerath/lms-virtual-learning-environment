@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchStudents, deactivateStudentStatus } from "../features/students/StudentSlice";
+import { useNavigate } from "react-router-dom";
 
 const StudentManagement = () => {
   const dispatch = useDispatch();
   const { list, status, error } = useSelector((state) => state.students);
-  
+  const navigate=useNavigate()
   useEffect(() => {
     dispatch(fetchStudents());
   }, [dispatch]);
@@ -54,6 +55,9 @@ const StudentManagement = () => {
           <button className="px-4" onClick={() => handleStatus(student.nic,'ACTIVE')}>
             Activate
           </button>
+          {student.status === "PENDING" ? <button className="px-4" onClick={() => navigate(`/admin/student/register/${student.nic}`)}>
+            Pending
+          </button> : <></> }
         </td>
       </tr>
     ))
