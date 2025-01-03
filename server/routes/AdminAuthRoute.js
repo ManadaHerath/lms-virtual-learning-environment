@@ -36,6 +36,9 @@ router.get('/students', AuthMiddleware(["admin"]), AdminController.getStudents);
 router.get('/students/:id', AuthMiddleware(["admin"]), AdminController.getStudentById);
 // Update student status by ID
 router.patch('/students', AuthMiddleware(["admin"]), AdminController.updateStudentStatus);
+// Get enrolled students by course ID
+router.get('/students/:courseId', AuthMiddleware(["admin"]), AdminController.getEnrolledStudents);
+
 
 //Registration Management
 router.get('/registrations/:nic', AuthMiddleware(["admin"]), RegistrationController.getImageByNIC);

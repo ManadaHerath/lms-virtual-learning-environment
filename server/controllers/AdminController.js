@@ -89,9 +89,15 @@ const AdminController = {
 
       const result = await AdminModel.createAdmin(newAdmin);
 
-      res.status(201).json({
+      res.status(200).json({
+        message: "Admin Created successful",
         success: true,
-        message: "Admin created successfully",
+        user: {
+          nic: admin.nic,
+          email: req.body.email,
+          userType: "admin",
+          name: `${admin.first_name} ${admin.last_name}`,
+        }
       });
     } catch (error) {
       console.error(error);
@@ -199,6 +205,17 @@ const AdminController = {
           message: "Student status updated successfully",
           
         });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  // Get enrolled students by course ID
+  async getEnrolledStudents(req, res) {
+    try {
+      const students = await AdminModel.getEnrolledStudents(req.params.courseId, req.params.paid);
+      res.status(200).json({ students });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal server error" });

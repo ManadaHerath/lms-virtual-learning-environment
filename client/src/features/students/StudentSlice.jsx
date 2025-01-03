@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchStudentsAPI, deactivateStudentStatusAPI } from "./studentAPI";
+import { fetchStudentsAPI, deactivateStudentStatusAPI, fetchEnrolledStudentsAPI } from "./studentAPI";
 
 export const fetchStudents = createAsyncThunk("students/fetch", async () => {
   return await fetchStudentsAPI(); // Centralized API logic
@@ -10,6 +10,13 @@ export const deactivateStudentStatus = createAsyncThunk(
   async (data) => {
     
     return await deactivateStudentStatusAPI(data.id, data.status); // Centralized API logic
+  }
+);
+
+export const fetchEnrolledStudents = createAsyncThunk(
+  "students/fetchEnrolled",
+  async (courseId, paid) => {
+    return await fetchEnrolledStudentsAPI(courseId, paid); // Centralized API logic
   }
 );
 
@@ -49,7 +56,21 @@ const studentSlice = createSlice({
       .addCase(deactivateStudentStatus.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || 'Failed to toggle student status';
+      })
+      // Fetch Enrolled Students
+      .addCase(fetchEnrolledStudents.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchEnrolledStudents.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.list = action.payload;
+      })
+      .addCase(fetchEnrolledStudents.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || 'Failed to fetch enrolled students';
       });
+      
   },
 });
 

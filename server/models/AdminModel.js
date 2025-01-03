@@ -131,6 +131,20 @@ const AdminModel = {
       throw error;
     }
   },
+
+  // Get enrolled students by course ID
+  getEnrolledStudents: async (courseId, paid) => {
+    try {
+      const [students] = await pool.query(
+        `SELECT * FROM User
+         WHERE nic IN (SELECT user_id FROM Enrollment WHERE course_id = ?)`,
+        [courseId]
+      );
+      return students;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 module.exports = AdminModel;

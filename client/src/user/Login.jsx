@@ -14,16 +14,14 @@ const Login = () => {
     },{withCredentials:true});
     
     if(res.data.success){
-      sessionStorage.setItem('accessToken',res.data.accessToken);
-      
-      prompt(res.data.message);
-      navigate('/')
+      window.location.href = '/'; // Change to your desired route
     }else{
       
       prompt(res.data.message);
     }
     } catch (error) {
-      
+      console.error("Error logging in:", error);
+      throw new Error(error.response?.data?.message || "Failed to log in");
     }
     
   };
