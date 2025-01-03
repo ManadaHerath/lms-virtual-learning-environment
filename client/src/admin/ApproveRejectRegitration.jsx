@@ -23,7 +23,7 @@ const ApproveRejectRegitration = () => {
       useEffect(() => {
         const getImage=async()=>{
             try {
-                const res=await api.get(`/admin/registrations/${nic}`);
+                const res=await api.get(`/admin/register/${nic}`);
                 
                 setImageUrl(res.data.image_url);
             } catch (error) {

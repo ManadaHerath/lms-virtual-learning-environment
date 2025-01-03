@@ -38,6 +38,7 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/register/:nic" element={<Registration />} />
           <Route element={<UserProtectedRoute />}>
             <Route path="/" element={<CourseList />} />
             <Route path="/courses/:courseId" element={<CourseDetail />} />
