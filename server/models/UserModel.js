@@ -230,7 +230,7 @@ const UserModel = {
       SELECT c.course_id, c.price, CONCAT(c.course_type, ' ', c.batch) AS name, c.image_url
       FROM Course c
       JOIN Enrollment e ON c.course_id = e.course_id
-      WHERE e.nic = ? and e.status='enroll'
+      WHERE e.nic = ? 
     `;
     try {
       const [courses] = await pool.query(query, [nic]);
@@ -261,8 +261,8 @@ const UserModel = {
   
       // Insert into Enrollment table
       const enrollmentSql = `
-        INSERT INTO Enrollment (nic, course_id,status)
-        VALUES (?, ?,'enroll')
+        INSERT INTO Enrollment (nic, course_id)
+        VALUES (?, ?')
       `;
       const [enrollmentResult] = await connection.query(enrollmentSql, [nic, courseId]);
       const enrollment_id = enrollmentResult.insertId;

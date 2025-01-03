@@ -6,49 +6,62 @@ const Section = {
   getSectionsByCourseId: async (courseId, nic) => {
     const connection = await pool.getConnection();
     try {
-      const userQuery = `
-        SELECT e.enrollment_id, p.payment_status 
-        FROM Enrollment e 
-        LEFT JOIN Payment p ON e.enrollment_id = p.enrollment_id 
-        WHERE e.course_id = ? AND e.nic = ?
-      `;
-      const [userResult] = await connection.execute(userQuery, [courseId, nic]);
-  
-      if (userResult.length === 0) {
-        return { error: "User not enrolled in this course" };
-      }
-  
-      const { enrollment_id, payment_status } = userResult[0];
-  
-      const sectionsQuery = payment_status === 'completed'
-        ? `
-            SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id 
-            FROM Section s 
-            WHERE s.course_id = ? 
-            ORDER BY s.week_id, s.order_id
-          `
-        : `
-            SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id 
-            FROM Section s 
-            WHERE s.course_id = ? AND s.week_id = 1
-            ORDER BY s.order_id
-          `;
-  
-      const [sections] = await connection.execute(sectionsQuery, [courseId]);
-  
-      return {
-        enrollment_id,
-        payment_status,
-        sections,
-      };
-    } catch (error) {
-      console.error('Error fetching sections:', error);
-      throw error;
-    } finally {
-      connection.release();
-    }
+        // Check if the user is enrolled in the course
+        const userQuery = `
+            SELECT e.enrollment_id
+            FROM Enrollment e
+            WHERE e.course_id = ? AND e.nic = ?
+        `;
+        const [userResult] = await connection.execute(userQuery, [courseId, nic]);
 
-  },
+        if (userResult.length === 0) {
+            return { error: "User not enrolled in this course" };
+        }
+
+        const { enrollment_id } = userResult[0];
+
+        // Check if the user has paid and fetch payment type
+        const paymentQuery = `
+            SELECT payment_type
+            FROM Payment
+            WHERE enrollment_id = ?
+        `;
+        const [paymentResult] = await connection.execute(paymentQuery, [enrollment_id]);
+
+        const paymentType = paymentResult.length > 0 ? paymentResult[0].payment_type : null;
+
+        // Fetch course price
+        const priceQuery = `
+            SELECT price
+            FROM Course
+            WHERE course_id = ?
+        `;
+        const [priceResult] = await connection.execute(priceQuery, [courseId]);
+        const price = priceResult.length > 0 ? priceResult[0].price : null;
+
+        // Fetch all sections for the course
+        const sectionsQuery = `
+            SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id
+            FROM Section s
+            WHERE s.course_id = ?
+            ORDER BY s.week_id, s.order_id
+        `;
+        const [sections] = await connection.execute(sectionsQuery, [courseId]);
+
+        return {
+            enrollment_id,
+            paymentType,
+            price,
+            sections,
+        };
+    } catch (error) {
+        console.error("Error fetching sections:", error);
+        throw error;
+    } finally {
+        connection.release();
+    }
+},
+
   getSectionsForAdmin:async({courseId})=>{
    
     const connection = await pool.getConnection();
