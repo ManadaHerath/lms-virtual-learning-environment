@@ -262,17 +262,13 @@ const UserModel = {
       // Insert into Enrollment table
       const enrollmentSql = `
         INSERT INTO Enrollment (nic, course_id)
-        VALUES (?, ?')
+        VALUES (?, ?)
       `;
       const [enrollmentResult] = await connection.query(enrollmentSql, [nic, courseId]);
       const enrollment_id = enrollmentResult.insertId;
   
       // Insert into Payment table with 'pending' status and the course fee as amount
-      const paymentSql = `
-        INSERT INTO Payment (enrollment_id, payment_status, amount)
-        VALUES (?, 'pending', ?)
-      `;
-      await connection.query(paymentSql, [enrollment_id, courseFee]);
+     
   
       // Fetch all section IDs for the given course
       const sectionsSql = `

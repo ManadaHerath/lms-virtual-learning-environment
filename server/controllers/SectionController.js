@@ -15,6 +15,7 @@ const SectionController = {
         }
 
         const { enrollment_id, paymentType, sections, price } = result;
+        console.log(paymentType);
 
         // Group sections by week and apply locked state based on payment type
         const weeks = sections.reduce((acc, section) => {
