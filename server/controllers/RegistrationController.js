@@ -3,7 +3,7 @@ const RegistrationModel=require('../models/RegistrationModel');
 
 const RegistrationController={
     getImageByNIC:async(req,res)=>{
-        const {nic}=req.params;
+        const { nic } = req.user;
         try {
             const result=await RegistrationModel.getImageByNIC(nic);
             
@@ -12,8 +12,19 @@ const RegistrationController={
             res.status(500).json({message:"internal server error "+error,success:false})
         }
     },
+    adminGetImageByNIC:async(req,res)=>{
+        const { nic } = req.body;
+        try {
+            const result=await RegistrationModel.getImageByNIC(nic);
+            
+            res.status(200).send({image_url:result[0].image_url,success:true})
+        } catch (error) {
+            res.status(500).json({message:"internal server error "+error,success:false})
+        }
+    },
+    
     uploadImage:async(req,res)=>{
-        const {nic}=req.body;
+        const { nic } = req.user;
         
         const image_url = req.file ? req.file.path : null;
         
@@ -26,7 +37,7 @@ const RegistrationController={
         }
     },
     updateImage:async(req,res)=>{
-        const {nic}=req.body;
+        const { nic } = req.user;
         
         const image_url = req.file ? req.file.path : null;
         try {

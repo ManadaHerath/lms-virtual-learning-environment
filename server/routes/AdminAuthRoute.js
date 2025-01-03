@@ -41,7 +41,7 @@ router.get('/students/:courseId', AuthMiddleware(["admin"]), AdminController.get
 
 
 //Registration Management
-router.get('/register/:nic', AuthMiddleware(["admin"]), RegistrationController.getImageByNIC);
+router.get('/register/:nic', AuthMiddleware(["admin"]), RegistrationController.adminGetImageByNIC);
 
 // Admin routes
 router.post(
