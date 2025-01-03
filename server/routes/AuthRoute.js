@@ -44,7 +44,7 @@ router.get("/courses", async (req, res) => {
 
 
 // Route to fetch course details by ID
-router.get("/courses/:courseId", AuthController.getCourseById);
+router.get("/courses/:courseId", AuthMiddleware(["student"]), AuthController.getCourseById);
 
 // User profile route
 router.get("/profile", AuthMiddleware(["student", "admin"]), UserController.getProfile);

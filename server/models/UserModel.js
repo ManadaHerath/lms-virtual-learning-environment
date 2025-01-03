@@ -324,7 +324,6 @@ const UserModel = {
     const query = `
       SELECT 
         p.payment_id,
-        p.payment_status,
         p.payment_type,
         p.amount,
         p.payment_date,
