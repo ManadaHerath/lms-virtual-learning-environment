@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchStudents, deactivateStudentStatus } from "../features/students/StudentSlice";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import api from "../redux/api";
 const StudentManagement = () => {
   const dispatch = useDispatch();
   const { list, status, error } = useSelector((state) => state.students);
@@ -43,6 +44,19 @@ const StudentManagement = () => {
         console.error("Error toggling status:", error);
       });
   };
+  const handleDelete=async (nic)=>{
+    try {
+      
+      const response=await api.delete('/admin/students',
+        {data: { nic: nic }}
+      )
+     alert(response.data.message);
+     dispatch(fetchStudents());
+    } catch (error) {
+      console.error(error)
+    }
+    
+  }
   
 
   if (status === "loading") return <p>Loading students...</p>;
@@ -116,6 +130,12 @@ const StudentManagement = () => {
                   onClick={() => handleStatus(student.nic, "ACTIVE")}
                 >
                   Activate
+                </button>
+                <button
+                  className="px-4 bg-green-700"
+                  onClick={() => handleDelete(student.nic)}
+                >
+                  Delete
                 </button>
                 {student.status === "PENDING" ? (
                   <button

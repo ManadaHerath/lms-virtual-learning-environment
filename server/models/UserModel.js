@@ -206,6 +206,33 @@ const UserModel = {
       throw err;
     }
   },
+  deleteUserProfile: async (nic) => {
+    
+
+    try {
+      // Start transaction
+      const connection = await pool.getConnection();
+      await connection.beginTransaction();
+
+     
+      
+
+      // Update User table
+      const deleteUserQuery = `
+        delete from User where nic = ?
+      `;
+      const [result] = await connection.query(deleteUserQuery, [
+        
+        nic
+      ]);
+
+      await connection.commit(); // Commit transaction
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  },
 
   updateProfilePicture: async (nic, imageUrl) => {
     const query = `
