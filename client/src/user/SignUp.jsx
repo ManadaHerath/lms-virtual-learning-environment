@@ -56,7 +56,7 @@ const Signup = () => {
         setSuccessMessage(response.data.message);
         
         alert(successMessage);
-        navigate(`/register/${formData.nic}`);
+        navigate(`/login`);
       } else {
         setErrors(response.data.errors || {});
       }

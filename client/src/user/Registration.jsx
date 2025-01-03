@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import api from '../redux/api';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Registration = () => {
-  const nic = useParams().nic;
+  
   const [image, setImage] = useState(null);
+  const navigate=useNavigate();
   const [existingImageUrl, setExistingImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -12,27 +13,27 @@ const Registration = () => {
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const res = await api.get(`/user/register/${nic}`);
+        const res = await api.get(`/user/register`);
         if (res.data.image_url ) {
           setExistingImageUrl(res.data.image_url );
         }
         setLoading(false);
       } catch (error) {
         
-        console.error('Error fetching image:', error);
+        console.error('Error fetching image:');
         setLoading(false);
       }
     };
 
     fetchImage();
-  }, [nic]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(image && nic){
+    if(image){
       try {
         const data = new FormData();
-        data.append('nic', nic);
+        
         data.append('image', image);
   
         if (existingImageUrl) {
@@ -50,6 +51,7 @@ const Registration = () => {
     }else{
       alert("Please select an image to upload")
     }
+    
   };
 
   if (loading) {
