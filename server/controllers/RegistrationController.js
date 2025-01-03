@@ -13,7 +13,9 @@ const RegistrationController={
         }
     },
     adminGetImageByNIC:async(req,res)=>{
-        const { nic } = req.body;
+        const { nic } = req.params;
+        
+        
         try {
             const result=await RegistrationModel.getImageByNIC(nic);
             

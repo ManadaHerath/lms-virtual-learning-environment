@@ -7,6 +7,7 @@ import api from '../redux/api';
 const ApproveRejectRegitration = () => {
     const dispatch = useDispatch();
     const nic=useParams().nic;
+    
     const [image_url,setImageUrl]=useState('');
     const navigate=useNavigate();
     const handleStatus = (status) => {
@@ -23,6 +24,7 @@ const ApproveRejectRegitration = () => {
       useEffect(() => {
         const getImage=async()=>{
             try {
+              
                 const res=await api.get(`/admin/register/${nic}`);
                 
                 setImageUrl(res.data.image_url);
