@@ -158,8 +158,7 @@ const AuthController = {
 
   // Get course details by ID
   getCourseById: async (req, res) => {
-    const { courseId } = req.params;
-    
+    const { courseId } = req.params;    
     
     try {
       const course = await UserModel.getCourseById(courseId);

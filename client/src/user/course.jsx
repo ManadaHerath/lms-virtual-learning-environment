@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
+import api from "../redux/api";
 
 const CoursePage = () => {
   const { courseId } = useParams();
@@ -16,29 +17,14 @@ const CoursePage = () => {
   useEffect(() => {
     const fetchSections = async () => {
       try {
-        const accessToken = sessionStorage.getItem("accessToken");
 
-        if (!accessToken) {
-          throw new Error("User is not authenticated");
-        }
+        const response = await api.get(`/course/${courseId}/sections`);
 
-        const response = await fetch(
-          `http://localhost:3000/course/${courseId}/sections`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
+        if (!response == 200) {
           throw new Error("Failed to fetch course sections");
         }
 
-        const { weeks, payment_status, enrollment_id, price } = await response.json();
+        const { weeks, payment_status, enrollment_id, price } = await response.data;
         setWeeks(weeks);
         setPaymentStatus(payment_status);
         setEnrollmentId(enrollment_id);
@@ -67,31 +53,18 @@ const CoursePage = () => {
 
   const handleMarkAsDone = async (sectionId, currentStatus) => {
     try {
-      const accessToken = sessionStorage.getItem("accessToken");
-
-      if (!accessToken) {
-        throw new Error("User is not authenticated");
-      }
 
       const newStatus = currentStatus === 1 ? 0 : 1;
 
-      const response = await fetch(
-        `http://localhost:3000/course/${enrollmentId}/section/${sectionId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ mark_as_done: newStatus }),
-        }
-      );
+      const response = await api.patch(
+        `/course/${enrollmentId}/section/${sectionId}`,
+        { mark_as_done: newStatus });
 
-      if (!response.ok) {
+      if (!response.status !== 200) {
         throw new Error("Failed to update section status");
       }
 
-      const { updatedSection } = await response.json();
+      const { updatedSection } = await response.data;
 
       setWeeks((prevWeeks) =>
         prevWeeks.map((week) => ({

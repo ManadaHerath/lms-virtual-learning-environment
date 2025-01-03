@@ -262,7 +262,7 @@ const UserModel = {
       // Insert into Enrollment table
       const enrollmentSql = `
         INSERT INTO Enrollment (nic, course_id)
-        VALUES (?, ?')
+        VALUES (?, ?)
       `;
       const [enrollmentResult] = await connection.query(enrollmentSql, [nic, courseId]);
       const enrollment_id = enrollmentResult.insertId;
@@ -328,7 +328,6 @@ const UserModel = {
     const query = `
       SELECT 
         p.payment_id,
-        p.payment_status,
         p.payment_type,
         p.amount,
         p.payment_date,

@@ -20,9 +20,9 @@ const UserController = {
 
   updateProfile: async (req, res) => {
     try {
+      
       const { nic } = req.user; // Extract NIC from JWT payload (added by AuthMiddleware)
       const updatedData = req.body;
-
       // Call the model to update the user details
       const result = await UserModel.updateUserProfile(nic, updatedData);
 
