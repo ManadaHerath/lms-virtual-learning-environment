@@ -4,39 +4,46 @@ const Section = require('../models/SectionModel');
 const SectionController = {
   getSectionsByCourse: async (req, res) => {
     const { courseId } = req.params;
-    const {nic} = req.user; // Assuming `nic` is included in the token payload
-  
-    try {
+    const { nic } = req.user; // Assuming nic is included in the token payload
 
-      const result = await Section.getSectionsByCourseId(courseId, nic);
-  
-      if (result.error) {
-        
-        return res.status(403).json({ message: result.error });
-      }
-  
-      const { enrollment_id, payment_status, sections } = result;
-  
-      // Group sections by week
-      const weeks = sections.reduce((acc, section) => {
-        const { week_id, ...rest } = section;
-        if (!acc[week_id]) {
-          acc[week_id] = { week_id, sections: [] };
+    try {
+        // Fetch sections, enrollment details, payment status, and course price
+        const result = await Section.getSectionsByCourseId(courseId, nic);
+
+        if (result.error) {
+            return res.status(403).json({ message: result.error });
         }
-        acc[week_id].sections.push(rest);
-        return acc;
-      }, {});
-  
-      res.status(200).json({
-        enrollment_id,
-        payment_status,
-        weeks: Object.values(weeks),
-      });
+
+        const { enrollment_id, paymentType, sections, price } = result;
+
+        // Group sections by week and apply locked state based on payment type
+        const weeks = sections.reduce((acc, section) => {
+            const { week_id, ...rest } = section;
+            if (!acc[week_id]) {
+                acc[week_id] = { week_id, sections: [] };
+            }
+
+            // Lock YouTube videos if payment type is 'physical'
+            const isYouTube = rest.content_url && rest.content_url.includes("youtube.com");
+            const locked = paymentType === "physical" && isYouTube;
+
+            acc[week_id].sections.push({ ...rest, locked });
+            return acc;
+        }, {});
+
+        // Send response with enrollment details, payment status, course price, and sections grouped by weeks
+        res.status(200).json({
+            enrollment_id,
+            paymentType,
+            price,
+            weeks: Object.values(weeks),
+        });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Error fetching sections." });
+        console.error(error);
+        res.status(500).json({ message: "Error fetching sections." });
     }
-  },
+},
+
   getSectionsForAdmin:async  (req,res)=>{
     const courseId=req.params;
     
