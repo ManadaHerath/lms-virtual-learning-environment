@@ -5,6 +5,7 @@ const UserController = require("../controllers/UserController");
 const QuizController = require("../controllers/QuizController");
 const AuthMiddleware = require("../middleware/Authmiddleware");
 const RegistrationController = require("../controllers/RegistrationController");
+const CourseController = require("../controllers/CourseController");
 
 
 const router = express.Router();
@@ -30,16 +31,7 @@ router.get("/logout", AuthController.logoutUser);
 // Check authentication status
 router.get("/check-auth", AuthMiddleware("student"), AuthController.checkAuth);
 
-router.get("/courses", async (req, res) => {
-  const { batch, type } = req.query; // Extract filters from query parameters
-  try {
-    const courses = await AuthController.getAllCourses(batch, type);
-    res.status(200).json(courses);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: "Failed to fetch courses" });
-  }
-});
+router.get("/courses",AuthMiddleware(['student','admin']) ,CourseController.userGetAllCourses);
 
 
 
