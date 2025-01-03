@@ -27,6 +27,9 @@ router.post("/login", AuthController.loginUser);
 // Logout route
 router.get("/logout", AuthController.logoutUser);
 
+// Check authentication status
+router.get("/check-auth", AuthMiddleware("student"), AuthController.checkAuth);
+
 router.get("/courses", async (req, res) => {
   const { batch, type } = req.query; // Extract filters from query parameters
   try {

@@ -2,9 +2,17 @@ import React, { useState } from "react";
 import { Menu, X } from "lucide-react"; // Sidebar toggle button icons
 import { FiHome, FiUsers, FiSettings, FiBarChart } from "react-icons/fi"; // Section icons
 import { Link } from "react-router-dom"; // For routing
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../features/auth/authSlice"
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const dispatch = useDispatch();
+  const { status, error, user } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+  }
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -67,6 +75,16 @@ const AdminLayout = ({ children }) => {
                 <FiBarChart size={24} className="mr-4" />
                 {isSidebarOpen && <span>Payment</span>}
               </Link>
+            </li>
+            <li>
+              <a
+                href="/admin/login"
+                className="flex items-center px-4 py-2 hover:bg-gray-700"
+                onClick={ handleLogout }
+              >
+                <FiBarChart size={24} className="mr-4" />
+                {isSidebarOpen && <span>Logout</span>}
+              </a>
             </li>
           </ul>
         </nav>
