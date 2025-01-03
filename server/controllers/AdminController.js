@@ -198,6 +198,7 @@ const AdminController = {
         req.body.nic,
         req.body.status
       );
+      console.log(req.body.nic, req.body.status);
       res
         .status(200)
         .json({
