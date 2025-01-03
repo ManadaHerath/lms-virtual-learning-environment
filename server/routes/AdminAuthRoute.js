@@ -7,6 +7,7 @@ const router = express.Router();
 const SectionController = require("../controllers/SectionController")
 const QuizController = require("../controllers/QuizController");
 const RegistrationController = require("../controllers/RegistrationController");
+const UserController = require("../controllers/UserController");
 
 
 // Define rout es
@@ -36,6 +37,8 @@ router.get('/students', AuthMiddleware(["admin"]), AdminController.getStudents);
 router.get('/students/:id', AuthMiddleware(["admin"]), AdminController.getStudentById);
 // Update student status by ID
 router.patch('/students', AuthMiddleware(["admin"]), AdminController.updateStudentStatus);
+//delete student by ID
+router.delete('/students', AuthMiddleware(["admin"]), UserController.deleteUser);
 // Get enrolled students by course ID
 router.get('/students/:courseId', AuthMiddleware(["admin"]), AdminController.getEnrolledStudents);
 
