@@ -8,7 +8,7 @@ const CoursePage = () => {
 
   const [weeks, setWeeks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [paymentType, setPaymentType] = useState(null); // Update to paymentType
   const [enrollmentId, setEnrollmentId] = useState(null);
   const [coursePrice, setCoursePrice] = useState(0); // To store the course price
   const [error, setError] = useState(null);
@@ -38,9 +38,16 @@ const CoursePage = () => {
           throw new Error("Failed to fetch course sections");
         }
 
-        const { weeks, payment_status, enrollment_id, price } = await response.json();
+        const data = await response.json();
+        console.log("API Response:", data); // Log the entire response
+
+        const { weeks, paymentType, enrollment_id, price } = data;
+
+        // Log paymentType
+        console.log("Payment Type:", paymentType);
+
         setWeeks(weeks);
-        setPaymentStatus(payment_status);
+        setPaymentType(paymentType); // Use paymentType
         setEnrollmentId(enrollment_id);
         setCoursePrice(price); // Set course price
         setLoading(false);
@@ -120,7 +127,7 @@ const CoursePage = () => {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Course Details</h1>
-        {paymentStatus === "pending" && (
+        {paymentType === "pending" && (
           <button
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
             onClick={() => navigate("/user/mycourse")}
@@ -131,7 +138,7 @@ const CoursePage = () => {
       </div>
 
       <div className="p-4 mb-6 border rounded-lg bg-gray-50">
-        {paymentStatus === "online" ? (
+        {paymentType === "online" ? (
           <div className="text-green-500 font-semibold">You have paid for this course!</div>
         ) : (
           <div>
@@ -165,7 +172,7 @@ const CoursePage = () => {
 
                       {isYouTubeLink(section.content_url) ? (
                         <div className="text-gray-500">
-                          {paymentStatus !== "online" ? (
+                          {paymentType !== "online" ? (
                             <span>Video locked</span>
                           ) : (
                             <YouTube
@@ -184,27 +191,27 @@ const CoursePage = () => {
                         <a
                           href={section.content_url}
                           className={`text-blue-500 underline ${
-                            paymentStatus !== "online" ? "pointer-events-none" : ""
+                            paymentType !== "online" ? "pointer-events-none" : ""
                           }`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {paymentStatus !== "online" ? "Locked" : "View Content"}
+                          {paymentType !== "online" ? "Locked" : "View Content"}
                         </a>
                       )}
                     </div>
 
                     <button
                       className={`px-4 py-2 rounded-lg font-semibold ${
-                        paymentStatus !== "online"
+                        paymentType !== "online"
                           ? "bg-gray-500 text-white cursor-not-allowed"
                           : section.mark_as_done === 1
                           ? "bg-green-100 text-black"
                           : "bg-blue-100 text-black"
                       }`}
-                      disabled={paymentStatus !== "online"}
+                      disabled={paymentType !== "online"}
                       onClick={() =>
-                        paymentStatus === "online" &&
+                        paymentType === "online" &&
                         handleMarkAsDone(section.id, section.mark_as_done)
                       }
                     >
