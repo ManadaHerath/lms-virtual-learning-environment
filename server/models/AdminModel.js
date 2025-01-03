@@ -119,11 +119,12 @@ const AdminModel = {
   },
 
   // Update student status by ID
-  updateStudentStatus: async (id, status) => {
+  updateStudentStatus: async (nic, status) => {
     try {
+      
       const [result] = await pool.query(
         "UPDATE User SET status = ? WHERE nic = ?",
-        [status, id]
+        [status, nic]
       );
       return result;
     } catch (error) {

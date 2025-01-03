@@ -14,9 +14,10 @@ export const fetchStudentsAPI = async () => {
 };
 
 // Toggle student status
-export const toggleStudentStatusAPI = async (id) => {
+export const deactivateStudentStatusAPI = async (id, status) => {
   try {
-    const response = await api.patch(`/admin/students/${id}`);
+
+    const response = await api.patch(`/admin/students`, { nic: id, status: status });
     return response.data; // Return the updated student data
   } catch (error) {
     // Handle API errors

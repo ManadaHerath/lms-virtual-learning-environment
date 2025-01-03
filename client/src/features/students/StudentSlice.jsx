@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchEnrolledStudentsAPI, fetchStudentsAPI, toggleStudentStatusAPI } from "./studentAPI";
+import { fetchStudentsAPI, deactivateStudentStatusAPI, fetchEnrolledStudentsAPI } from "./studentAPI";
 
 export const fetchStudents = createAsyncThunk("students/fetch", async () => {
   return await fetchStudentsAPI(); // Centralized API logic
 });
 
-export const toggleStudentStatus = createAsyncThunk(
+export const deactivateStudentStatus = createAsyncThunk(
   "students/toggleStatus",
-  async (id) => {
-    return await toggleStudentStatusAPI(id, "toggle-status"); // Centralized API logic
+  async (data) => {
+
+    return await deactivateStudentStatusAPI(data.id, data.status); // Centralized API logic
   }
 );
 
@@ -44,18 +45,15 @@ const studentSlice = createSlice({
         state.error = action.payload || 'Failed to fetch students';
       })
       // Toggle Student Status
-      .addCase(toggleStudentStatus.pending, (state) => {
+      .addCase(deactivateStudentStatus.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(toggleStudentStatus.fulfilled, (state, action) => {
+      .addCase(deactivateStudentStatus.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        const index = state.list.findIndex((s) => s.id === action.payload.id);
-        if (index !== -1) {
-          state.list[index] = action.payload;
-        }
+        
       })
-      .addCase(toggleStudentStatus.rejected, (state, action) => {
+      .addCase(deactivateStudentStatus.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || 'Failed to toggle student status';
       })

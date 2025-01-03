@@ -38,7 +38,7 @@ const UserModel = {
       country,
       date_of_birth,
       batch,
-      status,
+      
       image_url,
     } = userData;
 
@@ -68,8 +68,8 @@ const UserModel = {
 
       // Insert into User table
       const userSql = `
-        INSERT INTO User (nic, first_name, last_name, address_id, telephone, email, password, date_of_birth, batch, image_url, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO User (nic, first_name, last_name, address_id, telephone, email, password, date_of_birth, batch, image_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       const [userResult] = await connection.query(userSql, [
         nic,
@@ -82,7 +82,7 @@ const UserModel = {
         date_of_birth,
         batch,
         image_url,
-        status,
+        
       ]);
 
       await connection.commit(); // Commit transaction
@@ -230,7 +230,7 @@ const UserModel = {
       SELECT c.course_id, c.price, CONCAT(c.course_type, ' ', c.batch) AS name, c.image_url
       FROM Course c
       JOIN Enrollment e ON c.course_id = e.course_id
-      WHERE e.nic = ? and e.status='enroll'
+      WHERE e.nic = ? 
     `;
     try {
       const [courses] = await pool.query(query, [nic]);
@@ -261,8 +261,8 @@ const UserModel = {
   
       // Insert into Enrollment table
       const enrollmentSql = `
-        INSERT INTO Enrollment (nic, course_id,status)
-        VALUES (?, ?,'enroll')
+        INSERT INTO Enrollment (nic, course_id)
+        VALUES (?, ?')
       `;
       const [enrollmentResult] = await connection.query(enrollmentSql, [nic, courseId]);
       const enrollment_id = enrollmentResult.insertId;
@@ -317,7 +317,7 @@ const UserModel = {
     `;
     try {
       const [result] = await pool.query(query, [nic, courseId]);
-      console.log(result);
+      
       return result.length > 0; // Return true if the user is already enrolled
     } catch (err) {
       throw err;

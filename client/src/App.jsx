@@ -24,6 +24,11 @@ import CreateSection from "./admin/CreateSection";
 import CourseDetailPage from "./admin/CourseDetailPage";
 import UserProtectedRoute from "./user/UserProtectedRoute";
 
+import Registration from "./user/Registration";
+
+import CreateQuiz from "./admin/CreateQuiz";
+
+
 function App() {
   return (
     <Provider store={store}>

@@ -10,6 +10,7 @@ const CoursePage = () => {
   const [loading, setLoading] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [enrollmentId, setEnrollmentId] = useState(null);
+  const [coursePrice, setCoursePrice] = useState(0); // To store the course price
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -37,10 +38,11 @@ const CoursePage = () => {
           throw new Error("Failed to fetch course sections");
         }
 
-        const { weeks, payment_status, enrollment_id } = await response.json();
+        const { weeks, payment_status, enrollment_id, price } = await response.json();
         setWeeks(weeks);
         setPaymentStatus(payment_status);
         setEnrollmentId(enrollment_id);
+        setCoursePrice(price); // Set course price
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -56,6 +58,11 @@ const CoursePage = () => {
   const extractYouTubeVideoId = (url) => {
     const urlParams = new URLSearchParams(new URL(url).search);
     return urlParams.get("v");
+  };
+
+  const handleCheckout = () => {
+    // Redirect to payment gateway with the enrollmentId and courseId
+    navigate(`/checkout?courseId=${courseId}&enrollmentId=${enrollmentId}`);
   };
 
   const handleMarkAsDone = async (sectionId, currentStatus) => {
@@ -101,37 +108,6 @@ const CoursePage = () => {
     }
   };
 
-  const handleUnenroll = async () => {
-    try {
-      const accessToken = sessionStorage.getItem("accessToken");
-
-      if (!accessToken) {
-        throw new Error("User is not authenticated");
-      }
-
-      const response = await fetch(
-        `http://localhost:3000/course/${enrollmentId}/unenroll`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to unenroll from the course");
-      }
-
-      const { message } = await response.json();
-      alert(message);
-      navigate("/user/mycourse");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
-
   if (error) {
     return <div className="p-4 text-red-500">Error: {error}</div>;
   }
@@ -147,10 +123,28 @@ const CoursePage = () => {
         {paymentStatus === "pending" && (
           <button
             className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={handleUnenroll}
+            onClick={() => navigate("/user/mycourse")}
           >
             Unenroll
           </button>
+        )}
+      </div>
+
+      <div className="p-4 mb-6 border rounded-lg bg-gray-50">
+        {paymentStatus === "online" ? (
+          <div className="text-green-500 font-semibold">You have paid for this course!</div>
+        ) : (
+          <div>
+            <p className="mb-2 text-gray-700">
+              Course Price: <span className="font-bold text-lg">${coursePrice}</span>
+            </p>
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={handleCheckout}
+            >
+              Proceed to Checkout
+            </button>
+          </div>
         )}
       </div>
 
@@ -170,43 +164,51 @@ const CoursePage = () => {
                       <p className="text-sm">{section.description}</p>
 
                       {isYouTubeLink(section.content_url) ? (
-                        <YouTube
-                          videoId={extractYouTubeVideoId(section.content_url)}
-                          opts={{
-                            height: "390",
-                            width: "640",
-                            playerVars: {
-                              autoplay: 0,
-                            },
-                          }}
-                        />
+                        <div className="text-gray-500">
+                          {paymentStatus !== "online" ? (
+                            <span>Video locked</span>
+                          ) : (
+                            <YouTube
+                              videoId={extractYouTubeVideoId(section.content_url)}
+                              opts={{
+                                height: "390",
+                                width: "640",
+                                playerVars: {
+                                  autoplay: 0,
+                                },
+                              }}
+                            />
+                          )}
+                        </div>
                       ) : (
-                        section.content_url && (
-                          <a
-                            href={section.content_url}
-                            className="text-blue-500 underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            View Content
-                          </a>
-                        )
+                        <a
+                          href={section.content_url}
+                          className={`text-blue-500 underline ${
+                            paymentStatus !== "online" ? "pointer-events-none" : ""
+                          }`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {paymentStatus !== "online" ? "Locked" : "View Content"}
+                        </a>
                       )}
                     </div>
 
                     <button
                       className={`px-4 py-2 rounded-lg font-semibold ${
-                        section.mark_as_done === 1
+                        paymentStatus !== "online"
+                          ? "bg-gray-500 text-white cursor-not-allowed"
+                          : section.mark_as_done === 1
                           ? "bg-green-100 text-black"
                           : "bg-blue-100 text-black"
                       }`}
+                      disabled={paymentStatus !== "online"}
                       onClick={() =>
+                        paymentStatus === "online" &&
                         handleMarkAsDone(section.id, section.mark_as_done)
                       }
                     >
-                      {section.mark_as_done === 1
-                        ? "Completed"
-                        : "Incomplete"}
+                      {section.mark_as_done === 1 ? "Completed" : "Incomplete"}
                     </button>
                   </div>
                 ))}
