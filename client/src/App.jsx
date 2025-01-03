@@ -25,6 +25,7 @@ import CreateSection from "./admin/CreateSection";
 import Registration from "./user/Registration";
 
 import CreateQuiz from "./admin/CreateQuiz";
+import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
 
 
 function App() {
@@ -59,6 +60,7 @@ function App() {
                   <Route path="courses" element={<CourseManagement />} />
                   <Route path="/upload-course" element={<UploadCourse />} />
                   <Route path="student" element={<StudentManagement />} />
+                  <Route path="/student/register/:nic" element={<ApproveRejectRegitration />} />
                   <Route path="payment" element={<PhysicalPayment />} />
                   <Route path="create_section/:courseId/:weekId" element={<CreateSection />} />
                   <Route path="course/:courseId" element={<AdminCoursePage />} />

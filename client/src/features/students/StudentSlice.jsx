@@ -8,7 +8,7 @@ export const fetchStudents = createAsyncThunk("students/fetch", async () => {
 export const deactivateStudentStatus = createAsyncThunk(
   "students/toggleStatus",
   async (data) => {
-
+    
     return await deactivateStudentStatusAPI(data.id, data.status); // Centralized API logic
   }
 );

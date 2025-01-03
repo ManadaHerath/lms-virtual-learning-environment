@@ -6,10 +6,10 @@ const RegistrationController={
         const {nic}=req.params;
         try {
             const result=await RegistrationModel.getImageByNIC(nic);
-            console.log(result);
-            res.status(200).send({result:result})
+            
+            res.status(200).send({image_url:result[0].image_url,success:true})
         } catch (error) {
-            res.status(500).json({message:"internal server error "+error})
+            res.status(500).json({message:"internal server error "+error,success:false})
         }
     },
     uploadImage:async(req,res)=>{
