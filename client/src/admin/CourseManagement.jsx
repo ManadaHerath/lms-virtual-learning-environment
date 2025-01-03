@@ -14,7 +14,7 @@ const CourseManagement = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await api.get("/user/courses", {
+      const response = await api.get("/admin/courses", {
         params: { batch, type }, // Send filters as query parameters
       });
       setCourses(response.data);

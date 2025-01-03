@@ -29,6 +29,10 @@ router.get('/course/:courseId/:weekId/maxorder', AuthMiddleware(['admin']), Sect
 router.post('/section', AuthMiddleware(['admin']), SectionController.createSection)
 router.get('/course/:courseId', AuthMiddleware(['admin']), CourseController.getCourseById);
 
+//get all courses
+router.get("/courses",AuthMiddleware(['admin']) ,CourseController.getAllCourses);
+
+
 
 // Student Management Routes
 // Get all students

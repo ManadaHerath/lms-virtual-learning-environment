@@ -1,5 +1,6 @@
 const CourseModel = require("../models/CourseModel");
-const { getCourseById } = require("./AuthController");
+const UserModel = require("../models/UserModel");
+const { getCourseById, getAllCourses } = require("./AuthController");
 
 const CourseController={
     createCourse:async(req,res)=>{
@@ -48,7 +49,28 @@ const CourseController={
       } catch (error) {
         res.status(500).json({ error: 'Internal server error'+error ,success:false});
       }
+    },
+    getAllCourses:async (req, res) => {
+      const { batch, type } = req.query; // Extract filters from query parameters
+      try {
+        const courses = await UserModel.getAllCourses(batch, type);
+        res.status(200).json(courses);
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Failed to fetch courses" });
+      }
+    },
+    userGetAllCourses:async (req, res) => {
+      const { batch, type } = req.query; // Extract filters from query parameters
+      try {
+        const courses = await UserModel.userGetAllCourses(batch, type);
+        res.status(200).json(courses);
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: "Failed to fetch courses" });
+      }
     }
+
 
 
 }
