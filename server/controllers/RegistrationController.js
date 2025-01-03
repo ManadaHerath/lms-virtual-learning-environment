@@ -24,6 +24,19 @@ const RegistrationController={
         } catch (error) {
             res.status(500).json({message:"internal server error "+error,success:false})
         }
+    },
+    updateImage:async(req,res)=>{
+        const {nic}=req.body;
+        
+        const image_url = req.file ? req.file.path : null;
+        try {
+            const result=await RegistrationModel.updateImage(nic,image_url);
+            
+            res.status(200).send({result:result, success:true})
+        } catch (error) {
+            res.status(500).json({message:"internal server error "+error,success:false})
+        }
     }
+
 }
 module.exports=RegistrationController;

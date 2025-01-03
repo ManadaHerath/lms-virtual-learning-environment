@@ -26,6 +26,17 @@ uploadImage:async (nic,image_url)=>{
     throw error;
   }
 },
+updateImage:async (nic,image_url)=>{
+  const query='update Registration set image_url=? where nic=?';
+
+  try {
+    const [result]=await db.query(query,[image_url,nic]);
+    return result;
+  } catch (error) {
+    throw error;
+  }
+},
+
 
 }
 module.exports=RegistrationModel;
