@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "multer-storage-cloudinary": "^4.0.0"
+    "multer-storage-cloudinary": "^4.0.0",
+    "react-countdown": "^2.3.6",
+    "react-router-dom": "^7.1.1"
   }
 }

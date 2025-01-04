@@ -21,6 +21,8 @@ import AdminProtectedRoute from "./admin/AdminProtectedRoute";
 import SignUp from "./user/SignUp";
 import AdminCoursePage from "./admin/AdminCoursePage";
 import CreateSection from "./admin/CreateSection";
+import QuizDetail from "./user/QuizDetail";
+import Quiz from "./user/Quiz";
 
 import Registration from "./user/Registration";
 
@@ -42,6 +44,8 @@ function App() {
           <Route path="/user/profile" element={<Profile />} />
           <Route path="/user/mycourse" element={<MyCourse />} />
           <Route path="/user/payments" element={<PaymentHistory />} />
+          <Route path="/quizdetail/:quizId" element={<QuizDetail />} />
+          <Route path="/quiz/:quizId" element={<Quiz />} />
 
 
         <Route path="/admin/create-quiz" element={<CreateQuiz />} />

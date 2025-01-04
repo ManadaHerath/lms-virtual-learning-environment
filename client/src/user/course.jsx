@@ -39,17 +39,12 @@ const CoursePage = () => {
         }
 
         const data = await response.json();
-        console.log("API Response:", data); // Log the entire response
-
         const { weeks, paymentType, enrollment_id, price } = data;
 
-        // Log paymentType
-        console.log("Payment Type:", paymentType);
-
         setWeeks(weeks);
-        setPaymentType(paymentType); // Use paymentType
+        setPaymentType(paymentType);
         setEnrollmentId(enrollment_id);
-        setCoursePrice(price); // Set course price
+        setCoursePrice(price);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -60,15 +55,32 @@ const CoursePage = () => {
     fetchSections();
   }, [courseId]);
 
-  const isYouTubeLink = (url) => url && url.includes("youtube.com");
+  const isYouTubeLink = (url) => typeof url === "string" && url.includes("youtube.com");
 
   const extractYouTubeVideoId = (url) => {
     const urlParams = new URLSearchParams(new URL(url).search);
     return urlParams.get("v");
   };
 
+  const handleNavigateContent = (contentUrl) => {
+    console.log("Content URL:", contentUrl);
+    console.log("Type of contentUrl:", typeof contentUrl); // Logs the type of contentUrl
+  
+    if (typeof contentUrl === "number") {
+      console.log("Navigating to quiz detail...");
+      navigate(`/quizdetail/${contentUrl}`);
+    } else if (isYouTubeLink(contentUrl)) {
+      console.log("This is a YouTube link. Handling separately.");
+      return; // Handle YouTube content separately
+    } else {
+      console.log("Opening external link:", contentUrl);
+      navigate(`/quizdetail/${contentUrl}`);
+      
+    }
+  };
+  
+
   const handleCheckout = () => {
-    // Redirect to payment gateway with the enrollmentId and courseId
     navigate(`/checkout?courseId=${courseId}&enrollmentId=${enrollmentId}`);
   };
 
@@ -125,17 +137,7 @@ const CoursePage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Course Details</h1>
-        {paymentType === "pending" && (
-          <button
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-            onClick={() => navigate("/user/mycourse")}
-          >
-            Unenroll
-          </button>
-        )}
-      </div>
+      
 
       <div className="p-4 mb-6 border rounded-lg bg-gray-50">
         {paymentType === "online" ? (
@@ -188,16 +190,15 @@ const CoursePage = () => {
                           )}
                         </div>
                       ) : (
-                        <a
-                          href={section.content_url}
+                        <button
                           className={`text-blue-500 underline ${
                             paymentType !== "online" ? "pointer-events-none" : ""
                           }`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          disabled={paymentType !== "online"}
+                          onClick={() => handleNavigateContent(section.content_url)}
                         >
                           {paymentType !== "online" ? "Locked" : "View Content"}
-                        </a>
+                        </button>
                       )}
                     </div>
 
