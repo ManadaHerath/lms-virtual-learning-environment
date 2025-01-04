@@ -28,7 +28,8 @@ router.get('/course/:courseId/sections', AuthMiddleware(['admin']), SectionContr
 router.get('/course/:courseId/:weekId/maxorder', AuthMiddleware(['admin']), SectionController.getMaxOrderByCourseId);
 router.post('/section', AuthMiddleware(['admin']), SectionController.createSection)
 router.get('/course/:courseId', AuthMiddleware(['admin']), CourseController.getCourseById);
-
+router.delete('/course/:courseId', AuthMiddleware(['admin']), CourseController.deleteCourseById);
+router.delete('/section/:sectionId', AuthMiddleware(['admin']), SectionController.deleteSection)
 //get all courses
 router.get("/courses",AuthMiddleware(['admin']) ,CourseController.getAllCourses);
 

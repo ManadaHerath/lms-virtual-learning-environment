@@ -1,6 +1,8 @@
 const CourseModel = require("../models/CourseModel");
+const { deleteSectionById } = require("../models/SectionModel");
 const UserModel = require("../models/UserModel");
 const { getCourseById, getAllCourses } = require("./AuthController");
+const { deleteSection } = require("./SectionController");
 
 const CourseController={
     createCourse:async(req,res)=>{
@@ -50,6 +52,22 @@ const CourseController={
         res.status(500).json({ error: 'Internal server error'+error ,success:false});
       }
     },
+    deleteCourseById:async(req,res)=>{
+    try {
+      const {courseId}=req.params;
+
+      const result=await CourseModel.deleteCourseById(courseId);
+      if(result.affectedRows===0){
+        res.status(404).json({message:'Course not found',success:false});
+      }else{
+        res.status(200).json({message:'Course deleted successfully',success:true});
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' ,success:false});
+    }
+    }
+    ,
     getAllCourses:async (req, res) => {
       const { batch, type } = req.query; // Extract filters from query parameters
       try {

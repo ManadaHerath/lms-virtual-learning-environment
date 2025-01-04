@@ -1,5 +1,6 @@
 // models/Section.js
 const db = require('../config/dbconfig');
+
 const pool=db
 const Section = {
 
@@ -209,6 +210,23 @@ unenrollCourseById: async (enrollmentId) => {
     connection.release();
   }
 },
+deleteSectionById: async (sectionId) => {
+  const connection = await pool.getConnection();
+  try {
+    const deleteQuery = `
+      DELETE FROM Section
+      WHERE id = ?
+    `;
+
+    const [result] = await connection.execute(deleteQuery, [sectionId]);
+    return result;
+  } catch (error) {
+    console.error("Error in deleteSectionById:", error);
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
 
 
   
