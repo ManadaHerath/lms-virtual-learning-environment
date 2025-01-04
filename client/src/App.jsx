@@ -45,7 +45,7 @@ function App() {
          <Route element={<UserProtectedRoute />}>
           <Route path="/register" element={<Registration />} />
           <Route path="/quizdetail/:quizId" element={<QuizDetail />} />
-          <Route path="/quizreveiw/:quizId" element={<QuizReview />} />
+          <Route path="/quizreview/:quizId" element={<QuizReview />} />
           <Route path="/quiz/:quizId" element={<Quiz />} />
           <Route path="/" element={<CourseList />} />
           <Route path="/courses/:courseId" element={<CourseDetail />} />
