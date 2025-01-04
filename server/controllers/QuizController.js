@@ -152,23 +152,33 @@ const QuizController = {
     }
   },
 
-  getQuizInfoById: async (req, res) => {
+   getQuizInfoById : async (req, res) => {
     try {
       const { quizId } = req.params;
-
-      // Fetch quiz info from the database
+      const { nic } = req.user;
+  
+      // Check if user has already responded to the quiz
+      const hasResponded = await QuizModel.checkUserResponse(quizId, nic);
+  
+      // Fetch quiz info
       const quizInfo = await QuizModel.getQuizInfoById(quizId);
-
+  
       if (!quizInfo) {
         return res.status(404).json({ success: false, message: "Quiz not found" });
       }
-
-      res.status(200).json({ success: true, quizInfo });
+  
+      // Respond with quiz info and the response flag
+      res.status(200).json({
+        success: true,
+        quizInfo,
+        hasResponded, // Send this flag to the frontend
+      });
     } catch (error) {
       console.error("Error fetching quiz info:", error.message);
       res.status(500).json({ success: false, message: "Failed to fetch quiz info" });
     }
-  }
+  },
+  
 };
 
 module.exports = QuizController;
