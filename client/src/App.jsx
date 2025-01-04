@@ -27,6 +27,7 @@ import UserProtectedRoute from "./user/UserProtectedRoute";
 import Registration from "./user/Registration";
 import CreateQuiz from "./admin/CreateQuiz";
 import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
+import QuizReview from "./user/QuizReveiw";
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
          <Route element={<UserProtectedRoute />}>
           <Route path="/register" element={<Registration />} />
           <Route path="/quizdetail/:quizId" element={<QuizDetail />} />
+          <Route path="/quizreveiw/:quizId" element={<QuizReview />} />
           <Route path="/quiz/:quizId" element={<Quiz />} />
           <Route path="/" element={<CourseList />} />
           <Route path="/courses/:courseId" element={<CourseDetail />} />
