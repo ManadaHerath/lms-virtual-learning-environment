@@ -1,8 +1,7 @@
 const CourseModel = require("../models/CourseModel");
-const { deleteSectionById } = require("../models/SectionModel");
+
 const UserModel = require("../models/UserModel");
-const { getCourseById, getAllCourses } = require("./AuthController");
-const { deleteSection } = require("./SectionController");
+
 
 const CourseController={
     createCourse:async(req,res)=>{
@@ -42,6 +41,70 @@ const CourseController={
           }
 
     },
+    updateCourseImage:async(req,res)=>{
+      try {
+        const { courseId } = req.params;
+        const {remove} = req.body;
+        
+        if (remove) {
+          // Remove the image (set image_url to null)
+          await CourseModel.updateCourseImage(courseId,null);
+          return res.status(200).json({ success: true, message: "Course picture removed successfully" });
+        }else{
+          const imageUrl = req.file.path;
+        const result = await CourseModel.updateCourseImage(courseId, imageUrl);
+        res.status(200).json({ message: "Course picture updated successfully", success:true });
+        }
+        
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' ,success:false});
+  }
+},
+
+    updateCourse:async(req,res)=>{
+
+      try {
+          const {
+            course_type,
+            batch,
+            month,
+            weeks,
+            description,
+            price,
+            
+            
+            started_at,
+            ended_at,
+            course_id,
+            
+          } = req.body;
+          
+          
+    
+          const courseId = await CourseModel.updateCourse({
+            course_type,
+            batch,
+            month,
+            weeks,
+            description,
+            
+            price,
+            
+            
+            started_at,
+            ended_at,
+            course_id
+
+          });
+    
+          res.status(201).json({ message: 'Course updated successfully', courseId:courseId ,success:true });
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: 'Internal server error' ,success:false});
+        }
+
+  },
     getCourseById:async(req,res)=>{
       try {
         const courseId=req.params;

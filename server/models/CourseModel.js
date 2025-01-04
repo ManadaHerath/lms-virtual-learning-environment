@@ -1,6 +1,5 @@
 const pool = require("../config/dbconfig");
-const { deleteSectionById } = require("./SectionModel");
-const { getCourseById } = require("./UserModel");
+
 const CourseModel={
     createCourse:async(courseData)=>{
         
@@ -44,6 +43,91 @@ const CourseModel={
 
 
     },
+    updateCourseImage:async(course_id,image_url)=>{
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        
+       
+        const query = `UPDATE Course SET image_url=? WHERE course_id=?`;
+        const [result]=await connection.execute(query, [image_url,course_id]);
+        
+        await connection.commit();
+        return result;
+      } catch (error) {
+        await connection.rollback();
+        console.error('Error on Course image updated', error.message);
+        throw error;
+      } finally {
+        await connection.release();
+      }
+    }
+,
+    updateCourse:async(courseData)=>{
+        
+ 
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+
+        const formatDateForMySQL = (date) => {
+      if (!(date instanceof Date)) {
+        date = new Date(date); // Parse string or other values into a Date object
+      }
+      if (isNaN(date)) {
+        throw new Error("Invalid date value provided");
+      }
+      return date.toISOString().slice(0, 19).replace("T", " ");
+    };
+    
+        const startedAt = formatDateForMySQL(courseData.started_at);
+        const endedAt = formatDateForMySQL(courseData.ended_at);
+       
+        const updateQuery = `
+        UPDATE Course
+        SET 
+          course_type = ?, 
+          batch = ?, 
+          month = ?, 
+          weeks = ?, 
+          description = ?, 
+          price = ?, 
+          started_at = ?, 
+          ended_at = ?
+        WHERE course_id = ?
+      `;
+        const [result]=await connection.execute(updateQuery, [
+          courseData.course_type,
+          courseData.batch,
+          courseData.month,
+          courseData.weeks,
+          
+          courseData.description,
+          courseData.price,
+          
+          
+          startedAt,
+          endedAt,
+          courseData.course_id
+
+          
+        ]);
+        
+    
+        
+    
+        await connection.commit();
+        return result.insertId;
+      } catch (error) {
+        await connection.rollback();
+        console.error('Error on Course updated', error.message);
+        throw error;
+      } finally {
+        await connection.release();
+      }
+  
+  
+      },
     getCourseById:async(courseId)=>{
       const connection = await pool.getConnection();
       try {
