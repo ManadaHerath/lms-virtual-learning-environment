@@ -44,13 +44,13 @@ const CoursePage = () => {
     return urlParams.get("v");
   };
 
-  const handleNavigateContent = (contentUrl) => {
-    if (typeof contentUrl === "number") {
-      navigate(`/quizdetail/${contentUrl}`);
-    } else if (isYouTubeLink(contentUrl)) {
+  const handleNavigateContent = (section) => {
+    if (section.type_id === 3 && section.quiz_id) {
+      navigate(`/quizdetail/${section.quiz_id}`);
+    } else if (isYouTubeLink(section.content_url)) {
       return; // YouTube links are handled separately
     } else {
-      navigate(`/quizdetail/${contentUrl}`);
+      navigate(section.content_url); // For other URLs
     }
   };
 
@@ -147,7 +147,7 @@ const CoursePage = () => {
                       ) : (
                         <button
                           className={`text-blue-500 underline`}
-                          onClick={() => handleNavigateContent(section.content_url)}
+                          onClick={() => handleNavigateContent(section)}
                         >
                           View Content
                         </button>

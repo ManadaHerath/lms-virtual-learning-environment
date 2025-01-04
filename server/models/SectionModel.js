@@ -42,7 +42,7 @@ const Section = {
 
         // Fetch all sections for the course
         const sectionsQuery = `
-            SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id
+            SELECT s.id, s.title, s.description, s.content_url, s.week_id, s.order_id,s.type_id,s.quiz_id
             FROM Section s
             WHERE s.course_id = ?
             ORDER BY s.week_id, s.order_id
