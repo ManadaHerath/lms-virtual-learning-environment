@@ -20,9 +20,10 @@ import AdminProtectedRoute from "./admin/AdminProtectedRoute";
 import SignUp from "./user/SignUp";
 import AdminCoursePage from "./admin/AdminCoursePage";
 import CreateSection from "./admin/CreateSection";
+import QuizDetail from "./user/QuizDetail";
+import Quiz from "./user/Quiz";
 import CourseDetailPage from "./admin/CourseDetailPage";
 import UserProtectedRoute from "./user/UserProtectedRoute";
-
 import Registration from "./user/Registration";
 import CreateQuiz from "./admin/CreateQuiz";
 import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
@@ -35,17 +36,19 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          
-          <Route element={<UserProtectedRoute />}>
+            
+         <Route element={<UserProtectedRoute />}>
           <Route path="/register" element={<Registration />} />
-            <Route path="/" element={<CourseList />} />
-            <Route path="/courses/:courseId" element={<CourseDetail />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/course/:courseId" element={<CoursePage />} />
-            <Route path="/user/profile" element={<Profile />} />
-            <Route path="/user/mycourse" element={<MyCourse />} />
-            <Route path="/user/payments" element={<PaymentHistory />} />
-          </Route>
+          <Route path="/quizdetail/:quizId" element={<QuizDetail />} />
+          <Route path="/quiz/:quizId" element={<Quiz />} />
+          <Route path="/" element={<CourseList />} />
+          <Route path="/courses/:courseId" element={<CourseDetail />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/course/:courseId" element={<CoursePage />} />
+          <Route path="/user/profile" element={<Profile />} />
+          <Route path="/user/mycourse" element={<MyCourse />} />
+          <Route path="/user/payments" element={<PaymentHistory />} />
+        </Route>
 
           <Route path="/admin/create-quiz" element={<CreateQuiz />} />
           {/* Admin Routes */}

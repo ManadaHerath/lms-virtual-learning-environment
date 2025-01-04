@@ -36,12 +36,15 @@ const QuizController = {
 
   submitQuiz: async (req, res) => {
     try {
-      const { quiz_id, student_nic, responses } = req.body;
+      const { quiz_id, responses } = req.body;
+      const { nic } = req.user;
+      const student_nic = nic;
 
       let totalMarks = 0;
 
       for (const response of responses) {
         const { question_id, response_text, uploaded_file_url } = response;
+        console.log(response_text);
 
         // Save response
         const isAutoGraded = response_text ? 1 : 0; // MCQs are auto-graded
@@ -72,6 +75,7 @@ const QuizController = {
   getQuizDetails: async (req, res) => {
     try {
       const { quizId } = req.params;
+      
 
       // Fetch quiz details
       const quiz = await QuizModel.getQuizById(quizId);
