@@ -33,7 +33,7 @@ const AuthController = {
     try {
       const {
         nic, first_name, last_name, email, password, telephone, street_address,
-        city, province, postal_code, country, date_of_birth, batch
+        city, province, postal_code, date_of_birth, batch
       } = req.body;
   
       console.log("Request body received:", req.body);
@@ -56,7 +56,7 @@ const AuthController = {
       console.log("Creating user in the database...");
       const newUser = {
         nic, first_name, last_name, email, password: hashedPassword, telephone,
-        street_address, city, province, postal_code, country, date_of_birth,
+        street_address, city, province, postal_code, date_of_birth,
         batch,  image_url
       };
   

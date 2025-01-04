@@ -37,7 +37,7 @@ const UserModel = {
       city,
       province,
       postal_code,
-      country,
+      
       date_of_birth,
       batch,
       
@@ -56,15 +56,15 @@ const UserModel = {
 
       // Insert into Address table
       const addressSql = `
-        INSERT INTO Address (street_address, city, province, postal_code, country)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO Address (street_address, city, province, postal_code)
+        VALUES (?, ?, ?, ?)
       `;
       const [addressResult] = await connection.query(addressSql, [
         street_address,
         city,
         province,
         postal_code,
-        country,
+        
       ]);
       const address_id = addressResult.insertId;
 
@@ -164,7 +164,7 @@ const UserModel = {
       SELECT 
         u.nic, u.first_name, u.last_name, u.email, u.telephone, u.date_of_birth, 
         u.batch, u.image_url, u.status,
-        a.street_address, a.city, a.province, a.postal_code, a.country
+        a.street_address, a.city, a.province, a.postal_code
       FROM User u
       LEFT JOIN Address a ON u.address_id = a.address_id
       WHERE u.nic = ?
@@ -188,7 +188,7 @@ const UserModel = {
       city,
       province,
       postal_code,
-      country,
+      
     } = updatedData;
 
     try {
@@ -199,7 +199,7 @@ const UserModel = {
       // Update Address table
       const updateAddressQuery = `
         UPDATE Address
-        SET street_address = ?, city = ?, province = ?, postal_code = ?, country = ?
+        SET street_address = ?, city = ?, province = ?, postal_code = ?
         WHERE address_id = (SELECT address_id FROM User WHERE nic = ?)
       `;
       await connection.query(updateAddressQuery, [
@@ -207,7 +207,7 @@ const UserModel = {
         city,
         province,
         postal_code,
-        country,
+        
         nic,
       ]);
 

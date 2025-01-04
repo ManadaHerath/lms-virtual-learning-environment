@@ -14,7 +14,7 @@ const Signup = () => {
     city: "",
     province: "",
     postal_code: "",
-    country: "",
+    
     date_of_birth: "",
     batch: "",
     

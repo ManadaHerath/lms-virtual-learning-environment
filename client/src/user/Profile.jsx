@@ -146,7 +146,7 @@ const Profile = () => {
           </div>
           <div className="mb-2">
             <strong>Address:</strong> {user.street_address}, {user.city},{" "}
-            {user.province}, {user.postal_code}, {user.country}
+            {user.province}, {user.postal_code}
           </div>
           <button
             className="p-2 bg-blue-500 text-white rounded"
@@ -220,14 +220,7 @@ const Profile = () => {
             placeholder="Postal Code"
             className="w-full p-2 border rounded"
           />
-          <input
-            type="text"
-            name="country"
-            value={formData.country}
-            onChange={handleInputChange}
-            placeholder="Country"
-            className="w-full p-2 border rounded"
-          />
+          
           <button
             type="submit"
             className="p-2 bg-green-500 text-white rounded"
