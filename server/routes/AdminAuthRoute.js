@@ -19,18 +19,22 @@ router.get("/check-auth", AuthMiddleware(["admin"]), AdminController.checkAuth);
 
 //course management
 router.post('/upload-course', AuthMiddleware(['admin']), upload.single('image'), (req, res, next) => {
-  console.log('Upload course endpoint hit');
-  console.log('Uploaded file details:', req.file);
+  
+  
   next(); // Pass control to AdminController.uploadCourse
 }, CourseController.createCourse);
+
 router.post('/upload-section', AuthMiddleware(["admin"]), SectionController.createSection);
 router.get('/course/:courseId/sections', AuthMiddleware(['admin']), SectionController.getSectionsForAdmin);
 router.get('/course/:courseId/:weekId/maxorder', AuthMiddleware(['admin']), SectionController.getMaxOrderByCourseId);
 router.post('/section', AuthMiddleware(['admin']), SectionController.createSection)
+router.delete('/section/:sectionId', AuthMiddleware(['admin']), SectionController.deleteSection);
+
+//coursess
 router.get('/course/:courseId', AuthMiddleware(['admin']), CourseController.getCourseById);
 router.delete('/course/:courseId', AuthMiddleware(['admin']), CourseController.deleteCourseById);
-router.delete('/section/:sectionId', AuthMiddleware(['admin']), SectionController.deleteSection)
-//get all courses
+router.put('/course/:courseId', AuthMiddleware(['admin']), CourseController.updateCourse);
+router.put('/course/:courseId/image', AuthMiddleware(['admin']), upload.single('image'), CourseController.updateCourseImage);
 router.get("/courses",AuthMiddleware(['admin']) ,CourseController.getAllCourses);
 
 

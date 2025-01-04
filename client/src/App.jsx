@@ -27,7 +27,7 @@ import UserProtectedRoute from "./user/UserProtectedRoute";
 import Registration from "./user/Registration";
 import CreateQuiz from "./admin/CreateQuiz";
 import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
-
+import AdminEditCourse from "./admin/AdminEditCourse";
 
 function App() {
   return (
@@ -76,6 +76,10 @@ function App() {
                     <Route
                       path="course-detail/:courseId"
                       element={<CourseDetailPage />}
+                    />
+                    <Route
+                      path="editcourse/:courseId"
+                      element={<AdminEditCourse />}
                     />
                   </Routes>
                 </AdminLayout>
