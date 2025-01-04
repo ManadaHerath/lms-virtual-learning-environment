@@ -15,7 +15,6 @@ import AdminLayout from "./admin/AdminLayout";
 import AdminDashboard from "./admin/AdminDashboard";
 import CourseManagement from "./admin/CourseManagement";
 import StudentManagement from "./admin/StudentManagement";
-import PhysicalPayment from "./admin/PhysicalPayment";
 import store from "./app/store";
 import AdminProtectedRoute from "./admin/AdminProtectedRoute";
 import SignUp from "./user/SignUp";
@@ -25,7 +24,6 @@ import CourseDetailPage from "./admin/CourseDetailPage";
 import UserProtectedRoute from "./user/UserProtectedRoute";
 
 import Registration from "./user/Registration";
-
 import CreateQuiz from "./admin/CreateQuiz";
 import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
 
@@ -36,10 +34,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
-
           <Route path="/signup" element={<SignUp />} />
-          
-
           <Route element={<UserProtectedRoute />}>
           <Route path="/register" element={<Registration />} />
             <Route path="/" element={<CourseList />} />
@@ -65,9 +60,7 @@ function App() {
                     <Route path="courses" element={<CourseManagement />} />
                     <Route path="/upload-course" element={<UploadCourse />} />
                     <Route path="student" element={<StudentManagement />} />
-                      <Route path="/student/register/:nic" element={<ApproveRejectRegitration />} />
-                  <Route path="payment" element={<PhysicalPayment />} />
-                    <Route path="payment" element={<PhysicalPayment />} />
+                    <Route path="/student/register/:nic" element={<ApproveRejectRegitration />} />
                     <Route
                       path="create_section/:courseId/:weekId"
                       element={<CreateSection />}

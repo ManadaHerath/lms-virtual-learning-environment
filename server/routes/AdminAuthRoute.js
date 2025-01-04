@@ -45,7 +45,9 @@ router.patch('/students', AuthMiddleware(["admin"]), AdminController.updateStude
 //delete student by ID
 router.delete('/students', AuthMiddleware(["admin"]), UserController.deleteUser);
 // Get enrolled students by course ID
-router.get('/students/:courseId', AuthMiddleware(["admin"]), AdminController.getEnrolledStudents);
+router.get('/studentsby/:courseId', AuthMiddleware(["admin"]), AdminController.getEnrolledStudents);
+// Physical payment
+router.post('/student/payment', AuthMiddleware(["admin"]), AdminController.addPayment);
 
 
 //Registration Management

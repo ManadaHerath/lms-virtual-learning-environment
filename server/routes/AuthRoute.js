@@ -33,8 +33,6 @@ router.get("/check-auth", AuthMiddleware("student"), AuthController.checkAuth);
 
 router.get("/courses",AuthMiddleware(['student','admin']) ,CourseController.userGetAllCourses);
 
-
-
 // Route to fetch course details by ID
 router.get("/courses/:courseId", AuthMiddleware(["student"]), AuthController.getCourseById);
 

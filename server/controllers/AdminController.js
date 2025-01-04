@@ -212,14 +212,28 @@ const AdminController = {
   },
 
   // Get enrolled students by course ID
-  async getEnrolledStudents(req, res) {
+  getEnrolledStudents: async (req, res) => {
+  
     try {
-      const students = await AdminModel.getEnrolledStudents(req.params.courseId, req.params.paid);
+      const students = await AdminModel.getEnrolledStudents(req.params.courseId);
       res.status(200).json({ students });
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching students:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   },
+
+  // Physical payment
+  addPayment: async (req, res) => {
+    try {
+      const enrollments = req.body.enrollments;
+      await AdminModel.addPayment(enrollments);
+      res.status(201).json({ message: "Payment added successfully" });
+    } catch (error) {
+      console.error("Error adding payment:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+  
 };
 module.exports = AdminController;

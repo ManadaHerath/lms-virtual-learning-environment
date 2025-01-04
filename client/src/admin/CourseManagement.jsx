@@ -81,7 +81,6 @@ const CourseManagement = () => {
               <div className="flex justify-between items-center">
                 <button
                   className="text-sm font-medium text-blue-600 hover:underline"
-                  // onclick navigate to the course detail page
                   onClick={(e) => {
                     e.preventDefault();
                     navigate(`/admin/course-detail/${course.course_id}`);
