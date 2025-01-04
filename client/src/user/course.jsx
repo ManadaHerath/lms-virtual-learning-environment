@@ -9,24 +9,20 @@ const CoursePage = () => {
 
   const [weeks, setWeeks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [paymentType, setPaymentType] = useState(null); // Update to paymentType
+  const [paymentType, setPaymentType] = useState(null);
   const [enrollmentId, setEnrollmentId] = useState(null);
-  const [coursePrice, setCoursePrice] = useState(0); // To store the course price
+  const [coursePrice, setCoursePrice] = useState(0);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchSections = async () => {
       try {
-
         const response = await api.get(`/course/${courseId}/sections`);
-
-        if (!response == 200) {
+        if (response.status !== 200) {
           throw new Error("Failed to fetch course sections");
         }
-
-        const data = await response.json();
-        const { weeks, paymentType, enrollment_id, price } = data;  
-
+        const data = await response.data;
+        const { weeks, paymentType, enrollment_id, price } = data;
         setWeeks(weeks);
         setPaymentType(paymentType);
         setEnrollmentId(enrollment_id);
@@ -49,22 +45,14 @@ const CoursePage = () => {
   };
 
   const handleNavigateContent = (contentUrl) => {
-    console.log("Content URL:", contentUrl);
-    console.log("Type of contentUrl:", typeof contentUrl); // Logs the type of contentUrl
-  
     if (typeof contentUrl === "number") {
-      console.log("Navigating to quiz detail...");
       navigate(`/quizdetail/${contentUrl}`);
     } else if (isYouTubeLink(contentUrl)) {
-      console.log("This is a YouTube link. Handling separately.");
-      return; // Handle YouTube content separately
+      return; // YouTube links are handled separately
     } else {
-      console.log("Opening external link:", contentUrl);
       navigate(`/quizdetail/${contentUrl}`);
-      
     }
   };
-  
 
   const handleCheckout = () => {
     navigate(`/checkout?courseId=${courseId}&enrollmentId=${enrollmentId}`);
@@ -72,19 +60,15 @@ const CoursePage = () => {
 
   const handleMarkAsDone = async (sectionId, currentStatus) => {
     try {
-
       const newStatus = currentStatus === 1 ? 0 : 1;
-
       const response = await api.patch(
         `/course/${enrollmentId}/section/${sectionId}`,
-        { mark_as_done: newStatus });
-
-      if (!response.status !== 200) {
+        { mark_as_done: newStatus }
+      );
+      if (response.status !== 200) {
         throw new Error("Failed to update section status");
       }
-
       const { updatedSection } = await response.data;
-
       setWeeks((prevWeeks) =>
         prevWeeks.map((week) => ({
           ...week,
@@ -110,8 +94,6 @@ const CoursePage = () => {
 
   return (
     <div className="container mx-auto p-4">
-      
-
       <div className="p-4 mb-6 border rounded-lg bg-gray-50">
         {paymentType === "online" ? (
           <div className="text-green-500 font-semibold">You have paid for this course!</div>
@@ -147,9 +129,7 @@ const CoursePage = () => {
 
                       {isYouTubeLink(section.content_url) ? (
                         <div className="text-gray-500">
-                          {paymentType !== "online" ? (
-                            <span>Video locked</span>
-                          ) : (
+                          {paymentType === "online" ? (
                             <YouTube
                               videoId={extractYouTubeVideoId(section.content_url)}
                               opts={{
@@ -160,17 +140,16 @@ const CoursePage = () => {
                                 },
                               }}
                             />
+                          ) : (
+                            <span>Video locked</span>
                           )}
                         </div>
                       ) : (
                         <button
-                          className={`text-blue-500 underline ${
-                            paymentType !== "online" ? "pointer-events-none" : ""
-                          }`}
-                          disabled={paymentType !== "online"}
+                          className={`text-blue-500 underline`}
                           onClick={() => handleNavigateContent(section.content_url)}
                         >
-                          {paymentType !== "online" ? "Locked" : "View Content"}
+                          View Content
                         </button>
                       )}
                     </div>

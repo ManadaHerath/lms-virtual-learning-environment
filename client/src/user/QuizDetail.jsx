@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import api from "../redux/api";
 
 const QuizDetails = () => {
   const { quizId } = useParams();
@@ -14,29 +15,15 @@ const QuizDetails = () => {
   useEffect(() => {
     const fetchQuizInfo = async () => {
       try {
-        const accessToken = sessionStorage.getItem("accessToken");
 
-        if (!accessToken) {
-          throw new Error("User is not authenticated");
-        }
+        const response = await api.get(
+          `/user/quiz/${quizId}/info`);
 
-        const response = await fetch(
-          `http://localhost:3000/user/quiz/${quizId}/info`,
-          {
-            method: "GET",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
+        if (!response.status == 200) {
           throw new Error("Failed to fetch quiz details");
         }
 
-        const data = await response.json();
+        const data = await response.data;
 
         if (!data.success) {
           throw new Error(data.message || "Quiz not found");

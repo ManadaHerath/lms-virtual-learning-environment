@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import api from "../redux/api";
 
 const QuizPage = () => {
   const { quizId } = useParams(); // Get quizId from the URL
@@ -38,13 +39,7 @@ const QuizPage = () => {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const token = localStorage.getItem("authToken"); // Retrieve token from secure storage
-        const response = await axios.get(`http://localhost:3000/user/quiz/${quizId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        });
+        const response = await api.get(`/user/quiz/${quizId}`);
 
         if (response.data.success) {
           setQuiz(response.data.quiz);
@@ -74,8 +69,6 @@ const QuizPage = () => {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("authToken");
-      const studentNic = localStorage.getItem("studentNIC"); // Ensure NIC is available
 
       // Upload files for essay questions before submitting the quiz
       const responsesWithFileUrls = await Promise.all(
@@ -101,20 +94,10 @@ const QuizPage = () => {
 
       const payload = {
         quiz_id: quizId,
-        student_nic: studentNic,
         responses: responsesWithFileUrls,
       };
 
-      const response = await axios.post(
-        "http://localhost:3000/user/submit-quiz", // Adjust API URL as needed
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await api.post("/user/submit-quiz", payload);
 
       if (response.data.success) {
         setMessage(`Quiz submitted successfully! Total Marks: ${response.data.totalMarks}`);
