@@ -2,6 +2,8 @@ const pool = require("../config/dbconfig");
 
 const UserModel = {
   // Find user by email
+  
+
   findByEmail: async (email) => {
     const query = "select userLogin(?);";
     try {

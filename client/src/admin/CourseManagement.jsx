@@ -66,7 +66,7 @@ const CourseManagement = () => {
         {courses.length > 0 ? (
           courses.map((course) => (
             <Link
-              to={`/admin/course/${course.course_id}`} // Navigate to course detail page
+              to={`/admin/editcourse/${course.course_id}`} // Navigate to course detail page
               key={course.course_id}
               className="block bg-white border border-gray-200 rounded-lg p-4 shadow-md transition-all duration-200 hover:shadow-lg hover:border-gray-400"
             >
