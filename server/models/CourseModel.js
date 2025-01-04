@@ -1,4 +1,5 @@
 const pool = require("../config/dbconfig");
+const { deleteSectionById } = require("./SectionModel");
 const { getCourseById } = require("./UserModel");
 const CourseModel={
     createCourse:async(courseData)=>{
@@ -68,7 +69,32 @@ const CourseModel={
         await connection.release();
       }
     }
+    ,
+    deleteCourseById:async(course_id)=>{
+      const connection = await pool.getConnection();
+      try {
+        await connection.beginTransaction();
+        
+       
+        const query = `
+          delete from Course where course_id=?
+        `;
 
+        const [result]=await connection.execute(query, [course_id]);
+        
+    
+        
+    
+        await connection.commit();
+        return result;
+      } catch (error) {
+        await connection.rollback();
+        console.error('Error on Coure deleting', error.message);
+        throw error;
+      } finally {
+        await connection.release();
+      }
+    }
 
 
 
