@@ -35,6 +35,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          
           <Route element={<UserProtectedRoute />}>
           <Route path="/register" element={<Registration />} />
             <Route path="/" element={<CourseList />} />
@@ -46,7 +47,7 @@ function App() {
             <Route path="/user/payments" element={<PaymentHistory />} />
           </Route>
 
-  <Route path="/admin/create-quiz" element={<CreateQuiz />} />
+          <Route path="/admin/create-quiz" element={<CreateQuiz />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLog />} />
           {/* Protected Admin Routes */}
