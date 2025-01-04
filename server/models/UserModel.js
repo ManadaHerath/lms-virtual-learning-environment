@@ -121,18 +121,18 @@ const UserModel = {
     }
   },
   userGetAllCourses: async (batch, type) => {
-    let query = "SELECT course_id,price, CONCAT(course_type, ' ', batch) AS name, image_url FROM Course where started_at <= CURDATE() and ended_at >= CURDATE()";
+    let query = "SELECT course_id,price, CONCAT(course_type, ' ', batch) AS name, image_url FROM Course where started_at <= CURDATE() and ended_at >= CURDATE() ";
     const queryParams = [];
   
     if (batch || type) {
-      query += " WHERE";
+      
       if (batch) {
-        query += " batch = ?";
+        query += "AND batch = ?";
         queryParams.push(batch);
       }
       if (type) {
-        if (queryParams.length) query += " AND";
-        query += " course_type = ?";
+        
+        query += "AND course_type = ?";
         queryParams.push(type);
       }
     }
