@@ -26,7 +26,6 @@ const CoursePage = () => {
 
         const data = await response.json();
         const { weeks, paymentType, enrollment_id, price } = data;  
-        const { weeks, payment_status, enrollment_id, price } = await response.data;
 
         setWeeks(weeks);
         setPaymentType(paymentType);
