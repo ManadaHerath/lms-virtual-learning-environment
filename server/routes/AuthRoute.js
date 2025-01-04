@@ -5,6 +5,7 @@ const UserController = require("../controllers/UserController");
 const QuizController = require("../controllers/QuizController");
 const AuthMiddleware = require("../middleware/Authmiddleware");
 const RegistrationController = require("../controllers/RegistrationController");
+const CourseController = require("../controllers/CourseController");
 
 
 const router = express.Router();
@@ -27,21 +28,13 @@ router.post("/login", AuthController.loginUser);
 // Logout route
 router.get("/logout", AuthController.logoutUser);
 
-router.get("/courses", async (req, res) => {
-  const { batch, type } = req.query; // Extract filters from query parameters
-  try {
-    const courses = await AuthController.getAllCourses(batch, type);
-    res.status(200).json(courses);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: "Failed to fetch courses" });
-  }
-});
+// Check authentication status
+router.get("/check-auth", AuthMiddleware("student"), AuthController.checkAuth);
 
-
+router.get("/courses",AuthMiddleware(['student','admin']) ,CourseController.userGetAllCourses);
 
 // Route to fetch course details by ID
-router.get("/courses/:courseId", AuthController.getCourseById);
+router.get("/courses/:courseId", AuthMiddleware(["student"]), AuthController.getCourseById);
 
 // User profile route
 router.get("/profile", AuthMiddleware(["student", "admin"]), UserController.getProfile);
@@ -105,6 +98,8 @@ router.get(
 );
 
 router.post("/register", AuthMiddleware(["student", "admin"]),upload.single("image"), RegistrationController.uploadImage);
+router.put("/register", AuthMiddleware(["student", "admin"]),upload.single("image"), RegistrationController.updateImage);
+router.get('/register', AuthMiddleware(["admin",'student']), RegistrationController.getImageByNIC);
 
 
 

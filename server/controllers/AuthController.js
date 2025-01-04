@@ -97,7 +97,7 @@ const AuthController = {
     const accessToken = jwt.sign(
       { nic: user.nic, email: req.body.email,userType:"student" },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "15m" } // Expires in 15 minutes
+      { expiresIn: "2h" } // Expires in 15 minutes
     );
 
     // Generate Refresh Token (long-lived)
@@ -108,10 +108,10 @@ const AuthController = {
     );
 
     // Store Refresh Token in HttpOnly cookie
-    res.cookie("refreshToken", refreshToken, {
+    res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 2 * 60 * 60 * 1000, // 7 days
       sameSite: "strict",
     });
     res.cookie("accessToken", accessToken, {
@@ -122,9 +122,8 @@ const AuthController = {
     });
     // Send Access Token to client
     res.status(200).json({
-      message: "Login successful",
+      message: "Student Login successful",
       success: true,
-      
     });
     } catch (error) {
       res.status(500).send({ message: `Error in login: ${error.message}` });
@@ -135,6 +134,15 @@ const AuthController = {
   logoutUser: (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
     res.status(200).send({ message: "Logged out successfully", success: true });
+  },
+
+  // Check authentication status
+  checkAuth: async (req, res) => {
+    // Error detection
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    res.status(200).json({ success: true, user: req.user });
   },
 
   getAllCourses: async (batch, type) => {
@@ -150,8 +158,7 @@ const AuthController = {
 
   // Get course details by ID
   getCourseById: async (req, res) => {
-    const { courseId } = req.params;
-    
+    const { courseId } = req.params;    
     
     try {
       const course = await UserModel.getCourseById(courseId);

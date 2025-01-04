@@ -20,9 +20,9 @@ const UserController = {
 
   updateProfile: async (req, res) => {
     try {
+      
       const { nic } = req.user; // Extract NIC from JWT payload (added by AuthMiddleware)
       const updatedData = req.body;
-
       // Call the model to update the user details
       const result = await UserModel.updateUserProfile(nic, updatedData);
 
@@ -79,6 +79,22 @@ const UserController = {
     } catch (err) {
       console.error(err.message);
       res.status(500).json({ success: false, message: "Failed to fetch payment history" });
+    }
+  },
+  deleteUser: async (req, res) => {
+    try {
+      const { nic } = req.body; // Extract NIC from JWT payload (added by AuthMiddleware)
+      
+      const result = await UserModel.deleteUserProfile(nic);
+
+      if (!result) {
+        return res.status(400).json({ success: false, message: "Delete failed" });
+      }
+
+      res.status(200).json({ success: true, message: "Profile deleted successfully" });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).json({ success: false, message: "Failed to delete profile" });
     }
   }
 

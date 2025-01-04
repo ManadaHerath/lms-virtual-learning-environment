@@ -120,6 +120,30 @@ const UserModel = {
       throw err;
     }
   },
+  userGetAllCourses: async (batch, type) => {
+    let query = "SELECT course_id,price, CONCAT(course_type, ' ', batch) AS name, image_url FROM Course where started_at <= CURDATE() and ended_at >= CURDATE()";
+    const queryParams = [];
+  
+    if (batch || type) {
+      query += " WHERE";
+      if (batch) {
+        query += " batch = ?";
+        queryParams.push(batch);
+      }
+      if (type) {
+        if (queryParams.length) query += " AND";
+        query += " course_type = ?";
+        queryParams.push(type);
+      }
+    }
+  
+    try {
+      const [courses] = await pool.query(query, queryParams);
+      return courses;
+    } catch (err) {
+      throw err;
+    }
+  },
   
 
   // Fetch course details by ID
@@ -206,6 +230,33 @@ const UserModel = {
       throw err;
     }
   },
+  deleteUserProfile: async (nic) => {
+    
+
+    try {
+      // Start transaction
+      const connection = await pool.getConnection();
+      await connection.beginTransaction();
+
+     
+      
+
+      // Update User table
+      const deleteUserQuery = `
+        delete from User where nic = ?
+      `;
+      const [result] = await connection.query(deleteUserQuery, [
+        
+        nic
+      ]);
+
+      await connection.commit(); // Commit transaction
+      return result.affectedRows > 0;
+    } catch (err) {
+      console.error(err.message);
+      throw err;
+    }
+  },
 
   updateProfilePicture: async (nic, imageUrl) => {
     const query = `
@@ -230,7 +281,7 @@ const UserModel = {
       SELECT c.course_id, c.price, CONCAT(c.course_type, ' ', c.batch) AS name, c.image_url
       FROM Course c
       JOIN Enrollment e ON c.course_id = e.course_id
-      WHERE e.nic = ? 
+      WHERE e.nic = ? and started_at <= CURDATE() and ended_at >= CURDATE()
     `;
     try {
       const [courses] = await pool.query(query, [nic]);
@@ -324,7 +375,6 @@ const UserModel = {
     const query = `
       SELECT 
         p.payment_id,
-        p.payment_status,
         p.payment_type,
         p.amount,
         p.payment_date,

@@ -89,9 +89,15 @@ const AdminController = {
 
       const result = await AdminModel.createAdmin(newAdmin);
 
-      res.status(201).json({
+      res.status(200).json({
+        message: "Admin Created successful",
         success: true,
-        message: "Admin created successfully",
+        user: {
+          nic: admin.nic,
+          email: req.body.email,
+          userType: "admin",
+          name: `${admin.first_name} ${admin.last_name}`,
+        }
       });
     } catch (error) {
       console.error(error);
@@ -192,6 +198,7 @@ const AdminController = {
         req.body.nic,
         req.body.status
       );
+      
       res
         .status(200)
         .json({
@@ -203,5 +210,30 @@ const AdminController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
+
+  // Get enrolled students by course ID
+  getEnrolledStudents: async (req, res) => {
+  
+    try {
+      const students = await AdminModel.getEnrolledStudents(req.params.courseId);
+      res.status(200).json({ students });
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+
+  // Physical payment
+  addPayment: async (req, res) => {
+    try {
+      const enrollments = req.body.enrollments;
+      await AdminModel.addPayment(enrollments);
+      res.status(201).json({ message: "Payment added successfully" });
+    } catch (error) {
+      console.error("Error adding payment:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+  
 };
 module.exports = AdminController;

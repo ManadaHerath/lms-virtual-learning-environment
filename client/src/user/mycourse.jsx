@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import api from "../redux/api";
 
 const EnrolledCourses = () => {
   const [courses, setCourses] = useState([]);  // Ensure it's initialized as an empty array
@@ -10,26 +11,14 @@ const EnrolledCourses = () => {
   useEffect(() => {
     const fetchEnrolledCourses = async () => {
       try {
-        const accessToken = sessionStorage.getItem("accessToken");
 
-        if (!accessToken) {
-          throw new Error("User is not authenticated");
-        }
+        const response = await api.get("/user/enrolled");
 
-        const response = await fetch("http://localhost:3000/user/enrolled", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        if (!response.ok) {
+        if (!response == 200) {
           throw new Error("Failed to fetch enrolled courses");
         }
 
-        const data = await response.json();
+        const data = await response.data;
         setCourses(data || []);  // Ensure data.courses is handled correctly
       } catch (err) {
         setError(err.message);

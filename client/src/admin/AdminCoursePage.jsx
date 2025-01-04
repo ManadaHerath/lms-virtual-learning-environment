@@ -11,13 +11,36 @@ const AdminCoursePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [courseData,setCourseData]=useState();
+
+  const handleDeleteSection=async(sectionId)=>{
+    try {
+      const response = await api.delete(`/admin/section/${sectionId}`);
+      if (!response.data.success) {
+        throw new Error("Failed to delete section");
+      }
+      setWeeks(weeks.filter((w) => w.sections.some((s) => s.id !== sectionId)));
+      alert(response.data.message);
+      window.location.reload();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+  const handleCourseDelete=async()=>{
+    try {
+      const response = await api.delete(`/admin/course/${courseId}`);
+      if (!response.data.success) {
+        throw new Error("Failed to delete course");
+      }
+      alert(response.data.message);
+      navigate('/admin/courses');
+    } catch (err) {
+      setError(err.message);
+    }
+  }
   //fetch course details
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        
-
-
         const response = await api.get(`/admin/course/${courseId}`)
         
         if (!response.data.success) {
@@ -85,7 +108,8 @@ const AdminCoursePage = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Course Details</h1>
+        <h1 className="text-2xl font-bold">{courseData ? courseData.course_type+" "+ courseData.batch : "loading course name"}</h1>
+        <button className="bg-red-600 p-2" onClick={handleCourseDelete}>Delete course</button>
       </div>
   
       {courseData && courseData.weeks > 0 ? (
@@ -131,6 +155,7 @@ const AdminCoursePage = () => {
                             </a>
                           )
                         )}
+                        <button className="p-2 ml-3 rounded-lg bg-red-400" onClick={()=>{handleDeleteSection(section.id)}}>Delete Section</button>
                       </div>
                     ))
                   ) : (

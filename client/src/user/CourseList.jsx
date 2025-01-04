@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../redux/api";
 
 const CourseList = () => {
   const [courses, setCourses] = useState([]);
@@ -13,7 +13,7 @@ const CourseList = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/user/courses", {
+      const response = await api.get("/user/courses", {
         params: { batch, type }, // Send filters as query parameters
       });
       setCourses(response.data);
