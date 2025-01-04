@@ -37,7 +37,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
             
-          <Route element={<UserProtectedRoute />}>
+         <Route element={<UserProtectedRoute />}>
           <Route path="/register" element={<Registration />} />
           <Route path="/quizdetail/:quizId" element={<QuizDetail />} />
           <Route path="/quiz/:quizId" element={<Quiz />} />
