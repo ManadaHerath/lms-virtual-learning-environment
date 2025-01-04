@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import api from "../redux/api";
 
 const CreateQuiz = () => {
   const [quiz, setQuiz] = useState({
@@ -64,19 +65,10 @@ const CreateQuiz = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const accessToken = sessionStorage.getItem("accessToken");
-
     try {
-      const response = await fetch("http://localhost:3000/admin/create-quiz", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(quiz),
-      });
+      const response = await api.post("/admin/create-quiz", quiz);
 
-      const data = await response.json();
+      const data = await response.data;
       if (data.success) {
         alert("Quiz created successfully!");
         setQuiz({
@@ -227,7 +219,10 @@ const CreateQuiz = () => {
           Add Question
         </button>
 
-        <button type="submit" className="p-2 bg-blue-500 text-white rounded mt-4">
+        <button
+          type="submit"
+          className="p-2 bg-blue-500 text-white rounded mt-4"
+        >
           Create Quiz
         </button>
       </form>

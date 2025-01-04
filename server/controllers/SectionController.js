@@ -15,6 +15,7 @@ const SectionController = {
         }
 
         const { enrollment_id, paymentType, sections, price } = result;
+        console.log(paymentType);
 
         // Group sections by week and apply locked state based on payment type
         const weeks = sections.reduce((acc, section) => {
@@ -90,6 +91,23 @@ const SectionController = {
       res.status(400);
     }
   },
+  deleteSection:async(req,res)=>{
+    const {sectionId}=req.params;
+    try {
+      const result=await Section.deleteSectionById(sectionId);
+      if(result.affectedRows===0){
+        res.status(404).json({success:false ,message:"Section not found"})
+      }
+      else{
+        res.status(200).json({success:true ,message:"Section deleted successfully"})
+      }
+      
+    } catch (error) {
+      console.log(error)
+      res.status(400).json({success:false ,message:"Failed to delete section"})
+  }
+}
+  ,
 
   
 
@@ -147,13 +165,13 @@ unenrollCourse: async (req, res) => {
     const result = await Section.unenrollCourseById(enrollmentId);
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Enrollment not found" });
+      return res.status(404).json({success:false ,message: "Enrollment not found" });
     }
 
-    res.status(200).json({ message: "Successfully unenrolled from course" });
+    res.status(200).json({success:true , message: "Successfully unenrolled from course" });
   } catch (error) {
     console.error("Error unenrolling:", error);
-    res.status(500).json({ message: "Error unenrolling from course" });
+    res.status(500).json({success:false , message: "Error unenrolling from course" });
   }
 },
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from "../redux/api";
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -8,13 +9,13 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3000/user/login', {
+      const res = await api.post('/user/login', {
         "email":email,
         "password":password
     },{withCredentials:true});
     
     if(res.data.success){
-      window.location.href = '/'; // Change to your desired route
+      window.location.href = '/user/mycourse'; // Change to your desired route
     }else{
       
       prompt(res.data.message);

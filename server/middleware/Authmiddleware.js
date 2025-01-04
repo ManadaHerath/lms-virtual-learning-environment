@@ -6,7 +6,8 @@ const AuthMiddleware = (allowedRoles) => {
 
     try {
       const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
+      
+      // Check if the user's role is in the allowed roles
       if (!allowedRoles.includes(payload.userType)) {
         return res
           .status(403)
@@ -15,6 +16,7 @@ const AuthMiddleware = (allowedRoles) => {
 
       req.user = payload;
       next();
+
     } catch (error) {
       console.log("Auth error:", error.message);
       res.status(403).json({ success: false, message: "Token expired or invalid" });

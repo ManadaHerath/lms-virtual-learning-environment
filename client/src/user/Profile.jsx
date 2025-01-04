@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "../redux/api";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -10,26 +11,14 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const accessToken = sessionStorage.getItem("accessToken");
 
-        if (!accessToken) {
-          throw new Error("User is not authenticated");
-        }
+        const response = await api.get("/user/profile");
 
-        const response = await fetch("http://localhost:3000/user/profile", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        if (!response.ok) {
+        if (!response.status == 200) {
           throw new Error("Failed to fetch profile");
         }
 
-        const data = await response.json();
+        const data = await response.data;
         setUser(data.user);
         setFormData(data.user);
       } catch (err) {
@@ -45,25 +34,17 @@ const Profile = () => {
   };
 
   const handleFormSubmit = async (e) => {
+    
     e.preventDefault();
     try {
-      const accessToken = sessionStorage.getItem("accessToken");
+      
+      const response = await api.put('/user/editprofile',formData);
 
-      const response = await fetch("http://localhost:3000/user/editprofile", {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
+      if (!response.status == 200) {
         throw new Error("Failed to update profile");
       }
 
-      const data = await response.json();
+      const data = await response.data;
       alert(data.message);
       setEditMode(false);
     } catch (err) {
@@ -72,26 +53,17 @@ const Profile = () => {
   };
 
   const handlePictureChange = async () => {
+    const dataa = new FormData();
+    dataa.append("image", imageFile);
     try {
-      const accessToken = sessionStorage.getItem("accessToken");
 
-      const formData = new FormData();
-      formData.append("image", imageFile);
+      const response = await api.put("/user/profile/picture",dataa);
 
-      const response = await fetch("http://localhost:3000/user/profile/picture", {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
+      if (!response.status == 200) {
         throw new Error("Failed to update profile picture");
       }
 
-      const data = await response.json();
+      const data = await response.data;
       alert(data.message);
       setUser({ ...user, image_url: data.image_url });
       setImageFile(null);
@@ -102,23 +74,14 @@ const Profile = () => {
 
   const handlePictureRemove = async () => {
     try {
-      const accessToken = sessionStorage.getItem("accessToken");
 
-      const response = await fetch("http://localhost:3000/user/profile/picture", {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ remove: true }),
-      });
+      const response = await api.put("/user/profile/picture", { remove: true });
 
-      if (!response.ok) {
+      if (!response.status == 200) {
         throw new Error("Failed to remove profile picture");
       }
 
-      const data = await response.json();
+      const data = await response.data;
       alert(data.message);
       setUser({ ...user, image_url: null });
     } catch (err) {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import api from "../redux/api";
 
 const PaymentHistory = () => {
   const [payments, setPayments] = useState([]);
@@ -7,25 +8,14 @@ const PaymentHistory = () => {
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const accessToken = sessionStorage.getItem("accessToken");
 
-        if (!accessToken) {
-          throw new Error("User is not authenticated");
-        }
+        const response = await api.get("/user/payments");
 
-        const response = await fetch("http://localhost:3000/user/payments", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        if (!response.ok) {
+        if (!response.status == 200) {
           throw new Error("Failed to fetch payments");
         }
 
-        const data = await response.json();
+        const data = await response.data;
         setPayments(data.payments);
       } catch (err) {
         setError(err.message);
@@ -47,7 +37,6 @@ const PaymentHistory = () => {
           <thead>
             <tr className="bg-gray-100">
               <th className="border border-gray-200 p-2">Payment ID</th>
-              <th className="border border-gray-200 p-2">Status</th>
               <th className="border border-gray-200 p-2">Type</th>
               <th className="border border-gray-200 p-2">Amount</th>
               <th className="border border-gray-200 p-2">Date</th>
@@ -58,7 +47,6 @@ const PaymentHistory = () => {
             {payments.map((payment) => (
               <tr key={payment.payment_id} className="text-center">
                 <td className="border border-gray-200 p-2">{payment.payment_id}</td>
-                <td className="border border-gray-200 p-2">{payment.payment_status}</td>
                 <td className="border border-gray-200 p-2">{payment.payment_type}</td>
                 <td className="border border-gray-200 p-2">Rs.{payment.amount}</td>
                 <td className="border border-gray-200 p-2">{new Date(payment.payment_date).toISOString().split('T')[0]}</td>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import api from "../redux/api";
 
 const CourseDetail = () => {
   const { courseId } = useParams(); // Get courseId from URL
@@ -11,27 +12,18 @@ const CourseDetail = () => {
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
-        const accessToken = sessionStorage.getItem("accessToken");
 
-        if (!accessToken) {
-          throw new Error("User is not authenticated");
-        }
 
         // Fetch course details and enrollment status from the backend
-        const response = await fetch(`http://localhost:3000/user/courses/${courseId}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const response = await api.get(`/user/courses/${courseId}`);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch course details");
+        console.log(response)
+
+        if (!response.status == 200) {
+          throw new Error("Failed to fetch courses details");
         }
 
-        const data = await response.json();
+        const data = await response.data;
         setCourse(data); // Set course details
         setEnrolled(data.enrolled); // Set enrollment status from backend response
       } catch (err) {
@@ -46,22 +38,14 @@ const CourseDetail = () => {
 
   const handleEnroll = async () => {
     try {
-      const accessToken = sessionStorage.getItem("accessToken");
 
-      const response = await fetch(`http://localhost:3000/user/enroll/${courseId}`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await api.post(`/user/enroll/${courseId}`);
 
-      if (!response.ok) {
+      if (!response.status == 200) {
         throw new Error("You have already enrolled");
       }
 
-      const data = await response.json();
+      const data = await response.data;
       console.log(data);
       alert(data.message);
 
