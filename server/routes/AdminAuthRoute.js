@@ -36,7 +36,9 @@ router.get('/students/:id', AuthMiddleware(["admin"]), AdminController.getStuden
 // Update student status by ID
 router.patch('/students', AuthMiddleware(["admin"]), AdminController.updateStudentStatus);
 // Get enrolled students by course ID
-router.get('/students/:courseId', AuthMiddleware(["admin"]), AdminController.getEnrolledStudents);
+router.get('/studentsby/:courseId', AuthMiddleware(["admin"]), AdminController.getEnrolledStudents);
+// Physical payment
+router.post('/student/payment', AuthMiddleware(["admin"]), AdminController.addPayment);
 
 
 // Admin routes

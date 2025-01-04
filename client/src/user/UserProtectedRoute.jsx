@@ -6,7 +6,7 @@ import { checkAuth } from "../features/userAuth/authSlice";
 
 const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
   const dispatch = useDispatch();
-  const { user, authInitialized, status } = useSelector((state) => state.auth);
+  const { user, authInitialized, status } = useSelector((state) => state.studentAuth);
 
   useEffect(() => {
     // Check auth status only if it hasn't been initialized

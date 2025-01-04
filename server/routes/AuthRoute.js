@@ -41,8 +41,6 @@ router.get("/courses", async (req, res) => {
   }
 });
 
-
-
 // Route to fetch course details by ID
 router.get("/courses/:courseId", AuthController.getCourseById);
 

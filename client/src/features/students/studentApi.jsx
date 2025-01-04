@@ -28,12 +28,11 @@ export const deactivateStudentStatusAPI = async (id, status) => {
 };
 
 // Fetch Enrolled + paid or non paid students of a course by courseId
-export const fetchEnrolledStudentsAPI = async (courseId, paid) => {
+export const fetchEnrolledStudentsAPI = async (courseId) => {
   try {
-    const response = await api.get(`/admin/students/${courseId}`, {
-      params: { paid },
-    });
+    const response = await api.get(`/admin/studentsby/${courseId}`);
     return response.data; // Return the data on successful response
+
   } catch (error) {
     // Handle API errors
     console.error("Error fetching students:", error);

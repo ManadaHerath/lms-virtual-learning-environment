@@ -59,7 +59,7 @@ const initialState = {
   authInitialized: false,
 };
 
-const authSlice = createSlice({
+const studentAuthSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
@@ -151,5 +151,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, authSuccess, authFailure } = authSlice.actions;
-export default authSlice.reducer;
+export const { clearError, authSuccess, authFailure } = studentAuthSlice.actions;
+export default studentAuthSlice.reducer;

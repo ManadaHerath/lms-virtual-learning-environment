@@ -15,8 +15,8 @@ export const deactivateStudentStatus = createAsyncThunk(
 
 export const fetchEnrolledStudents = createAsyncThunk(
   "students/fetchEnrolled",
-  async (courseId, paid) => {
-    return await fetchEnrolledStudentsAPI(courseId, paid); // Centralized API logic
+  async (courseId) => {
+    return await fetchEnrolledStudentsAPI(courseId); // Centralized API logic
   }
 );
 

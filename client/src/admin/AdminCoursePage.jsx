@@ -15,9 +15,6 @@ const AdminCoursePage = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        
-
-
         const response = await api.get(`/admin/course/${courseId}`)
         
         if (!response.data.success) {
