@@ -54,7 +54,7 @@ function App() {
                       element={<QuizDetail />}
                     />
                     <Route
-                      path="/quizreveiw/:quizId"
+                      path="/quizreview/:quizId"
                       element={<QuizReview />}
                     />
                     <Route path="/quiz/:quizId" element={<Quiz />} />
