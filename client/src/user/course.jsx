@@ -95,7 +95,7 @@ const CoursePage = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="p-4 mb-6 border rounded-lg bg-gray-50">
-        {paymentType === "online" ? (
+        {paymentType === "online" || paymentType === "physical" ? (
           <div className="text-green-500 font-semibold">You have paid for this course!</div>
         ) : (
           <div>
@@ -127,7 +127,11 @@ const CoursePage = () => {
                       <h3 className="text-lg font-bold">{section.title}</h3>
                       <p className="text-sm">{section.description}</p>
 
-                      {isYouTubeLink(section.content_url) ? (
+                      {paymentType === null ? (
+                        <div className="text-gray-500">
+                          <span>Content locked. Please proceed to checkout to unlock.</span>
+                        </div>
+                      ) : isYouTubeLink(section.content_url) ? (
                         <div className="text-gray-500">
                           {paymentType === "online" ? (
                             <YouTube
@@ -156,13 +160,13 @@ const CoursePage = () => {
 
                     <button
                       className={`px-4 py-2 rounded-lg font-semibold ${
-                        paymentType !== "online"
+                        paymentType !== "online" || paymentType === null
                           ? "bg-gray-500 text-white cursor-not-allowed"
                           : section.mark_as_done === 1
                           ? "bg-green-100 text-black"
                           : "bg-blue-100 text-black"
                       }`}
-                      disabled={paymentType !== "online"}
+                      disabled={paymentType !== "online" || paymentType === null}
                       onClick={() =>
                         paymentType === "online" &&
                         handleMarkAsDone(section.id, section.mark_as_done)
