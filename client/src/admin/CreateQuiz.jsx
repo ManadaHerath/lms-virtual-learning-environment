@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import api from "../redux/api";
+import axios from "axios";
+import { useDropzone } from "react-dropzone";
 
 const CreateQuiz = () => {
   const [quiz, setQuiz] = useState({
@@ -21,6 +23,7 @@ const CreateQuiz = () => {
   });
 
   const [currentOption, setCurrentOption] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const handleInputChange = (e) => {
     setQuiz({ ...quiz, [e.target.name]: e.target.value });
@@ -62,12 +65,46 @@ const CreateQuiz = () => {
     });
   };
 
+  const handleImageUpload = async (file) => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "my_first_upload"); // Replace with your Cloudinary upload preset
+    formData.append("cloud_name", "dxxa198zw"); // Replace with your Cloudinary cloud name
+
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/dxxa198zw/image/upload",
+        formData
+      );
+      const imageUrl = response.data.secure_url;
+      setCurrentQuestion({ ...currentQuestion, question_image_url: imageUrl });
+      alert("Image uploaded successfully!");
+    } catch (error) {
+      console.error(error.message);
+      alert("Failed to upload image. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onDrop = (acceptedFiles) => {
+    if (acceptedFiles.length > 0) {
+      handleImageUpload(acceptedFiles[0]);
+    }
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: "image/*",
+    multiple: false,
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await api.post("/admin/create-quiz", quiz);
-
       const data = await response.data;
       if (data.success) {
         alert("Quiz created successfully!");
@@ -114,7 +151,6 @@ const CreateQuiz = () => {
           name="open_time"
           value={quiz.open_time}
           onChange={handleInputChange}
-          placeholder="Open Time"
           className="w-full p-2 border rounded"
           required
         />
@@ -123,7 +159,6 @@ const CreateQuiz = () => {
           name="close_time"
           value={quiz.close_time}
           onChange={handleInputChange}
-          placeholder="Close Time"
           className="w-full p-2 border rounded"
           required
         />
@@ -141,7 +176,6 @@ const CreateQuiz = () => {
           name="review_available_time"
           value={quiz.review_available_time}
           onChange={handleInputChange}
-          placeholder="Review Availability Time"
           className="w-full p-2 border rounded"
         />
 
@@ -153,14 +187,21 @@ const CreateQuiz = () => {
           placeholder="Question Text"
           className="w-full p-2 border rounded"
         />
-        <input
-          type="text"
-          name="question_image_url"
-          value={currentQuestion.question_image_url}
-          onChange={handleQuestionChange}
-          placeholder="Image URL (Optional)"
-          className="w-full p-2 border rounded"
-        />
+        <div {...getRootProps()} className="border p-4 text-center">
+          <input {...getInputProps()} />
+          <p>
+            {uploading
+              ? "Uploading..."
+              : "Drag 'n' drop an image here, or click to select an image"}
+          </p>
+        </div>
+        {currentQuestion.question_image_url && (
+          <img
+            src={currentQuestion.question_image_url}
+            alt="Uploaded"
+            className="w-32 h-32 object-cover mt-2"
+          />
+        )}
         <select
           name="question_type"
           value={currentQuestion.question_type}
