@@ -35,45 +35,48 @@ const CourseManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-200 flex items-center">
-          <Book className="w-6 h-6 mr-2 text-blue-400" />
-          Course Management
-        </h1>
-        <button
-          onClick={() => navigate("/admin/upload-course")}
-          className="flex items-center px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
-        >
-          <PlusCircle className="w-5 h-5 mr-2" />
-          Create Course
-        </button>
-      </div>
+      {/* Sticky Header and Filters */}
+      <div className="sticky top-0 bg-gray-900/95 backdrop-blur-sm z-10 pb-6">
+        {/* Header */}
+        <div className="flex justify-between items-center pt-6">
+          <h1 className="text-2xl font-semibold text-gray-200 flex items-center">
+            <Book className="w-6 h-6 mr-2 text-blue-400" />
+            Course Management
+          </h1>
+          <button
+            onClick={() => navigate("/admin/upload-course")}
+            className="flex items-center px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
+          >
+            <PlusCircle className="w-5 h-5 mr-2" />
+            Create Course
+          </button>
+        </div>
 
-      {/* Filters */}
-      <div className="flex space-x-4">
-        <select
-          value={batch}
-          onChange={(e) => setBatch(e.target.value)}
-          className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
-        >
-          <option value="">All Batches</option>
-          <option value="24">Batch 24</option>
-          <option value="25">Batch 25</option>
-          <option value="26">Batch 26</option>
-          <option value="27">Batch 27</option>
-        </select>
+        {/* Filters */}
+        <div className="flex space-x-4 pt-6">
+          <select
+            value={batch}
+            onChange={(e) => setBatch(e.target.value)}
+            className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
+          >
+            <option value="">All Batches</option>
+            <option value="24">Batch 24</option>
+            <option value="25">Batch 25</option>
+            <option value="26">Batch 26</option>
+            <option value="27">Batch 27</option>
+          </select>
 
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
-        >
-          <option value="">All Types</option>
-          <option value="REVISION">Revision</option>
-          <option value="THEORY">Theory</option>
-          <option value="PAPER">Paper</option>
-        </select>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
+          >
+            <option value="">All Types</option>
+            <option value="REVISION">Revision</option>
+            <option value="THEORY">Theory</option>
+            <option value="PAPER">Paper</option>
+          </select>
+        </div>
       </div>
 
       {/* Course Grid */}

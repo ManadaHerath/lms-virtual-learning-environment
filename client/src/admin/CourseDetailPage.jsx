@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchEnrolledStudents } from "../features/students/StudentSlice";
 import { useParams } from "react-router-dom";
 import AddStudentModal from "./AddStudentModal"; // Import Modal Component
-import { Search, PlusCircle, AlertCircle } from "lucide-react";
+import { Search, PlusCircle, AlertCircle, CheckCircle, XCircle, Monitor, User } from "lucide-react";
 
 const CourseDetailPage = () => {
   const { courseId } = useParams();
@@ -40,6 +40,50 @@ const CourseDetailPage = () => {
           student.telephone.includes(searchQuery)
         : true
     );
+
+  const getPaymentStatusColor = (status) => {
+    switch (status) {
+      case "PAID":
+        return "text-green-400";
+      case "NOT PAID":
+        return "text-red-400";
+      default:
+        return "text-gray-400";
+    }
+  };
+
+  const getPaymentStatusIcon = (status) => {
+    switch (status) {
+      case "PAID":
+        return <CheckCircle className="w-4 h-4 mr-2" />;
+      case "NOT PAID":
+        return <XCircle className="w-4 h-4 mr-2" />;
+      default:
+        return null;
+    }
+  };
+
+  const getMediumColor = (medium) => {
+    switch (medium) {
+      case "PHYSICAL":
+        return "text-blue-400";
+      case "ONLINE":
+        return "text-purple-400";
+      default:
+        return "text-gray-400";
+    }
+  };
+
+  const getMediumIcon = (medium) => {
+    switch (medium) {
+      case "PHYSICAL":
+        return <User className="w-4 h-4 mr-2" />;
+      case "ONLINE":
+        return <Monitor className="w-4 h-4 mr-2" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -138,11 +182,17 @@ const CourseDetailPage = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                     {student.telephone}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {student.payment_status}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <div className={`flex items-center ${getPaymentStatusColor(student.payment_status)}`}>
+                      {getPaymentStatusIcon(student.payment_status)}
+                      {student.payment_status}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {student.medium}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <div className={`flex items-center ${getMediumColor(student.medium)}`}>
+                      {getMediumIcon(student.medium)}
+                      {student.medium}
+                    </div>
                   </td>
                 </tr>
               ))}

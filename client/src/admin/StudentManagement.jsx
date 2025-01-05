@@ -77,36 +77,40 @@ const StudentManagement = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-200 flex items-center">
-          <Users className="w-6 h-6 mr-2 text-blue-400" />
-          Student Management
-        </h1>
-      </div>
+      {/* Sticky Header and Filters */}
+      <div className="sticky top-0 bg-gray-900/95 backdrop-blur-sm z-10 pb-6">
+        {/* Header */}
+        <div className="flex justify-between items-center pt-6">
+          <h1 className="text-2xl font-semibold text-gray-200 flex items-center">
+            <Users className="w-6 h-6 mr-2 text-blue-400" />
+            Student Management
+          </h1>
+        </div>
 
-      {/* Filters */}
-      <div className="flex space-x-4">
-        <select
-          value={batchFilter}
-          onChange={(e) => setBatchFilter(e.target.value)}
-          className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
-        >
-          <option value="all">All Batches</option>
-          {uniqueBatches.map((batch) => (
-            <option key={batch} value={batch}>{batch}</option>
-          ))}
-        </select>
+        {/* Filters */}
+        <div className="flex space-x-4 pt-6">
+          <select
+            value={batchFilter}
+            onChange={(e) => setBatchFilter(e.target.value)}
+            className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
+          >
+            <option value="all">All Batches</option>
+            {uniqueBatches.map((batch) => (
+              <option key={batch} value={batch}>{batch}</option>
+            ))}
+          </select>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
-        >
-          <option value="all">All Statuses</option>
-          <option value="ACTIVE">Active</option>
-          <option value="INACTIVE">Inactive</option>
-          <option value="PENDING">Pending</option>
-        </select>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
+          >
+            <option value="all">All Statuses</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+            <option value="PENDING">Pending</option>
+          </select>
+        </div>
       </div>
 
       {/* Table */}
@@ -141,29 +145,32 @@ const StudentManagement = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <div className="flex justify-between items-center">
                       <div className="space-x-2">
-                        {student.status !== 'INACTIVE' && (
-                          <button
-                            onClick={() => handleStatus(student.nic, "INACTIVE")}
-                            className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors"
-                          >
-                            Deactivate
-                          </button>
-                        )}
-                        {student.status !== 'ACTIVE' && (
-                          <button
-                            onClick={() => handleStatus(student.nic, "ACTIVE")}
-                            className="px-3 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 transition-colors"
-                          >
-                            Activate
-                          </button>
-                        )}
-                        {student.status === "PENDING" && (
+                        {student.status === "PENDING" ? (
                           <button
                             onClick={() => navigate(`/admin/student/register/${student.nic}`)}
                             className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 transition-colors"
                           >
                             Review
                           </button>
+                        ) : (
+                          <>
+                            {student.status !== 'INACTIVE' && (
+                              <button
+                                onClick={() => handleStatus(student.nic, "INACTIVE")}
+                                className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors"
+                              >
+                                Deactivate
+                              </button>
+                            )}
+                            {student.status !== 'ACTIVE' && (
+                              <button
+                                onClick={() => handleStatus(student.nic, "ACTIVE")}
+                                className="px-3 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 transition-colors"
+                              >
+                                Activate
+                              </button>
+                            )}
+                          </>
                         )}
                       </div>
                       <button
