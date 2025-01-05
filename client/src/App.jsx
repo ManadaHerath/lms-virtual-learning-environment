@@ -27,6 +27,7 @@ import UserProtectedRoute from "./user/UserProtectedRoute";
 import Registration from "./user/Registration";
 import CreateQuiz from "./admin/CreateQuiz";
 import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
+import Dashboard from "./user/Dashboard";
 
 import QuizReview from "./user/QuizReveiw";
 
@@ -58,6 +59,7 @@ function App() {
                     />
                     <Route path="/quiz/:quizId" element={<Quiz />} />
                     <Route path="/" element={<CourseList />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route
                       path="/courses/:courseId"
                       element={<CourseDetail />}

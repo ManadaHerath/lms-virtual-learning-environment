@@ -68,7 +68,7 @@ const UserLayout = ({ children }) => {
             <ul className="space-y-4">
               <li>
                 <Link
-                  to="/"
+                  to="/dashboard"
                   className="flex items-center px-4 py-2 hover:bg-gray-700"
                 >
                   <FiHome size={24} className="mr-4" />
