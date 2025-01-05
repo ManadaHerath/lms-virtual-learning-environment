@@ -30,9 +30,8 @@ import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
 
 import QuizReview from "./user/QuizReveiw";
 
-
 import AdminEditCourse from "./admin/AdminEditCourse";
-
+import UserLayout from "./user/UserLayout";
 
 function App() {
   return (
@@ -41,20 +40,38 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-            
-         <Route element={<UserProtectedRoute />}>
-          <Route path="/register" element={<Registration />} />
-          <Route path="/quizdetail/:quizId" element={<QuizDetail />} />
-          <Route path="/quizreview/:quizId" element={<QuizReview />} />
-          <Route path="/quiz/:quizId" element={<Quiz />} />
-          <Route path="/" element={<CourseList />} />
-          <Route path="/courses/:courseId" element={<CourseDetail />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/course/:courseId" element={<CoursePage />} />
-          <Route path="/user/profile" element={<Profile />} />
-          <Route path="/user/mycourse" element={<MyCourse />} />
-          <Route path="/user/payments" element={<PaymentHistory />} />
-        </Route>
+
+          <Route element={<UserProtectedRoute />}>
+            <Route
+              path="/*"
+              element={
+                <UserLayout>
+                  <Routes>
+                    <Route path="/register" element={<Registration />} />
+                    <Route
+                      path="/quizdetail/:quizId"
+                      element={<QuizDetail />}
+                    />
+                    <Route
+                      path="/quizreveiw/:quizId"
+                      element={<QuizReview />}
+                    />
+                    <Route path="/quiz/:quizId" element={<Quiz />} />
+                    <Route path="/" element={<CourseList />} />
+                    <Route
+                      path="/courses/:courseId"
+                      element={<CourseDetail />}
+                    />
+                    <Route path="/cart" element={<CartPage />} />
+                    <Route path="/course/:courseId" element={<CoursePage />} />
+                    <Route path="/user/profile" element={<Profile />} />
+                    <Route path="/user/mycourse" element={<MyCourse />} />
+                    <Route path="/user/payments" element={<PaymentHistory />} />
+                  </Routes>
+                </UserLayout>
+              }
+            />
+          </Route>
 
           <Route path="/admin/create-quiz" element={<CreateQuiz />} />
           {/* Admin Routes */}
@@ -70,7 +87,10 @@ function App() {
                     <Route path="courses" element={<CourseManagement />} />
                     <Route path="/upload-course" element={<UploadCourse />} />
                     <Route path="student" element={<StudentManagement />} />
-                    <Route path="/student/register/:nic" element={<ApproveRejectRegitration />} />
+                    <Route
+                      path="/student/register/:nic"
+                      element={<ApproveRejectRegitration />}
+                    />
                     <Route
                       path="create_section/:courseId/:weekId"
                       element={<CreateSection />}
