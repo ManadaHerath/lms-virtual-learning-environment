@@ -256,7 +256,7 @@ const Signup = () => {
       <div
         className="hidden md:flex w-1/2 bg-cover bg-center rounded-tl-lg rounded-tr-lg rounded-bl-[200px]"
         style={{
-          backgroundImage: "url('/public/image2.png')",
+          backgroundImage: "url('/image2.png')",
           margin: "0.01px",
         }}
       ></div>
