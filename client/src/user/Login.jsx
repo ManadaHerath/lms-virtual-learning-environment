@@ -36,7 +36,7 @@ const Login = () => {
       <div
         className="hidden md:flex w-1/2 bg-cover bg-center rounded-tl-lg rounded-tr-lg rounded-br-[200px]"
         style={{
-          backgroundImage: "url('/public/image.png')",
+          backgroundImage: "url('/image.png')",
           margin: "0.01px",
         }}
       ></div>
