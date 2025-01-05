@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchEnrolledStudents } from "../features/students/StudentSlice";
 import { useParams } from "react-router-dom";
 import AddStudentModal from "./AddStudentModal"; // Import Modal Component
+import { Search, PlusCircle, AlertCircle } from "lucide-react";
 
 const CourseDetailPage = () => {
   const { courseId } = useParams();
@@ -41,17 +42,29 @@ const CourseDetailPage = () => {
     );
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Course Detail Page</h1>
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-semibold text-gray-200 mb-6 flex items-center">
+        <AlertCircle className="w-6 h-6 mr-2 text-blue-400" />
+        Course Detail Page
+      </h1>
 
-      {status === "loading" && <p>Loading students...</p>}
-      {status === "failed" && <p className="text-red-500">{error}</p>}
+      {status === "loading" && (
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+        </div>
+      )}
+      {status === "failed" && (
+        <div className="flex items-center justify-center h-full text-red-400">
+          <AlertCircle className="w-6 h-6 mr-2" />
+          <span>Error: {error}</span>
+        </div>
+      )}
 
       {/* Filters and Add Button */}
-      <div className="mb-4 flex gap-4 justify-between">
+      <div className="mb-6 flex justify-between items-center">
         <div className="flex gap-4">
           <select
-            className="border rounded px-2 py-1"
+            className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
             value={paymentFilter}
             onChange={(e) => setPaymentFilter(e.target.value)}
           >
@@ -60,7 +73,7 @@ const CourseDetailPage = () => {
             <option value="NOT PAID">Unpaid</option>
           </select>
           <select
-            className="border rounded px-2 py-1"
+            className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
             value={mediumFilter}
             onChange={(e) => setMediumFilter(e.target.value)}
           >
@@ -68,19 +81,23 @@ const CourseDetailPage = () => {
             <option value="PHYSICAL">Physical</option>
             <option value="ONLINE">Online</option>
           </select>
-          <input
-            type="text"
-            className="border rounded px-2 py-1"
-            placeholder="Search by name, NIC, or phone"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <div className="relative">
+            <input
+              type="text"
+              className="bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
+              placeholder="Search by name, NIC, or phone"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+          </div>
         </div>
         <button
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="flex items-center px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
           onClick={() => setShowModal(true)}
         >
-          + Add Student
+          <PlusCircle className="w-5 h-5 mr-2" />
+          Add Student
         </button>
         {showModal && (
           <AddStudentModal
@@ -91,38 +108,49 @@ const CourseDetailPage = () => {
       </div>
 
       {status === "succeeded" && filteredStudents.length > 0 ? (
-        <table className="table-auto w-full border-collapse border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border border-gray-300 px-4 py-2">Name</th>
-              <th className="border border-gray-300 px-4 py-2">Phone Number</th>
-              <th className="border border-gray-300 px-4 py-2">
-                Payment Status
-              </th>
-              <th className="border border-gray-300 px-4 py-2">Medium</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredStudents.map((student) => (
-              <tr key={student.nic}>
-                <td className="border border-gray-300 px-4 py-2">
-                  {student.first_name + " " + student.last_name}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {student.telephone}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {student.payment_status}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {student.medium}
-                </td>
+        <div className="overflow-x-auto rounded-lg border border-gray-700/50">
+          <table className="w-full">
+            <thead className="bg-gray-800/50 border-b border-gray-700/50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Phone Number
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Payment Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Medium
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-700/50">
+              {filteredStudents.map((student) => (
+                <tr
+                  key={student.nic}
+                  className="bg-gray-800/30 hover:bg-gray-800/50 transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    {student.first_name + " " + student.last_name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    {student.telephone}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    {student.payment_status}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                    {student.medium}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
-        <p>No students match the filters or search criteria.</p>
+        <p className="text-gray-400">No students match the filters or search criteria.</p>
       )}
     </div>
   );

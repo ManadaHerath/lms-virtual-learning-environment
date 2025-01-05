@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
 import api from "../redux/api";
+import { Trash2, PlusCircle, AlertCircle } from "lucide-react";
 
 const AdminCoursePage = () => {
   const { courseId } = useParams();
@@ -10,9 +11,9 @@ const AdminCoursePage = () => {
   const [weeks, setWeeks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [courseData,setCourseData]=useState();
+  const [courseData, setCourseData] = useState(null);
 
-  const handleDeleteSection=async(sectionId)=>{
+  const handleDeleteSection = async (sectionId) => {
     try {
       const response = await api.delete(`/admin/section/${sectionId}`);
       if (!response.data.success) {
@@ -24,32 +25,30 @@ const AdminCoursePage = () => {
     } catch (err) {
       setError(err.message);
     }
-  }
-  const handleCourseDelete=async()=>{
+  };
+
+  const handleCourseDelete = async () => {
     try {
       const response = await api.delete(`/admin/course/${courseId}`);
       if (!response.data.success) {
         throw new Error("Failed to delete course");
       }
       alert(response.data.message);
-      navigate('/admin/courses');
+      navigate("/admin/courses");
     } catch (err) {
       setError(err.message);
     }
-  }
-  //fetch course details
+  };
+
+  // Fetch course details
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await api.get(`/admin/course/${courseId}`)
-        
+        const response = await api.get(`/admin/course/${courseId}`);
         if (!response.data.success) {
           throw new Error("Failed to fetch course");
         }
-        
-        const courseData = response.data.course;
-        
-        setCourseData(courseData)
+        setCourseData(response.data.course);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -64,17 +63,11 @@ const AdminCoursePage = () => {
   useEffect(() => {
     const fetchSections = async () => {
       try {
-        
-
         const response = await api.get(`/admin/course/${courseId}/sections`);
-        
         if (!response.data) {
           throw new Error("Failed to fetch course sections");
         }
-
-        const weeks=response.data.weeks;
-        setWeeks(weeks);
-        
+        setWeeks(response.data.weeks);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -92,46 +85,58 @@ const AdminCoursePage = () => {
     return urlParams.get("v");
   };
 
-  const handleCheckout = () => {
-    navigate(`/checkout/${enrollmentId}`);
-  };
-  
-
   if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>;
+    return (
+      <div className="flex items-center justify-center h-full text-red-400">
+        <AlertCircle className="w-6 h-6 mr-2" />
+        <span>Error: {error}</span>
+      </div>
+    );
   }
 
   if (loading) {
-    return <div className="p-4 text-blue-500">Loading course details...</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">{courseData ? courseData.course_type+" "+ courseData.batch : "loading course name"}</h1>
-        <button className="bg-red-600 p-2" onClick={handleCourseDelete}>Delete course</button>
+    <div className="container mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold text-gray-200">
+          {courseData ? `${courseData.course_type} ${courseData.batch}` : "Loading course name..."}
+        </h1>
+        <button
+          onClick={handleCourseDelete}
+          className="flex items-center px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+        >
+          <Trash2 className="w-5 h-5 mr-2" />
+          Delete Course
+        </button>
       </div>
-  
+
       {courseData && courseData.weeks > 0 ? (
         <div>
           {Array.from({ length: courseData.weeks }, (_, index) => {
             const weekId = index + 1; // Week IDs start from 1
             const matchedWeek = weeks.find((w) => w.week_id === weekId); // Find matching week in `weeks`
             const sections = matchedWeek ? matchedWeek.sections : []; // Use sections if found, else empty array
-  
+
             return (
               <div key={`week-${weekId}`} className="mb-6">
-                <h2 className="text-xl font-semibold mb-2">Week {weekId}</h2>
+                <h2 className="text-xl font-semibold text-gray-200 mb-4">Week {weekId}</h2>
                 <div className="space-y-4">
                   {sections.length > 0 ? (
                     sections.map((section) => (
                       <div
                         key={`section-${section.id}`}
-                        className="p-4 border rounded-lg bg-gray-100"
+                        className="p-4 rounded-lg bg-gray-800/50 border border-gray-700/50"
                       >
-                        <h3 className="text-lg font-bold">{section.title}</h3>
-                        <p className="text-sm">{section.description}</p>
-  
+                        <h3 className="text-lg font-bold text-gray-200">{section.title}</h3>
+                        <p className="text-sm text-gray-400">{section.description}</p>
+
                         {isYouTubeLink(section.content_url) ? (
                           <YouTube
                             videoId={extractYouTubeVideoId(section.content_url)}
@@ -142,12 +147,13 @@ const AdminCoursePage = () => {
                                 autoplay: 0,
                               },
                             }}
+                            className="mt-4"
                           />
                         ) : (
                           section.content_url && (
                             <a
                               href={section.content_url}
-                              className="text-blue-500 underline"
+                              className="text-blue-400 underline hover:text-blue-300 transition-colors"
                               target="_blank"
                               rel="noopener noreferrer"
                             >
@@ -155,11 +161,17 @@ const AdminCoursePage = () => {
                             </a>
                           )
                         )}
-                        <button className="p-2 ml-3 rounded-lg bg-red-400" onClick={()=>{handleDeleteSection(section.id)}}>Delete Section</button>
+                        <button
+                          onClick={() => handleDeleteSection(section.id)}
+                          className="flex items-center mt-4 px-3 py-1 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete Section
+                        </button>
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-500">No sections available for this week.</p>
+                    <p className="text-gray-400">No sections available for this week.</p>
                   )}
                 </div>
                 <button
@@ -167,8 +179,9 @@ const AdminCoursePage = () => {
                     e.preventDefault();
                     navigate(`/admin/create_section/${courseId}/${weekId}`);
                   }}
-                  className="mt-2 bg-blue-500 text-white py-2 px-4 rounded"
+                  className="flex items-center mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
                 >
+                  <PlusCircle className="w-5 h-5 mr-2" />
                   Add Section
                 </button>
               </div>
@@ -176,12 +189,10 @@ const AdminCoursePage = () => {
           })}
         </div>
       ) : (
-        <p>No weeks available for this course.</p>
+        <p className="text-gray-400">No weeks available for this course.</p>
       )}
     </div>
   );
-  
-  
 };
 
 export default AdminCoursePage;
