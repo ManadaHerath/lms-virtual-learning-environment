@@ -22,8 +22,7 @@ const CoursePage = () => {
         if (response.status !== 200) {
           throw new Error("Failed to fetch course details");
         }
-        const data = await response.data;
-        setCourseDetails(data);
+        setCourseDetails(response.data);
       } catch (err) {
         setError(err.message);
       }
@@ -35,8 +34,7 @@ const CoursePage = () => {
         if (response.status !== 200) {
           throw new Error("Failed to fetch course sections");
         }
-        const data = await response.data;
-        const { weeks, paymentType, enrollment_id, price } = data;
+        const { weeks, paymentType, enrollment_id, price } = response.data;
         setWeeks(weeks);
         setPaymentType(paymentType);
         setEnrollmentId(enrollment_id);
@@ -62,10 +60,8 @@ const CoursePage = () => {
   const handleNavigateContent = (section) => {
     if (section.type_id === 3 && section.quiz_id) {
       navigate(`/quizdetail/${section.quiz_id}`);
-    } else if (isYouTubeLink(section.content_url)) {
-      return; // YouTube links are handled separately
-    } else {
-      navigate(section.content_url); // For other URLs
+    } else if (!isYouTubeLink(section.content_url)) {
+      navigate(section.content_url);
     }
   };
 
@@ -83,7 +79,7 @@ const CoursePage = () => {
       if (response.status !== 200) {
         throw new Error("Failed to update section status");
       }
-      const { updatedSection } = await response.data;
+      const { updatedSection } = response.data;
       setWeeks((prevWeeks) =>
         prevWeeks.map((week) => ({
           ...week,
@@ -112,7 +108,6 @@ const CoursePage = () => {
     : "Course Details";
 
   return (
-
     <div className="container mx-auto p-4">
       <div className="p-4 mb-6 border rounded-lg bg-gray-50">
         {paymentType === "online" || paymentType === "physical" ? (
@@ -130,54 +125,23 @@ const CoursePage = () => {
             </button>
           </div>
         )}
-
-    <div className="container mx-auto p-6">
-    {courseDetails && (
-      <div className="bg-white shadow rounded-lg p-8 mb-10 flex flex-col md:flex-row items-center md:items-start">
-        <img
-          src={courseDetails.image_url}
-          alt={courseTitle}
-          className="w-48 h-48 object-cover rounded-lg shadow-md"
-        />
-        <div className="md:ml-8 mt-6 md:mt-0">
-          <h1 className="text-4xl font-extrabold text-gray-900">{courseTitle}</h1>
-          <p className="text-lg text-gray-700 mt-4 leading-relaxed">
-            {courseDetails.description}
-          </p>
-        </div>
-
       </div>
-    )}
 
-
-<div className="bg-white shadow rounded-lg p-6 mb-4">
-  {paymentType === "online" ? (
-    <div className="text-lg font-semibold text-green-600">
-      Enrollment Status - Paid
-    </div>
-  ) : (
-    <div className="text-lg font-semibold text-red-600">
-      Enrollment Status - Not paid
-    </div>
-  )}
-</div>
-
-{paymentType !== "online" && (
-  <div className="bg-white shadow rounded-lg p-6 mb-8">
-    <p className="text-lg mb-4">
-      Course Price:{" "}
-      <span className="font-bold text-xl text-gray-800">Rs.{coursePrice}</span>
-    </p>
-    <button
-      onClick={handleCheckout}
-      className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-    >
-      Proceed to Checkout
-    </button>
-  </div>
-)}
-
-
+      {courseDetails && (
+        <div className="bg-white shadow rounded-lg p-8 mb-10 flex flex-col md:flex-row items-center md:items-start">
+          <img
+            src={courseDetails.image_url}
+            alt={courseTitle}
+            className="w-48 h-48 object-cover rounded-lg shadow-md"
+          />
+          <div className="md:ml-8 mt-6 md:mt-0">
+            <h1 className="text-4xl font-extrabold text-gray-900">{courseTitle}</h1>
+            <p className="text-lg text-gray-700 mt-4 leading-relaxed">
+              {courseDetails.description}
+            </p>
+          </div>
+        </div>
+      )}
 
       {weeks.length > 0 ? (
         <div className="space-y-8">
@@ -193,33 +157,19 @@ const CoursePage = () => {
                     <div className="space-y-2">
                       <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
                       <p className="text-sm text-gray-600">{section.description}</p>
-
-
-                      {paymentType === null ? (
+                      {paymentType !== "online" ? (
                         <div className="text-gray-500">
-                          <span>Content locked. Please proceed to checkout to unlock.</span>
+                          Content locked. Please proceed to checkout to unlock.
                         </div>
                       ) : isYouTubeLink(section.content_url) ? (
-                        <div className="text-gray-500">
-
-                      {isYouTubeLink(section.content_url) ? (
-                        <div className="mt-4">
-
-                          {paymentType === "online" ? (
-                            <YouTube
-                              videoId={extractYouTubeVideoId(section.content_url)}
-                              opts={{
-                                height: "360",
-                                width: "640",
-                                playerVars: {
-                                  autoplay: 0,
-                                },
-                              }}
-                            />
-                          ) : (
-                            <span className="text-gray-500">Video locked</span>
-                          )}
-                        </div>
+                        <YouTube
+                          videoId={extractYouTubeVideoId(section.content_url)}
+                          opts={{
+                            height: "360",
+                            width: "640",
+                            playerVars: { autoplay: 0 },
+                          }}
+                        />
                       ) : (
                         <button
                           onClick={() => handleNavigateContent(section)}
@@ -229,18 +179,7 @@ const CoursePage = () => {
                         </button>
                       )}
                     </div>
-
                     <button
-
-                      className={`px-4 py-2 rounded-lg font-semibold ${
-                        paymentType !== "online" || paymentType === null
-                          ? "bg-gray-500 text-white cursor-not-allowed"
-                          : section.mark_as_done === 1
-                          ? "bg-green-100 text-black"
-                          : "bg-blue-100 text-black"
-                      }`}
-                      disabled={paymentType !== "online" || paymentType === null}
-
                       onClick={() =>
                         paymentType === "online" &&
                         handleMarkAsDone(section.id, section.mark_as_done)
