@@ -12,7 +12,7 @@ const ExtendSessionRoute=require("./routes/ExtendSessionRoute")
 // Middlewares in here
 //Middleware for cross platform
 
-const allowedOrigins = ['http://localhost:5173','http://localhost:5174'];
+const allowedOrigins = ['http://localhost:5173','http://localhost:5174','http://16.171.12.238'];
 app.use(cors({ origin: (origin, callback) => {
   if (!origin || allowedOrigins.includes(origin)) {
     callback(null, origin); 

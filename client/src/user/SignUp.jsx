@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import api from "../redux/api";
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -43,8 +43,8 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/user/signup",
+      const response = await api.post(
+        "/user/signup",
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
