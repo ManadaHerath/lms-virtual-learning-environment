@@ -97,7 +97,20 @@ const QuizModel = {
     `;
     const [rows] = await pool.query(query, [quizId]);
     return rows[0];
-  }
+  },
+
+  // Update your existing model to add the method to check if a user has responded to the quiz
+ checkUserResponse : async (quizId, nic) => {
+  const query = `
+    SELECT DISTINCT sr.student_nic
+    FROM Question mo
+    JOIN StudentResponse sr ON mo.id = sr.question_id
+    WHERE sr.student_nic = ? AND mo.quiz_id = ?
+  `;
+  const [rows] = await pool.query(query, [nic, quizId]);
+  return rows.length > 0;
+}
+
   
 };
 

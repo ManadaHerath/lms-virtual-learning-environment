@@ -4,32 +4,31 @@ import api from "../redux/api";
 
 const QuizDetails = () => {
   const { quizId } = useParams();
-  console.log(quizId); // Extract the quiz ID from the URL
   const navigate = useNavigate();
 
   const [quizInfo, setQuizInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(0); // Countdown timer
+  const [hasResponded, setHasResponded] = useState(false); // Track if the user has responded
 
   useEffect(() => {
     const fetchQuizInfo = async () => {
       try {
-
-        const response = await api.get(
-          `/user/quiz/${quizId}/info`);
+        const response = await api.get(`/user/quiz/${quizId}/info`);
 
         if (!response.status == 200) {
           throw new Error("Failed to fetch quiz details");
         }
 
-        const data = await response.data;
+        const data = response.data;
 
         if (!data.success) {
           throw new Error(data.message || "Quiz not found");
         }
 
         setQuizInfo(data.quizInfo);
+        setHasResponded(data.hasResponded); // Set the hasResponded flag
 
         // Calculate time remaining until quiz opens
         const openTime = new Date(data.quizInfo.open_time).getTime();
@@ -69,6 +68,10 @@ const QuizDetails = () => {
     navigate(`/quiz/${quizId}`); // Navigate to quiz start page
   };
 
+  const handleReviewQuiz = () => {
+    navigate(`/quizreview/${quizId}`); // Navigate to quiz review page
+  };
+
   if (loading) {
     return <div className="p-4 text-blue-500">Loading quiz details...</div>;
   }
@@ -78,6 +81,12 @@ const QuizDetails = () => {
   }
 
   const isQuizOpen = timeRemaining <= 0;
+
+  // Navigate to quiz review page if the user has already responded
+  if (hasResponded) {
+    navigate(`/quizreview/${quizId}`);
+    return null; // Prevent further rendering
+  }
 
   return (
     <div className="container mx-auto p-4">
