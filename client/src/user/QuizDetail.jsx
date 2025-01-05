@@ -12,7 +12,9 @@ const QuizDetails = () => {
   const [error, setError] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [hasResponded, setHasResponded] = useState(false);
-
+  const [openTime, setOpenTime] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [closeTime,setCloseTime]=useState(0);
   useEffect(() => {
     const fetchQuizInfo = async () => {
       try {
@@ -27,8 +29,13 @@ const QuizDetails = () => {
         setQuizInfo(data.quizInfo);
         setHasResponded(data.hasResponded);
         const openTime = new Date(data.quizInfo.open_time).getTime();
+        const closeTime=new Date(data.quizInfo.close_time).getTime();
+        setOpenTime(openTime);
+        setCloseTime(closeTime)
         const currentTime = Date.now();
+        setCurrentTime(currentTime);
         setTimeRemaining(openTime - currentTime);
+        
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -56,7 +63,12 @@ const QuizDetails = () => {
   };
 
   const handleStartQuiz = () => {
+    if(openTime > currentTime){
+      
+      
+    }else{
     navigate(`/quiz/${quizId}`);
+    }
   };
 
   if (hasResponded) {
@@ -91,7 +103,7 @@ const QuizDetails = () => {
     );
   }
 
-  const isQuizOpen = timeRemaining <= 0;
+  const isQuizOpen = timeRemaining <= 0 && (closeTime- currentTime)>=0;
 
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-100 min-h-screen py-10 px-4">
@@ -142,7 +154,7 @@ const QuizDetails = () => {
               <div>
                 <span className="text-sm text-gray-600">Time until quiz opens:</span>
                 <span className="ml-2 font-mono text-lg text-indigo-700">
-                  {formatTime(timeRemaining)}
+                  {timeRemaining>=0 ? formatTime(timeRemaining) : "00:00:00"}
                 </span>
               </div>
             </div>
@@ -161,7 +173,7 @@ const QuizDetails = () => {
               disabled
               className="bg-gray-300 text-gray-500 py-2 px-4 rounded-md font-medium cursor-not-allowed"
             >
-              Quiz Not Yet Open
+              Quiz isn't available
             </button>
           )}
         </div>
