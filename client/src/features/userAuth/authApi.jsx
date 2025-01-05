@@ -27,7 +27,7 @@ export const registerAPI = async (userData) => {
 // Logout API call
 export const logoutAPI = async () => {
   try {
-    const response = await api.post("/user/logout");
+    const response = await api.get("/user/logout");
     return response.data; // Success response from the server (optional)
   } catch (error) {
     console.error("Error logging out:", error);

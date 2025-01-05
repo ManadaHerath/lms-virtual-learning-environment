@@ -26,7 +26,7 @@ router.post("/signup", upload.single("image"), (req, res) => {
 router.post("/login", AuthController.loginUser);
 
 // Logout route
-router.get("/logout", AuthController.logoutUser);
+router.get("/logout", AuthMiddleware("student"), AuthController.logoutUser);
 
 // Check authentication status
 router.get("/check-auth", AuthMiddleware("student"), AuthController.checkAuth);

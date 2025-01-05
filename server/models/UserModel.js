@@ -123,7 +123,7 @@ const UserModel = {
     }
   },
   userGetAllCourses: async (batch, type) => {
-    let query = "SELECT course_id,price, CONCAT(course_type, ' ', batch) AS name, image_url FROM Course where started_at <= CURDATE() and ended_at >= CURDATE() ";
+    let query = "SELECT course_id,price, course_type, batch, month, description, image_url FROM Course where started_at <= CURDATE() and ended_at >= CURDATE() ";
     const queryParams = [];
   
     if (batch || type) {
@@ -150,7 +150,7 @@ const UserModel = {
 
   // Fetch course details by ID
   getCourseById: async (courseId) => {
-    const query = "SELECT course_id, course_type, batch, description, price, image_url FROM Course WHERE course_id = ?;";
+    const query = "SELECT course_id, course_type, batch, month, description, price, image_url FROM Course WHERE course_id = ?;";
     try {
       const [course] = await pool.query(query, [courseId]);
       return course[0];

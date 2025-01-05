@@ -1,66 +1,77 @@
 import React, { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
 
 const CartPage = () => {
   const [cart, setCart] = useState([]);
+  const reverseCart = [...cart].reverse();
 
-  // Load cart from localStorage when the component mounts
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(storedCart);
   }, []);
 
-  // Remove item from cart
-  const removeFromCart = (courseId) => {
-    const updatedCart = cart.filter((item) => item.course_id !== courseId);
+  const removeFromCart = (image_url) => {
+    const updatedCart = cart.filter((item) => item.image_url !== image_url);
     setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Update localStorage
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    window.location.reload();
   };
 
-  // Calculate total price
   const totalPrice = cart.reduce((total, item) => {
-    // Ensure price is a number before adding
     return total + (parseFloat(item.price) || 0);
   }, 0);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+
       {cart.length > 0 ? (
-        <div>
-          {cart.map((item) => (
-            <div
-              key={item.course_id}
-              className="flex justify-between items-center border-b py-4"
-            >
-              <div className="flex items-center">
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  className="w-20 h-20 object-cover rounded-lg mr-4"
-                />
-                <div>
-                  <h2 className="text-lg font-semibold">{item.name}</h2>
-                  <p>{item.course_type} - Batch {item.batch}</p>
-                  <p className="text-sm text-gray-500">Price: ${item.price}</p>
+        <div className="space-y-6">
+          <div className="space-y-4">
+            {reverseCart.map((item) => (
+              <div
+                key={item.course_id}
+                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+              >
+                <div className="p-6">
+                  <div className="flex items-center justify-between">
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        className="h-24 w-24 object-cover rounded-lg"
+                      />
+                      <p className="text-lg font-medium">
+                        Rs:{parseFloat(item.price).toFixed(2)}
+                      </p>
+                    <button
+                      onClick={() => removeFromCart(item.image_url)}
+                      className="p-2 rounded-full hover:bg-red-50 text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
-              <button
-                onClick={() => removeFromCart(item.course_id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                Remove
-              </button>
+            ))}
+          </div>
+
+          <div className="mt-8 space-y-4">
+            <div className="flex items-center justify-between p-6 bg-gray-50 rounded-lg">
+              <span className="text-xl font-semibold">Total:</span>
+              <span className="text-2xl font-bold">
+                Rs:{totalPrice.toFixed(2)}
+              </span>
             </div>
-          ))}
-          <div className="mt-4">
-            <h2 className="text-xl font-bold">Total: ${totalPrice.toFixed(2)}</h2>
-            <button className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-colors">
               Proceed to Checkout
             </button>
           </div>
         </div>
       ) : (
-        <p>Your cart is empty</p>
+        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+          <p className="text-xl text-gray-600">Your cart is empty</p>
+        </div>
       )}
     </div>
   );
