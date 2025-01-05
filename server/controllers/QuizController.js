@@ -44,7 +44,7 @@ const QuizController = {
 
       for (const response of responses) {
         const { question_id, response_text, uploaded_file_url } = response;
-        console.log(response_text);
+        
 
         // Save response
         const isAutoGraded = response_text ? 1 : 0; // MCQs are auto-graded

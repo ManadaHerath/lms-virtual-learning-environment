@@ -5,12 +5,16 @@ import api from "../redux/api";
 
 const QuizPage = () => {
   const { quizId } = useParams();
+  const [quizInfo, setQuizInfo] = useState(null);
   const navigate = useNavigate();
   const [quiz, setQuiz] = useState(null);
   const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [timeRemaining, setTimeRemaining] = useState();
+  const [hasResponded, setHasResponded] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const uploadFileToCloudinary = async (file) => {
     try {
@@ -24,6 +28,7 @@ const QuizPage = () => {
       );
 
       if (response.data.secure_url) {
+        
         return response.data.secure_url;
       } else {
         throw new Error("Failed to upload file to Cloudinary");
@@ -33,6 +38,62 @@ const QuizPage = () => {
       throw error;
     }
   };
+  //fetch quiz info and timer
+  useEffect(() => {
+    const fetchQuizInfo = async () => {
+      try {
+        const response = await api.get(`/user/quiz/${quizId}/info`);
+        if (response.status !== 200) {
+          throw new Error("Failed to fetch quiz details");
+        }
+        const data = response.data;
+        if (!data.success) {
+          throw new Error(data.message || "Quiz not found");
+        }
+        setQuizInfo(data.quizInfo);
+        
+        setHasResponded(data.hasResponded);
+        const open_time = new Date(data.quizInfo.open_time).getTime();
+        const close_time = new Date(data.quizInfo.close_time).getTime();
+        const currentTime = Date.now();
+        if((close_time - currentTime)<=0 && !hasSubmitted){
+          setHasSubmitted(true);
+          setHasResponded(true);
+          
+          handleSubmit(); 
+
+        }else if((close_time - currentTime)<=0 && hasSubmitted){
+          navigate('/user/mycourse')
+        }
+
+        if(open_time > currentTime){
+          alert("Quiz has not started");
+          navigate(`/user/mycourse`);
+          
+        }
+        
+        setTimeRemaining(close_time - currentTime);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+    fetchQuizInfo();
+  }, [timeRemaining]);
+
+
+  const formatTime = (milliseconds) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+
+   // Add `hasResponded` to dependencies
+  
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -60,8 +121,8 @@ const QuizPage = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    
 
     try {
       const responsesWithFileUrls = await Promise.all(
@@ -91,8 +152,9 @@ const QuizPage = () => {
       const response = await api.post("/user/submit-quiz", payload);
 
       if (response.data.success) {
+        
         setMessage(`Quiz submitted successfully! Total Marks: ${response.data.totalMarks}`);
-        setTimeout(() => navigate("/user/mycourse"), 3000);
+        alert(`Quiz submitted successfully! Total Marks: ${response.data.totalMarks}`);
       } else {
         setError(response.data.message || "Failed to submit quiz");
       }
@@ -131,7 +193,10 @@ const QuizPage = () => {
   if (!quiz) {
     return <div className="container mx-auto p-4 max-w-2xl text-lg">No quiz data available</div>;
   }
-
+  if (hasResponded) {
+    navigate(`/quizreview/${quizId}`);
+    return null;
+  }
   return (
     <div className="bg-gradient-to-r from-blue-50 to-indigo-100 min-h-screen py-10 px-4">
       <div className="container mx-auto max-w-4xl bg-white rounded-lg shadow-lg">
@@ -141,8 +206,11 @@ const QuizPage = () => {
           <div className="mt-4 text-sm text-gray-500">
             Total Questions: <span className="font-medium text-gray-700">{quiz.questions.length}</span>
           </div>
+          <p className="mt-4 text-lg font-semibold text-indigo-700 bg-indigo-100 py-2 px-4 rounded-md inline-block shadow">
+  Time Remaining: <span className="font-bold">{timeRemaining>=0 ? formatTime(timeRemaining) :"00:00:00"}</span>
+</p>
         </header>
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={(e)=>{e.preventDefault();handleSubmit();}} className="p-6 space-y-6">
           {quiz.questions.map((question, index) => (
             <div
               key={question.id}
