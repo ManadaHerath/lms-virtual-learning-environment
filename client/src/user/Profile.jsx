@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Camera, Edit2, Save, X } from "lucide-react";
 import api from "../redux/api";
 
 const Profile = () => {
@@ -7,25 +8,21 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
   const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-
         const response = await api.get("/user/profile");
-
-        if (!response.status == 200) {
-          throw new Error("Failed to fetch profile");
-        }
-
-        const data = await response.data;
-        setUser(data.user);
-        setFormData(data.user);
+        if (!response.status === 200) throw new Error("Failed to fetch profile");
+        setUser(response.data.user);
+        setFormData(response.data.user);
       } catch (err) {
         setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchProfile();
   }, []);
 
@@ -34,201 +31,233 @@ const Profile = () => {
   };
 
   const handleFormSubmit = async (e) => {
-    
     e.preventDefault();
     try {
-      
-      const response = await api.put('/user/editprofile',formData);
-
-      if (!response.status == 200) {
-        throw new Error("Failed to update profile");
-      }
-
-      const data = await response.data;
-      alert(data.message);
+      const response = await api.put('/user/editprofile', formData);
+      if (!response.status === 200) throw new Error("Failed to update profile");
+      setUser(formData);
       setEditMode(false);
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
     }
   };
 
   const handlePictureChange = async () => {
-    const dataa = new FormData();
-    dataa.append("image", imageFile);
+    if (!imageFile) return;
+    const formData = new FormData();
+    formData.append("image", imageFile);
     try {
-
-      const response = await api.put("/user/profile/picture",dataa);
-
-      if (!response.status == 200) {
-        throw new Error("Failed to update profile picture");
-      }
-
-      const data = await response.data;
-      alert(data.message);
-      setUser({ ...user, image_url: data.image_url });
+      const response = await api.put("/user/profile/picture", formData);
+      if (!response.status === 200) throw new Error("Failed to update profile picture");
+      setUser({ ...user, image_url: response.data.image_url });
       setImageFile(null);
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
     }
   };
 
   const handlePictureRemove = async () => {
     try {
-
       const response = await api.put("/user/profile/picture", { remove: true });
-
-      if (!response.status == 200) {
-        throw new Error("Failed to remove profile picture");
-      }
-
-      const data = await response.data;
-      alert(data.message);
+      if (!response.status === 200) throw new Error("Failed to remove profile picture");
       setUser({ ...user, image_url: null });
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
     }
   };
 
-  if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
-  if (!user) {
-    return <div className="p-4 text-blue-500">Loading profile...</div>;
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto mt-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">My Profile</h1>
-      <div className="flex items-center space-x-4 mb-4">
-        {user.image_url ? (
-          <img
-            src={user.image_url}
-            alt="Profile"
-            className="w-24 h-24 rounded-full border-2 border-gray-300"
-          />
-        ) : (
-          <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-100">
-            <span className="text-gray-500">No Image</span>
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
+            {!editMode && (
+              <button
+                onClick={() => setEditMode(true)}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              >
+                <Edit2 className="w-4 h-4" />
+                Edit Profile
+              </button>
+            )}
           </div>
-        )}
-      </div>
-      <div className="mb-4">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files[0])}
-        />
-        <button
-          onClick={handlePictureChange}
-          className="p-2 bg-blue-500 text-white rounded ml-2"
-        >
-          Change Picture
-        </button>
-        <button
-          onClick={handlePictureRemove}
-          className="p-2 bg-red-500 text-white rounded ml-2"
-        >
-          Remove Picture
-        </button>
-      </div>
 
-      {!editMode ? (
-        <>
-          <div className="mb-2">
-            <strong>Name:</strong> {user.first_name} {user.last_name}
+          <div className="space-y-6">
+            {/* Profile Picture Section */}
+            <div className="flex flex-col items-center space-y-4">
+              <div className="relative">
+                {user?.image_url ? (
+                  <img
+                    src={user.image_url}
+                    alt="Profile"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-gray-200"
+                  />
+                ) : (
+                  <div className="w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center border-4 border-gray-200">
+                    <Camera className="w-8 h-8 text-gray-400" />
+                  </div>
+                )}
+                <label className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-2 cursor-pointer hover:bg-blue-600 transition-colors">
+                  <Camera className="w-4 h-4 text-white" />
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => setImageFile(e.target.files[0])}
+                  />
+                </label>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={handlePictureChange}
+                  disabled={!imageFile}
+                  className="px-3 py-1 text-sm text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Update Picture
+                </button>
+                {user?.image_url && (
+                  <button
+                    onClick={handlePictureRemove}
+                    className="px-3 py-1 text-sm text-white bg-red-500 rounded-md hover:bg-red-600 transition-colors"
+                  >
+                    Remove Picture
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Profile Information */}
+            {!editMode ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Name</label>
+                    <p className="mt-1">{user?.first_name} {user?.last_name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Email</label>
+                    <p className="mt-1">{user?.email}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Phone</label>
+                    <p className="mt-1">{user?.telephone}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-500">Location</label>
+                    <p className="mt-1">{user?.city}, {user?.province}</p>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Address</label>
+                  <p className="mt-1">{user?.street_address}</p>
+                  <p>{user?.postal_code}</p>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleFormSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleInputChange}
+                    placeholder="First Name"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleInputChange}
+                    placeholder="Last Name"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Email"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    name="telephone"
+                    value={formData.telephone}
+                    onChange={handleInputChange}
+                    placeholder="Phone"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <textarea
+                  name="street_address"
+                  value={formData.street_address}
+                  onChange={handleInputChange}
+                  placeholder="Street Address"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows="2"
+                />
+                <div className="grid grid-cols-3 gap-4">
+                  <input
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                    placeholder="City"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    name="province"
+                    value={formData.province}
+                    onChange={handleInputChange}
+                    placeholder="Province"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    name="postal_code"
+                    value={formData.postal_code}
+                    onChange={handleInputChange}
+                    placeholder="Postal Code"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditMode(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex items-center gap-2 px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors"
+                  >
+                    <Save className="w-4 h-4" />
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
-          <div className="mb-2">
-            <strong>Email:</strong> {user.email}
-          </div>
-          <div className="mb-2">
-            <strong>Phone:</strong> {user.telephone}
-          </div>
-          <div className="mb-2">
-            <strong>Address:</strong> {user.street_address}, {user.city},{" "}
-            {user.province}, {user.postal_code}
-          </div>
-          <button
-            className="p-2 bg-blue-500 text-white rounded"
-            onClick={() => setEditMode(true)}
-          >
-            Edit Profile
-          </button>
-        </>
-      ) : (
-        <form onSubmit={handleFormSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="first_name"
-            value={formData.first_name}
-            onChange={handleInputChange}
-            placeholder="First Name"
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="last_name"
-            value={formData.last_name}
-            onChange={handleInputChange}
-            placeholder="Last Name"
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="Email"
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="telephone"
-            value={formData.telephone}
-            onChange={handleInputChange}
-            placeholder="Phone"
-            className="w-full p-2 border rounded"
-          />
-          <textarea
-            name="street_address"
-            value={formData.street_address}
-            onChange={handleInputChange}
-            placeholder="Street Address"
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="city"
-            value={formData.city}
-            onChange={handleInputChange}
-            placeholder="City"
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="province"
-            value={formData.province}
-            onChange={handleInputChange}
-            placeholder="Province"
-            className="w-full p-2 border rounded"
-          />
-          <input
-            type="text"
-            name="postal_code"
-            value={formData.postal_code}
-            onChange={handleInputChange}
-            placeholder="Postal Code"
-            className="w-full p-2 border rounded"
-          />
-          
-          <button
-            type="submit"
-            className="p-2 bg-green-500 text-white rounded"
-          >
-            Save Changes
-          </button>
-        </form>
-      )}
+        </div>
+      </div>
     </div>
   );
 };

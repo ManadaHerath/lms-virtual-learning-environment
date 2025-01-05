@@ -18,7 +18,7 @@ const Login = () => {
       );
 
       if (res.data.success) {
-        window.location.href = "/user/mycourse"; // Change to your desired route
+        window.location.href = "/dashboard"; // Change to your desired route
       } else {
         prompt(res.data.message);
       }
