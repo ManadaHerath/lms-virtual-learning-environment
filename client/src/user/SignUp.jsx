@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import api from "../redux/api";
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -14,11 +15,9 @@ const Signup = () => {
     city: "",
     province: "",
     postal_code: "",
-    
     date_of_birth: "",
     batch: "",
-    
-    image: null, // For file upload
+    image: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -38,15 +37,14 @@ const Signup = () => {
     setErrors({});
     setSuccessMessage("");
 
-    // Create form data for file upload
     const data = new FormData();
     for (const key in formData) {
       data.append(key, formData[key]);
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/user/signup", // Adjust the URL as per your backend
+      const response = await api.post(
+        "/user/signup",
         data,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -54,9 +52,8 @@ const Signup = () => {
       );
       if (response.data.success) {
         setSuccessMessage(response.data.message);
-        
         alert(successMessage);
-        navigate(`/login`);
+        navigate("/login");
       } else {
         setErrors(response.data.errors || {});
       }
@@ -66,188 +63,203 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-8">
-        <h2 className="text-2xl font-bold mb-6">Signup</h2>
-        {successMessage && (
-          <div className="p-4 mb-4 text-green-800 bg-green-100 rounded-lg">
-            {successMessage}
-          </div>
-        )}
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-          {/* NIC */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">NIC</label>
-            <input
-              type="text"
-              name="nic"
-              value={formData.nic}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-              required
-            />
+    <div className="flex h-screen w-full bg-white p-4">
+      {/* Left Section for Signup Form */}
+      <div className="flex w-full md:w-1/2 items-center justify-center p-6">
+        <div className="w-full max-w-md h-[90vh] overflow-y-scroll border border-gray-200 rounded-lg shadow-lg p-4">
+          <div className="mb-6">
+            <h1 className="text-4xl font-bold text-gray-800">Signup</h1>
+            <h2 className="text-2xl font-semibold text-gray-600 mt-2">
+              Join Physics with Lasa
+            </h2>
           </div>
 
-          {/* First and Last Name */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="mb-4">
-              <label className="block mb-1 font-medium">First Name</label>
+          {successMessage && (
+            <div className="p-4 mb-4 text-green-800 bg-green-100 rounded-lg">
+              {successMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
+            {/* NIC */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">NIC</label>
               <input
                 type="text"
-                name="first_name"
-                value={formData.first_name}
+                name="nic"
+                value={formData.nic}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full p-2 border border-gray-300 rounded-lg"
                 required
               />
             </div>
-            <div className="mb-4">
-              <label className="block mb-1 font-medium">Last Name</label>
+
+            {/* First and Last Name */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">First Name</label>
+                <input
+                  type="text"
+                  name="first_name"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                <input
+                  type="text"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email</label>
               <input
-                type="text"
-                name="last_name"
-                value={formData.last_name}
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full p-2 border border-gray-300 rounded-lg"
                 required
               />
             </div>
-          </div>
 
-          {/* Email */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-              required
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
-          </div>
-
-          {/* Password */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">Password</label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-              required
-            />
-          </div>
-
-          {/* Telephone */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">Telephone</label>
-            <input
-              type="text"
-              name="telephone"
-              value={formData.telephone}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-            />
-          </div>
-
-          {/* Street Address */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">Street Address</label>
-            <input
-              type="text"
-              name="street_address"
-              value={formData.street_address}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-            />
-          </div>
-
-          {/* City and Province */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="mb-4">
-              <label className="block mb-1 font-medium">City</label>
+            {/* Password */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Password</label>
               <input
-                type="text"
-                name="city"
-                value={formData.city}
+                type="password"
+                name="password"
+                value={formData.password}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full p-2 border border-gray-300 rounded-lg"
+                required
               />
             </div>
-            <div className="mb-4">
-              <label className="block mb-1 font-medium">Province</label>
+
+            {/* Telephone */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Telephone</label>
               <input
                 type="text"
-                name="province"
-                value={formData.province}
+                name="telephone"
+                value={formData.telephone}
                 onChange={handleChange}
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full p-2 border border-gray-300 rounded-lg"
               />
             </div>
-          </div>
 
-          {/* Postal Code */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">Postal Code</label>
-            <input
-              type="text"
-              name="postal_code"
-              value={formData.postal_code}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-            />
-          </div>
+            {/* Address */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Street Address</label>
+              <input
+                type="text"
+                name="street_address"
+                value={formData.street_address}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
 
-          {/* Date of Birth */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">Date of Birth</label>
-            <input
-              type="date"
-              name="date_of_birth"
-              value={formData.date_of_birth}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-            />
-          </div>
+            {/* City and Province */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">City</label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Province</label>
+                <input
+                  type="text"
+                  name="province"
+                  value={formData.province}
+                  onChange={handleChange}
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
 
-          {/* Batch */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">Batch</label>
-            <input
-              type="text"
-              name="batch"
-              value={formData.batch}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-2"
-            />
-          </div>
+            {/* Postal Code */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Postal Code</label>
+              <input
+                type="text"
+                name="postal_code"
+                value={formData.postal_code}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
 
-          {/* Profile Picture */}
-          <div className="mb-4">
-            <label className="block mb-1 font-medium">Profile Picture</label>
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full"
-            />
-          </div>
+            {/* Date of Birth */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+              <input
+                type="date"
+                name="date_of_birth"
+                value={formData.date_of_birth}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-          >
-            Signup
-          </button>
-        </form>
+            {/* Batch */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Batch</label>
+              <input
+                type="text"
+                name="batch"
+                value={formData.batch}
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            {/* Profile Picture */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Profile Picture</label>
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+            >
+              Signup
+            </button>
+          </form>
+        </div>
       </div>
+
+      {/* Right Section with Background Image */}
+      <div
+        className="hidden md:flex w-1/2 bg-cover bg-center rounded-tl-lg rounded-tr-lg rounded-bl-[200px]"
+        style={{
+          backgroundImage: "url('/image2.png')",
+          margin: "0.01px",
+        }}
+      ></div>
     </div>
   );
 };
