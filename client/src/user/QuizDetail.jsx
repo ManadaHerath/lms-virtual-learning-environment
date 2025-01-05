@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Clock, Calendar, Timer } from "lucide-react";
 import api from "../redux/api";
 
 const QuizDetails = () => {
@@ -9,28 +10,22 @@ const QuizDetails = () => {
   const [quizInfo, setQuizInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [timeRemaining, setTimeRemaining] = useState(0); // Countdown timer
-  const [hasResponded, setHasResponded] = useState(false); // Track if the user has responded
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [hasResponded, setHasResponded] = useState(false);
 
   useEffect(() => {
     const fetchQuizInfo = async () => {
       try {
         const response = await api.get(`/user/quiz/${quizId}/info`);
-
-        if (!response.status == 200) {
+        if (response.status !== 200) {
           throw new Error("Failed to fetch quiz details");
         }
-
         const data = response.data;
-
         if (!data.success) {
           throw new Error(data.message || "Quiz not found");
         }
-
         setQuizInfo(data.quizInfo);
-        setHasResponded(data.hasResponded); // Set the hasResponded flag
-
-        // Calculate time remaining until quiz opens
+        setHasResponded(data.hasResponded);
         const openTime = new Date(data.quizInfo.open_time).getTime();
         const currentTime = Date.now();
         setTimeRemaining(openTime - currentTime);
@@ -40,7 +35,6 @@ const QuizDetails = () => {
         setLoading(false);
       }
     };
-
     fetchQuizInfo();
   }, [quizId]);
 
@@ -49,7 +43,7 @@ const QuizDetails = () => {
       const timer = setInterval(() => {
         setTimeRemaining((prev) => prev - 1000);
       }, 1000);
-      return () => clearInterval(timer); // Cleanup interval
+      return () => clearInterval(timer);
     }
   }, [timeRemaining]);
 
@@ -58,78 +52,120 @@ const QuizDetails = () => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-
-    return `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const handleStartQuiz = () => {
-    navigate(`/quiz/${quizId}`); // Navigate to quiz start page
+    navigate(`/quiz/${quizId}`);
   };
 
-  const handleReviewQuiz = () => {
-    navigate(`/quizreview/${quizId}`); // Navigate to quiz review page
-  };
+  if (hasResponded) {
+    navigate(`/quizreview/${quizId}`);
+    return null;
+  }
 
   if (loading) {
-    return <div className="p-4 text-blue-500">Loading quiz details...</div>;
+    return (
+      <div className="container mx-auto p-4 max-w-2xl">
+        <div className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mb-6"></div>
+          <div className="space-y-3">
+            <div className="h-4 bg-gray-200 rounded w-full"></div>
+            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">Error: {error}</div>;
+    return (
+      <div className="container mx-auto p-4 max-w-2xl">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Error</h2>
+          <p className="text-red-500">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   const isQuizOpen = timeRemaining <= 0;
 
-  // Navigate to quiz review page if the user has already responded
-  if (hasResponded) {
-    navigate(`/quizreview/${quizId}`);
-    return null; // Prevent further rendering
-  }
-
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Quiz Details</h1>
-      {quizInfo ? (
-        <div className="p-4 border rounded-lg bg-gray-50">
-          <h2 className="text-xl font-semibold">{quizInfo.title}</h2>
-          <p className="text-gray-700">{quizInfo.description}</p>
-          <p className="text-sm text-gray-500 mt-2">
-            Open Time: {new Date(quizInfo.open_time).toLocaleString()}
-          </p>
-          <p className="text-sm text-gray-500">
-            Close Time: {new Date(quizInfo.close_time).toLocaleString()}
-          </p>
-          <p className="text-sm text-gray-500">
-            Time Limit: {quizInfo.time_limit_minutes} minutes
-          </p>
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-100 min-h-screen py-10 px-4">
+      <div className="container mx-auto max-w-4xl bg-white rounded-lg shadow-lg">
+        <header className="p-5 border-b border-gray-100 bg-indigo-50">
+          <h1 className="text-2xl font-semibold text-indigo-700">{quizInfo.title}</h1>
+          <p className="text-gray-600 mt-1">{quizInfo.description}</p>
+          <div className="mt-2 text-sm text-gray-500">
+            Time Limit:{" "}
+            <span className="font-medium text-gray-700">{quizInfo.time_limit_minutes} minutes</span>
+          </div>
+        </header>
+        <div className="p-5 space-y-5">
+          <div className="flex items-center gap-3 text-gray-700">
+            <Calendar className="h-5 w-5 text-indigo-500" />
+            <div className="flex flex-col gap-1">
+              <span className="text-sm">
+                Opens:{" "}
+                {new Date(quizInfo.open_time).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "numeric",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                })}
+              </span>
+              <span className="text-sm">
+                Closes:{" "}
+                {new Date(quizInfo.close_time).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "numeric",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                })}
+              </span>
+            </div>
+          </div>
 
+          <div className="flex items-center gap-3 text-gray-700">
+            <Timer className="h-5 w-5 text-indigo-500" />
+            <span className="text-sm">Duration: {quizInfo.time_limit_minutes} minutes</span>
+          </div>
+
+          {!isQuizOpen && (
+            <div className="flex items-center gap-3">
+              <Clock className="h-5 w-5 text-indigo-500" />
+              <div>
+                <span className="text-sm text-gray-600">Time until quiz opens:</span>
+                <span className="ml-2 font-mono text-lg text-indigo-700">
+                  {formatTime(timeRemaining)}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-center">
           {isQuizOpen ? (
             <button
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
               onClick={handleStartQuiz}
+              className="bg-blue-500 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-600 transition duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Start Quiz
             </button>
           ) : (
-            <div className="mt-4">
-              <p className="text-gray-500">Quiz starts in:</p>
-              <p className="text-lg font-bold text-red-500">
-                {formatTime(timeRemaining)}
-              </p>
-              <button
-                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded cursor-not-allowed"
-                disabled
-              >
-                Start Quiz
-              </button>
-            </div>
+            <button
+              disabled
+              className="bg-gray-300 text-gray-500 py-2 px-4 rounded-md font-medium cursor-not-allowed"
+            >
+              Quiz Not Yet Open
+            </button>
           )}
         </div>
-      ) : (
-        <p>Quiz details not available.</p>
-      )}
+      </div>
     </div>
   );
 };
