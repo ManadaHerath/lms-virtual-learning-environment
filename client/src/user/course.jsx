@@ -107,26 +107,8 @@ const CoursePage = () => {
     ? `${courseDetails.course_type} ${courseDetails.batch}`
     : "Course Details";
 
-  return (
-    <div className="container mx-auto p-4">
-      <div className="p-4 mb-6 border rounded-lg bg-gray-50">
-        {paymentType === "online" || paymentType === "physical" ? (
-          <div className="text-green-500 font-semibold">You have paid for this course!</div>
-        ) : (
-          <div>
-            <p className="mb-2 text-gray-700">
-              Course Price: <span className="font-bold text-lg">${coursePrice}</span>
-            </p>
-            <button
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-              onClick={handleCheckout}
-            >
-              Proceed to Checkout
-            </button>
-          </div>
-        )}
-      </div>
-
+    return (
+      <div className="container mx-auto p-6">
       {courseDetails && (
         <div className="bg-white shadow rounded-lg p-8 mb-10 flex flex-col md:flex-row items-center md:items-start">
           <img
@@ -142,70 +124,111 @@ const CoursePage = () => {
           </div>
         </div>
       )}
-
-      {weeks.length > 0 ? (
-        <div className="space-y-8">
-          {weeks.map((week) => (
-            <div key={week.week_id}>
-              <h2 className="text-2xl font-bold mb-4">Week {week.week_id}</h2>
-              <div className="space-y-6">
-                {week.sections.map((section) => (
-                  <div
-                    key={section.id}
-                    className="p-6 bg-gray-50 shadow-md rounded-lg flex justify-between items-center"
-                  >
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
-                      <p className="text-sm text-gray-600">{section.description}</p>
-                      {paymentType !== "online" ? (
-                        <div className="text-gray-500">
-                          Content locked. Please proceed to checkout to unlock.
-                        </div>
-                      ) : isYouTubeLink(section.content_url) ? (
-                        <YouTube
-                          videoId={extractYouTubeVideoId(section.content_url)}
-                          opts={{
-                            height: "360",
-                            width: "640",
-                            playerVars: { autoplay: 0 },
-                          }}
-                        />
-                      ) : (
-                        <button
-                          onClick={() => handleNavigateContent(section)}
-                          className="text-blue-600 underline font-medium hover:text-blue-800 transition"
-                        >
-                          View Content
-                        </button>
-                      )}
-                    </div>
-                    <button
-                      onClick={() =>
-                        paymentType === "online" &&
-                        handleMarkAsDone(section.id, section.mark_as_done)
-                      }
-                      disabled={paymentType !== "online"}
-                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
-                        paymentType !== "online"
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          : section.mark_as_done === 1
-                          ? "bg-green-100 text-green-700"
-                          : "bg-blue-100 text-blue-700"
-                      }`}
-                    >
-                      {section.mark_as_done === 1 ? "Completed" : "Incomplete"}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-gray-600 text-center">No sections available for this course.</p>
-      )}
+  
+  
+  <div className="bg-white shadow rounded-lg p-6 mb-4">
+    {paymentType === "online" || paymentType === "physical" ? (
+      <div className="text-lg font-semibold text-green-600">
+        Enrollment Status - Paid
+      </div>
+    ) : (
+      <div className="text-lg font-semibold text-red-600">
+        Enrollment Status - Not paid
+      </div>
+    )}
+  </div>
+  
+  {paymentType !== "online" && paymentType !== "physical"  && (
+    <div className="bg-white shadow rounded-lg p-6 mb-8">
+      <p className="text-lg mb-4">
+        Course Price:{" "}
+        <span className="font-bold text-xl text-gray-800">Rs.{coursePrice}</span>
+      </p>
+      <button
+        onClick={handleCheckout}
+        className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+      >
+        Proceed to Checkout
+      </button>
     </div>
-  );
+  )}
+  
+  
+  
+        {weeks.length > 0 ? (
+          <div className="space-y-8">
+            {weeks.map((week) => (
+              <div key={week.week_id}>
+                <h2 className="text-2xl font-bold mb-4">Week {week.week_id}</h2>
+                <div className="space-y-6">
+                  {week.sections.map((section) => (
+                    <div
+                      key={section.id}
+                      className="p-6 bg-gray-50 shadow-md rounded-lg flex justify-between items-center"
+                    >
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
+                        <p className="text-sm text-gray-600">{section.description}</p>
+  
+                        {isYouTubeLink(section.content_url) ? (
+  <div className="mt-4">
+    {paymentType === "online" || paymentType === "physical" ? (
+      <YouTube
+        videoId={extractYouTubeVideoId(section.content_url)}
+        opts={{
+          height: "360",
+          width: "640",
+          playerVars: {
+            autoplay: 0,
+          },
+        }}
+      />
+    ) : (
+      <span className="text-gray-500">Video locked</span>
+    )}
+  </div>
+) : (
+  paymentType === "online" || paymentType === "physical" ? (
+    <button
+      onClick={() => handleNavigateContent(section)}
+      className="text-blue-600 underline font-medium hover:text-blue-800 transition"
+    >
+      View Content
+    </button>
+  ) : (
+    <span className="text-gray-500">Content locked</span>
+  )
+)}
+
+                      </div>
+  
+                      <button
+                        onClick={() =>
+                          paymentType === "online" || paymentType === "physical" &&
+                          handleMarkAsDone(section.id, section.mark_as_done)
+                        }
+                        disabled={paymentType !== "online" || paymentType !== "physical"}
+                        className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+                          paymentType !== "online" || paymentType !== "physical"
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : section.mark_as_done === 1
+                            ? "bg-green-100 text-green-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
+                        {section.mark_as_done === 1 ? "Completed" : "Incomplete"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-600 text-center">No sections available for this course.</p>
+        )}
+      </div>
+    );
 };
 
 export default CoursePage;
