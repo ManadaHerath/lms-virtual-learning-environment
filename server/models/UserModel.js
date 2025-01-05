@@ -280,7 +280,7 @@ const UserModel = {
   getEnrolledCourses: async (nic) => {
     
     const query = `
-      SELECT c.course_id, c.price, CONCAT(c.course_type, ' ', c.batch) AS name, c.image_url
+      SELECT c.course_id, c.price, c.course_type, c.batch, c.month, c.image_url
       FROM Course c
       JOIN Enrollment e ON c.course_id = e.course_id
       WHERE e.nic = ? and started_at <= CURDATE() and ended_at >= CURDATE()
