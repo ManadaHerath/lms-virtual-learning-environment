@@ -196,18 +196,25 @@ getEnrolledCourses: async (req, res) => {
 
  // In AuthController.js
 
-enrollCourse: async (req, res) => {
+ enrollCourse: async (req, res) => {
   const { courseId } = req.params;
   const { nic } = req.user; // Get user nic from JWT token
 
   try {
+    // Check if user is active
+    const userStatus = await UserModel.getUserStatus(nic);
+
+    if (userStatus !== "ACTIVE") {
+      return res.status(200).json({
+        success: false,
+        message: "Your account is not active. Please contact support.",
+      });
+    }
+
     // Check if user is already enrolled in the course
     const isEnrolled = await UserModel.checkEnrollment(nic, courseId);
 
-    
-
     if (isEnrolled) {
-      
       return res.status(400).json({
         success: false,
         message: "You are already enrolled in this course.",
@@ -215,7 +222,7 @@ enrollCourse: async (req, res) => {
     }
 
     const result = await UserModel.enrollCourse(nic, courseId);
-  
+
     res.status(200).json({
       success: true,
       message: "Course enrolled successfully!",
@@ -226,6 +233,7 @@ enrollCourse: async (req, res) => {
     res.status(500).json({ error: "Failed to enroll in course" });
   }
 },
+
 
 
 };
