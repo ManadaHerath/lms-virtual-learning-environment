@@ -397,7 +397,14 @@ const UserModel = {
       console.error(err.message);
       throw err;
     }
-  }
+  },
+
+  getUserStatus: async (nic) => {
+    const query = "SELECT status FROM User WHERE nic = ?";
+    const [rows] = await pool.execute(query, [nic]);
+    return rows.length ? rows[0].status : null;
+  },
+
 
 };
 
