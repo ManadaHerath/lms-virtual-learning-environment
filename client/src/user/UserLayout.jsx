@@ -13,20 +13,38 @@ import {
   Settings,
   User,
 } from "lucide-react";
+import { AiOutlineShoppingCart } from "react-icons/ai"; // Icons for navbar
 import { useDispatch } from "react-redux";
 import { logout } from "../features/userAuth/authSlice";
 import { Link } from "react-router-dom";
+import api from "../redux/api";
 
 const UserLayout = ({ children }) => {
   const dispatch = useDispatch();
+  const [error, setError] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [notifications] = useState(3); // Example notification count
+  const [cartItemCount, setCartItemCount] = useState(0); // Example notification count
 
   const handleLogout = () => {
     dispatch(logout());
     window.location.reload();
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get("/user/profile");
+        if (response.status !== 200) throw new Error("Failed to fetch profile");
+        setImageFile(response.data.user.image_url); // Set image URL directly here
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+    fetchProfile();
+    const list = JSON.parse(localStorage.getItem("cart"));
+    setCartItemCount(list.length);
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
@@ -44,7 +62,7 @@ const UserLayout = ({ children }) => {
               />
             </div>
 
-            {/* Enhanced Search Bar */}
+            {/* Enhanced Search Bar
             <div className="max-w-xl flex-1 relative">
               <div
                 className={`
@@ -68,7 +86,7 @@ const UserLayout = ({ children }) => {
                   onBlur={() => setSearchFocused(false)}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Side Actions */}
@@ -76,22 +94,34 @@ const UserLayout = ({ children }) => {
             {/* Notification Bell */}
             <div className="relative">
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <Bell size={20} className="text-gray-600" />
-                {notifications > 0 && (
+                <Link to="/cart" className="hover:text-gray-400">
+                  <AiOutlineShoppingCart size={24} />
+                </Link>
+                {cartItemCount > 0 && (
                   <span className="absolute top-0 right-0 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {notifications}
+                    {cartItemCount}
                   </span>
                 )}
               </button>
             </div>
 
             {/* User Profile */}
-            <button className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors">
+            <Link
+              to="/user/profile"
+              className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors"
+            >
               <div className="h-8 w-8 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
-                <User size={20} className="text-white" />
+                {imageFile ? (
+                  <img
+                    src={imageFile}
+                    alt="User"
+                    className="h-8 w-8 rounded-full"
+                  />
+                ) : (
+                  <User size={20} className="text-white" />
+                )}
               </div>
-              <span className="text-sm font-medium text-gray-700">Profile</span>
-            </button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -148,7 +178,7 @@ const UserLayout = ({ children }) => {
 
           {/* Logout Section */}
           <div className="p-4 border-t border-gray-100">
-            <Link
+            <button
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 group transition-colors"
             >
@@ -156,7 +186,7 @@ const UserLayout = ({ children }) => {
               {isSidebarOpen && (
                 <span className="text-sm font-medium">Logout</span>
               )}
-            </Link>
+            </button>
           </div>
 
           {/* Toggle Button */}

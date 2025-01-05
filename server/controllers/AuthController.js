@@ -1,6 +1,7 @@
 const UserModel = require("../models/UserModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { image } = require("../config/cloudinary");
 require("dotenv").config();
 
 const handleErrors = (err) => {
@@ -132,7 +133,7 @@ const AuthController = {
 
   // Logout user
   logoutUser: (req, res) => {
-    res.cookie("jwt", "", { maxAge: 1 });
+    res.cookie("accessToken", "", { maxAge: 1 });
     res.status(200).send({ message: "Logged out successfully", success: true });
   },
 
