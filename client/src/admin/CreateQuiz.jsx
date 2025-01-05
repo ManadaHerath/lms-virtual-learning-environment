@@ -127,69 +127,92 @@ const CreateQuiz = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Create Quiz</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="title"
-          value={quiz.title}
-          onChange={handleInputChange}
-          placeholder="Quiz Title"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <textarea
-          name="description"
-          value={quiz.description}
-          onChange={handleInputChange}
-          placeholder="Quiz Description"
-          className="w-full p-2 border rounded"
-        />
-        <input
-          type="datetime-local"
-          name="open_time"
-          value={quiz.open_time}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="datetime-local"
-          name="close_time"
-          value={quiz.close_time}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="number"
-          name="time_limit_minutes"
-          value={quiz.time_limit_minutes}
-          onChange={handleInputChange}
-          placeholder="Time Limit (Minutes)"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="datetime-local"
-          name="review_available_time"
-          value={quiz.review_available_time}
-          onChange={handleInputChange}
-          className="w-full p-2 border rounded"
-        />
+    <div className="bg-gray-900 min-h-screen p-6 text-gray-300">
+      <h1 className="text-2xl font-bold mb-6">Create Quiz</h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="title" className="block text-sm font-medium mb-1">Quiz Title:</label>
+          <input
+            type="text"
+            name="title"
+            value={quiz.title}
+            onChange={handleInputChange}
+            placeholder="Quiz Title"
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="description" className="block text-sm font-medium mb-1">Quiz Description:</label>
+          <textarea
+            name="description"
+            value={quiz.description}
+            onChange={handleInputChange}
+            placeholder="Quiz Description"
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="4"
+          />
+        </div>
+        <div>
+          <label htmlFor="open_time" className="block text-sm font-medium mb-1">Open Time:</label>
+          <input
+            type="datetime-local"
+            name="open_time"
+            value={quiz.open_time}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="close_time" className="block text-sm font-medium mb-1">Close Time:</label>
+          <input
+            type="datetime-local"
+            name="close_time"
+            value={quiz.close_time}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="time_limit_minutes" className="block text-sm font-medium mb-1">Time Limit (Minutes):</label>
+          <input
+            type="number"
+            name="time_limit_minutes"
+            value={quiz.time_limit_minutes}
+            onChange={handleInputChange}
+            placeholder="Time Limit (Minutes)"
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="review_available_time" className="block text-sm font-medium mb-1">Review Available Time:</label>
+          <input
+            type="datetime-local"
+            name="review_available_time"
+            value={quiz.review_available_time}
+            onChange={handleInputChange}
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
         <h2 className="text-xl font-bold mt-6">Add Questions</h2>
-        <textarea
-          name="question_text"
-          value={currentQuestion.question_text}
-          onChange={handleQuestionChange}
-          placeholder="Question Text"
-          className="w-full p-2 border rounded"
-        />
-        <div {...getRootProps()} className="border p-4 text-center">
+        <div>
+          <label htmlFor="question_text" className="block text-sm font-medium mb-1">Question Text:</label>
+          <textarea
+            name="question_text"
+            value={currentQuestion.question_text}
+            onChange={handleQuestionChange}
+            placeholder="Question Text"
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows="4"
+          />
+        </div>
+        <div {...getRootProps()} className="border border-gray-700 p-4 text-center rounded-lg cursor-pointer hover:bg-gray-800/50 transition-colors">
           <input {...getInputProps()} />
-          <p>
+          <p className="text-gray-400">
             {uploading
               ? "Uploading..."
               : "Drag 'n' drop an image here, or click to select an image"}
@@ -199,18 +222,21 @@ const CreateQuiz = () => {
           <img
             src={currentQuestion.question_image_url}
             alt="Uploaded"
-            className="w-32 h-32 object-cover mt-2"
+            className="w-32 h-32 object-cover mt-2 rounded-lg"
           />
         )}
-        <select
-          name="question_type"
-          value={currentQuestion.question_type}
-          onChange={handleQuestionChange}
-          className="w-full p-2 border rounded"
-        >
-          <option value="mcq">MCQ</option>
-          <option value="essay">Essay</option>
-        </select>
+        <div>
+          <label htmlFor="question_type" className="block text-sm font-medium mb-1">Question Type:</label>
+          <select
+            name="question_type"
+            value={currentQuestion.question_type}
+            onChange={handleQuestionChange}
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="mcq">MCQ</option>
+            <option value="essay">Essay</option>
+          </select>
+        </div>
         {currentQuestion.question_type === "mcq" && (
           <>
             <div className="flex items-center space-x-2">
@@ -219,31 +245,31 @@ const CreateQuiz = () => {
                 value={currentOption}
                 onChange={(e) => setCurrentOption(e.target.value)}
                 placeholder="Option Text"
-                className="w-full p-2 border rounded"
+                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"
                 onClick={addOption}
-                className="p-2 bg-blue-500 text-white rounded"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Add Option
               </button>
             </div>
-            <div className="mt-2">
+            <div className="mt-2 space-y-2">
               {currentQuestion.options.map((option, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between space-x-4"
+                  className="flex items-center justify-between px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg"
                 >
-                  <span>{option.option_text}</span>
+                  <span className="text-gray-300">{option.option_text}</span>
                   <button
                     type="button"
                     onClick={() => markCorrectOption(index)}
-                    className={`p-1 ${
+                    className={`px-3 py-1 rounded-lg ${
                       option.is_correct
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-200 text-black"
-                    } rounded`}
+                        ? "bg-green-600 text-white"
+                        : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    } transition-colors`}
                   >
                     {option.is_correct ? "Correct" : "Mark as Correct"}
                   </button>
@@ -255,14 +281,14 @@ const CreateQuiz = () => {
         <button
           type="button"
           onClick={addQuestion}
-          className="p-2 bg-green-500 text-white rounded mt-4"
+          className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           Add Question
         </button>
 
         <button
           type="submit"
-          className="p-2 bg-blue-500 text-white rounded mt-4"
+          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Create Quiz
         </button>
