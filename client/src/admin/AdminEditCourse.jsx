@@ -3,7 +3,10 @@ import { useParams } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import api from '../redux/api'
+import { useSnackbar } from "notistack";
+
 const AdminEditCourse = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const { courseId } = useParams();
   const [courseData, setCourseData] = useState();
@@ -12,66 +15,67 @@ const AdminEditCourse = () => {
   const [image, setImageFile] = useState(null);
   const [error, setError] = useState(null);
   const [formValues, setFormValues] = useState({});
-  //delete image
+
+  // Helper: Format date for <input type="date" />
   const formatDate = (isoDate) => {
-    if (!isoDate) return ""; // Handle empty values
-    return new Date(isoDate).toISOString().split("T")[0]; // Extract only the date
+    if (!isoDate) return "";
+    return new Date(isoDate).toISOString().split("T")[0];
   };
-  
+
+  // Delete image
   const handleDeleteImage = async () => {
     try {
       const response = await api.put(`/admin/course/${courseId}/image`, { remove: true });
-
       if (!response.data.success) {
         throw new Error("Failed to delete image");
       } else {
-        alert("Image deleted successfully");
+        
+        enqueueSnackbar("Image deleted successfully", { variant: "success" })
         window.location.reload();
       }
     } catch (error) {
+      enqueueSnackbar("Image deletion unsuccessfully", { variant: "error" })
       console.error(error);
     }
-
   };
-  //upload image
+
+  // Upload image
   const handleImageUpload = async (e) => {
     e.preventDefault();
     const data = new FormData();
     data.append('image', image);
     if (image) {
       try {
-
         const response = await api.put(`/admin/course/${courseId}/image`, data);
         if (!response.data.success) {
           throw new Error("Failed to upload image");
         } else {
-          alert("Image uploaded successfully");
+          enqueueSnackbar("Image uploaded successfully", { variant: "success" })
+          
           window.location.reload();
         }
-
-
       } catch (error) {
         console.error(error);
+        enqueueSnackbar("Image upload unsuccessfully", { variant: "error" })
       }
     } else {
-      alert("Please upload an image");
+      enqueueSnackbar("Please upload an image", { variant: "warning" })
+      
     }
   };
 
-  //fetch course details
+  // Fetch course details
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         const response = await api.get(`/admin/course/${courseId}`);
-
         if (!response.data.success) {
           throw new Error("Failed to fetch course");
         }
-
         const courseData = response.data.course;
         setCourseData(courseData);
 
-        // Split month into year and monthName
+        // Split the courseData.month into year and monthName
         const [year, monthName] = courseData.month.split(" ");
         setFormValues({
           ...courseData,
@@ -89,197 +93,230 @@ const AdminEditCourse = () => {
     fetchCourse();
   }, [courseId]);
 
-
-  // Fetch sections for the course
+  // Handle all input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     setFormValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }));
   };
 
-  //update course
+  // Update course
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-  
     // Reconstruct month in "YYYY MONTH" format
     const updatedFormValues = {
       ...formValues,
       month: `${formValues.year} ${formValues.monthName}`,
     };
-  
+
     try {
       const response = await api.put(`/admin/course/${courseId}`, updatedFormValues);
-  
       if (!response.data.success) {
         throw new Error("Failed to update course");
       }
-  
       alert("Course updated successfully!");
       navigate(`/admin/editcourse/${courseId}`);
     } catch (err) {
       alert(err.message);
     }
   };
-  
 
-  if (loading) return <div className="text-center mt-10">Loading...</div>;
-  if (error) return <div className="text-center mt-10 text-red-500">Error: {error}</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full py-10">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full py-10 text-red-400">
+        <span className="mr-2">Error:</span> {error}
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-md">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Edit Course</h1>
-      <button className='p-2 bg-blue-400' onClick={() => { navigate(`/admin/course/${courseId}`); }}> Coure Details</button>
-      <form onSubmit={handleFormSubmit} className="space-y-4">
+    <div className="container mx-auto p-6 mt-10 bg-gray-800/50 border border-gray-700/50 rounded-md">
+      <h1 className="text-2xl font-semibold text-gray-200 mb-6">Edit Course</h1>
+
+      {/* Go to course details */}
+      <button
+        className="flex items-center px-4 py-2 mb-6 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
+        onClick={() => navigate(`/admin/course/${courseId}`)}
+      >
+        Course Details
+      </button>
+
+      <form onSubmit={handleFormSubmit} className="space-y-6">
+        {/* Batch */}
         <div>
-          <label className="block text-gray-700 font-medium">Batch:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Batch:</label>
           <input
             type="text"
             name="batch"
             value={formValues.batch || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
           />
         </div>
 
+        {/* Course Type */}
         <div>
-          <label className="block text-gray-700 font-medium">Course Type:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Course Type:</label>
           <input
             type="text"
             name="course_type"
             value={formValues.course_type || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
           />
         </div>
+
+        {/* Description */}
         <div>
-          <label className="block text-gray-700 font-medium">Description:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Description:</label>
           <textarea
             name="description"
             value={formValues.description || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
           />
         </div>
+
+        {/* Price */}
         <div>
-          <label className="block text-gray-700 font-medium">Price:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Price:</label>
           <input
             type="number"
             name="price"
             value={formValues.price || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
           />
         </div>
+
+        {/* Year */}
         <div>
-          <label className="block text-gray-700 font-medium">Year:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Year:</label>
           <input
             type="text"
             name="year"
             value={formValues.year || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
           />
         </div>
+
+        {/* Month (as select) */}
         <div>
-          <label className="block text-gray-700 font-medium">Month:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Month:</label>
           <select
             name="monthName"
             value={formValues.monthName || ""}
             onChange={handleInputChange}
             disabled={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
           >
-            {[
-              "JANUARY",
-              "FEBRUARY",
-              "MARCH",
-              "APRIL",
-              "MAY",
-              "JUNE",
-              "JULY",
-              "AUGUST",
-              "SEPTEMBER",
-              "OCTOBER",
-              "NOVEMBER",
-              "DECEMBER",
-            ].map((month) => (
-              <option key={month} value={month}>
-                {month}
-              </option>
-            ))}
+            <option value="JANUARY">JANUARY</option>
+            <option value="FEBRUARY">FEBRUARY</option>
+            <option value="MARCH">MARCH</option>
+            <option value="APRIL">APRIL</option>
+            <option value="MAY">MAY</option>
+            <option value="JUNE">JUNE</option>
+            <option value="JULY">JULY</option>
+            <option value="AUGUST">AUGUST</option>
+            <option value="SEPTEMBER">SEPTEMBER</option>
+            <option value="OCTOBER">OCTOBER</option>
+            <option value="NOVEMBER">NOVEMBER</option>
+            <option value="DECEMBER">DECEMBER</option>
           </select>
         </div>
 
+        {/* Weeks */}
         <div>
-  <label className="block text-gray-700 font-medium">Weeks:</label>
-  <select
-    name="weeks"
-    value={formValues.weeks || ""}
-    onChange={handleInputChange}
-    disabled={!isEditing}
-    className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-      !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-    }`}
-  >
-    <option value="" disabled>
-      Select Weeks
-    </option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-  </select>
-</div>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Weeks:</label>
+          <select
+            name="weeks"
+            value={formValues.weeks || ""}
+            onChange={handleInputChange}
+            disabled={!isEditing}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
+          >
+            <option value="" disabled>
+              Select Weeks
+            </option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
 
+        {/* Start Date */}
         <div>
-          <label className="block text-gray-700 font-medium">Start Date:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Start Date:</label>
           <input
             type="date"
             name="started_at"
             value={formatDate(formValues.started_at) || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
           />
         </div>
+
+        {/* End Date */}
         <div>
-          <label className="block text-gray-700 font-medium">End Date:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">End Date:</label>
           <input
             type="date"
             name="ended_at"
             value={formatDate(formValues.ended_at) || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
+            className={`w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+              focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent 
+              ${!isEditing ? "cursor-not-allowed" : ""}`}
           />
         </div>
+
+        {/* Image Section */}
         <div>
-          <label className="block text-gray-700 font-medium">Image:</label>
+          <label className="block text-sm font-medium text-gray-400 mb-2">Image:</label>
           {formValues.image_url ? (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-32">
               <img
                 src={formValues.image_url}
                 alt="Course"
-                className="w-32 h-32 object-cover rounded"
+                className="w-60 h-48  object-cover rounded-lg border border-gray-700/50"
               />
               <button
                 type="button"
                 onClick={handleDeleteImage}
-                className="bg-red-500 text-white px-4 py-2 rounded shadow hover:bg-red-600"
+                className="flex items-center  px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
               >
                 Delete Photo
               </button>
@@ -289,35 +326,44 @@ const AdminEditCourse = () => {
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => { setImageFile(e.target.files[0]) }}
-                className="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                onChange={(e) => setImageFile(e.target.files[0])}
+                className="w-full bg-gray-800/50 border border-gray-700/50 text-gray-300 rounded-lg px-4 py-2 
+                  focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent"
               />
-              <button className='p-2 bg-blue-400' onClick={handleImageUpload}>Upload</button>
+              <button
+                className="flex items-center mt-2 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
+                onClick={handleImageUpload}
+              >
+                Upload
+              </button>
             </div>
           )}
         </div>
-        <div className="flex justify-between mt-4">
+
+        {/* Actions */}
+        <div className="flex justify-between h-14 mt-6">
           {isEditing ? (
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
+              className="flex items-center px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
             >
               Save Changes
             </button>
-          ) : <div className='px-4 py-2'></div>}
-
+          ) : (
+            <div />
+          )}
 
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600"
+            className="flex items-center px-7 py-2 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors"
           >
             Edit
           </button>
 
           <button
             onClick={() => navigate(`/admin/course/${courseId}`)}
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md shadow hover:bg-gray-400"
+            className="flex items-center  px-4 py-2 bg-gray-700/50 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>
@@ -325,6 +371,6 @@ const AdminEditCourse = () => {
       </form>
     </div>
   );
-}
+};
 
-export default AdminEditCourse
+export default AdminEditCourse;
