@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchStudentsAPI, deactivateStudentStatusAPI, fetchEnrolledStudentsAPI } from "./studentAPI";
+import { fetchStudentsAPI, deactivateStudentStatusAPI, fetchEnrolledStudentsAPI } from "./studentApi";
 
 export const fetchStudents = createAsyncThunk("students/fetch", async () => {
   return await fetchStudentsAPI(); // Centralized API logic
