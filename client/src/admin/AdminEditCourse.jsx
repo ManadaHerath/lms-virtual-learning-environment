@@ -4,114 +4,134 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import api from '../redux/api'
 const AdminEditCourse = () => {
-    const navigate = useNavigate();
-    const { courseId } = useParams();
-    const [courseData, setCourseData] = useState();
-    const [loading, setLoading] = useState(true);
-    const [isEditing, setIsEditing] = useState(false);
-   const [image, setImageFile] = useState(null);
-    const [error, setError] = useState(null);
-    const [formValues, setFormValues] = useState({});
-//delete image
-    const handleDeleteImage = async () => {
-        try {
-            const response =await api.put(`/admin/course/${courseId}/image`, { remove: true });
-            
-            if (!response.data.success) {
-                throw new Error("Failed to delete image");
-            }else{
-                alert("Image deleted successfully");
-                window.location.reload();
-            }
-        } catch (error) {
-            console.error(error);
+  const navigate = useNavigate();
+  const { courseId } = useParams();
+  const [courseData, setCourseData] = useState();
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [image, setImageFile] = useState(null);
+  const [error, setError] = useState(null);
+  const [formValues, setFormValues] = useState({});
+  //delete image
+  const formatDate = (isoDate) => {
+    if (!isoDate) return ""; // Handle empty values
+    return new Date(isoDate).toISOString().split("T")[0]; // Extract only the date
+  };
+  
+  const handleDeleteImage = async () => {
+    try {
+      const response = await api.put(`/admin/course/${courseId}/image`, { remove: true });
+
+      if (!response.data.success) {
+        throw new Error("Failed to delete image");
+      } else {
+        alert("Image deleted successfully");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+
+  };
+  //upload image
+  const handleImageUpload = async (e) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append('image', image);
+    if (image) {
+      try {
+
+        const response = await api.put(`/admin/course/${courseId}/image`, data);
+        if (!response.data.success) {
+          throw new Error("Failed to upload image");
+        } else {
+          alert("Image uploaded successfully");
+          window.location.reload();
         }
-        
-    };
-    //upload image
-    const handleImageUpload = async(e) => {
-        e.preventDefault();
-        const data=new FormData();
-        data.append('image',image);
-       if(image){
-        try {
-            
-            const response = await api.put(`/admin/course/${courseId}/image`, data);
-            if(!response.data.success){
-                throw new Error("Failed to upload image");
-            }else{
-                alert("Image uploaded successfully");
-                window.location.reload();
-            }
-    
-           
-           } catch (error) {
-            console.error(error);
-           }
-       }else{
-        alert("Please upload an image");
-       }
-    };
 
-    //fetch course details
-    useEffect(() => {
-        const fetchCourse = async () => {
-            try {
-                const response = await api.get(`/admin/course/${courseId}`)
 
-                if (!response.data.success) {
-                    throw new Error("Failed to fetch course");
-                }
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      alert("Please upload an image");
+    }
+  };
 
-                const courseData = response.data.course;
-               
-                setCourseData(courseData)
-                setFormValues(courseData);
-                console.log(formValues.started_at);
-                setLoading(false);
-            } catch (err) {
-                setError(err.message);
-                setLoading(false);
-            }
-        };
+  //fetch course details
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const response = await api.get(`/admin/course/${courseId}`);
 
-        fetchCourse();
-    }, [courseId]);
+        if (!response.data.success) {
+          throw new Error("Failed to fetch course");
+        }
 
-    // Fetch sections for the course
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const courseData = response.data.course;
+        setCourseData(courseData);
+
+        // Split month into year and monthName
+        const [year, monthName] = courseData.month.split(" ");
         setFormValues({
-            ...formValues,
-            [name]: value,
+          ...courseData,
+          year: year || "",
+          monthName: monthName || "",
         });
-    };
-//update course
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
-        
-      
-        try {
-            const response = await api.put(`/admin/course/${courseId}`, formValues,);
-            if (!response.data.success) {
-                throw new Error("Failed to update course");
-            }
-            alert("Course updated successfully!");
-            navigate(`/admin/editcourse/${courseId}`);
-        } catch (err) {
-            alert(err.message);
-        }
-       
-        
+
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
     };
 
-    if (loading) return <div className="text-center mt-10">Loading...</div>;
+    fetchCourse();
+  }, [courseId]);
+
+
+  // Fetch sections for the course
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+
+  //update course
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+  
+    // Reconstruct month in "YYYY MONTH" format
+    const updatedFormValues = {
+      ...formValues,
+      month: `${formValues.year} ${formValues.monthName}`,
+    };
+  
+    try {
+      const response = await api.put(`/admin/course/${courseId}`, updatedFormValues);
+  
+      if (!response.data.success) {
+        throw new Error("Failed to update course");
+      }
+  
+      alert("Course updated successfully!");
+      navigate(`/admin/editcourse/${courseId}`);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+  
+
+  if (loading) return <div className="text-center mt-10">Loading...</div>;
   if (error) return <div className="text-center mt-10 text-red-500">Error: {error}</div>;
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-md">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Edit Course</h1>
-        <button className='p-2 bg-blue-400' onClick={()=>{navigate(`/admin/course/${courseId}`);}}> Coure Details</button>
+      <button className='p-2 bg-blue-400' onClick={() => { navigate(`/admin/course/${courseId}`); }}> Coure Details</button>
       <form onSubmit={handleFormSubmit} className="space-y-4">
         <div>
           <label className="block text-gray-700 font-medium">Batch:</label>
@@ -121,12 +141,11 @@ const AdminEditCourse = () => {
             value={formValues.batch || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-              !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-            }`}
+            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
           />
         </div>
-        
+
         <div>
           <label className="block text-gray-700 font-medium">Course Type:</label>
           <input
@@ -135,9 +154,8 @@ const AdminEditCourse = () => {
             value={formValues.course_type || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-              !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-            }`}
+            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
           />
         </div>
         <div>
@@ -147,9 +165,8 @@ const AdminEditCourse = () => {
             value={formValues.description || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-              !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-            }`}
+            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
           />
         </div>
         <div>
@@ -160,48 +177,82 @@ const AdminEditCourse = () => {
             value={formValues.price || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-              !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-            }`}
+            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700 font-medium">Year:</label>
+          <input
+            type="text"
+            name="year"
+            value={formValues.year || ""}
+            onChange={handleInputChange}
+            readOnly={!isEditing}
+            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
           />
         </div>
         <div>
           <label className="block text-gray-700 font-medium">Month:</label>
-          <input
-            type="text"
-            name="month"
-            value={formValues.month || ""}
+          <select
+            name="monthName"
+            value={formValues.monthName || ""}
             onChange={handleInputChange}
-            readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-              !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-            }`}
-          />
+            disabled={!isEditing}
+            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
+          >
+            {[
+              "JANUARY",
+              "FEBRUARY",
+              "MARCH",
+              "APRIL",
+              "MAY",
+              "JUNE",
+              "JULY",
+              "AUGUST",
+              "SEPTEMBER",
+              "OCTOBER",
+              "NOVEMBER",
+              "DECEMBER",
+            ].map((month) => (
+              <option key={month} value={month}>
+                {month}
+              </option>
+            ))}
+          </select>
         </div>
+
         <div>
-          <label className="block text-gray-700 font-medium">Weeks:</label>
-          <input
-            type="number"
-            name="weeks"
-            value={formValues.weeks || ""}
-            onChange={handleInputChange}
-            readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-              !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-            }`}
-          />
-        </div>
+  <label className="block text-gray-700 font-medium">Weeks:</label>
+  <select
+    name="weeks"
+    value={formValues.weeks || ""}
+    onChange={handleInputChange}
+    disabled={!isEditing}
+    className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+      !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+    }`}
+  >
+    <option value="" disabled>
+      Select Weeks
+    </option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
+</div>
+
         <div>
           <label className="block text-gray-700 font-medium">Start Date:</label>
           <input
             type="date"
             name="started_at"
-            value={formValues.started_at || ""}
+            value={formatDate(formValues.started_at) || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-              !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-            }`}
+            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
           />
         </div>
         <div>
@@ -209,12 +260,11 @@ const AdminEditCourse = () => {
           <input
             type="date"
             name="ended_at"
-            value={formValues.ended_at || ""}
+            value={formatDate(formValues.ended_at) || ""}
             onChange={handleInputChange}
             readOnly={!isEditing}
-            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
-              !isEditing ? "bg-gray-100 cursor-not-allowed" : ""
-            }`}
+            className={`w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 ${!isEditing ? "bg-gray-100 cursor-not-allowed" : ""
+              }`}
           />
         </div>
         <div>
@@ -239,10 +289,10 @@ const AdminEditCourse = () => {
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e)=>{setImageFile(e.target.files[0])}}
+                onChange={(e) => { setImageFile(e.target.files[0]) }}
                 className="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
-                <button className='p-2 bg-blue-400' onClick={handleImageUpload}>Upload</button>
+              <button className='p-2 bg-blue-400' onClick={handleImageUpload}>Upload</button>
             </div>
           )}
         </div>
@@ -257,14 +307,14 @@ const AdminEditCourse = () => {
           ) : <div className='px-4 py-2'></div>}
 
 
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600"
-            >
-              Edit
-            </button>
-          
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            className="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600"
+          >
+            Edit
+          </button>
+
           <button
             onClick={() => navigate(`/admin/course/${courseId}`)}
             className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md shadow hover:bg-gray-400"
