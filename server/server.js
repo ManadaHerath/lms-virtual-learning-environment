@@ -24,11 +24,11 @@ credentials: true,// Allow credentials (cookies, etc.)
 }));
 // Middleware to parse incoming JSON requests
 app.use(express.json());
-app.use('/user', AuthRoute);
-app.use('/session',ExtendSessionRoute);
-app.use('/admin',AdminAuthRoute);
-app.use('/course',SectionRoute);
-app.use('/type',TypeRoute);
+app.use('/api/user', AuthRoute);
+app.use('/api/session',ExtendSessionRoute);
+app.use('/api/admin',AdminAuthRoute);
+app.use('/api/course',SectionRoute);
+app.use('/api/type',TypeRoute);
 
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
