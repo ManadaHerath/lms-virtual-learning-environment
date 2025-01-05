@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Menu, X } from "lucide-react"; // Sidebar toggle button icons
-import { FiHome, FiUsers, FiSettings, FiBarChart } from "react-icons/fi"; // Section icons
-import { Link } from "react-router-dom"; // For routing
+import { Menu, X } from "lucide-react";
+import { FiHome, FiUsers, FiSettings, FiLogOut } from "react-icons/fi";
+import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logout } from "../features/auth/authSlice"
+import { logout } from "../features/auth/authSlice";
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -12,85 +12,99 @@ const AdminLayout = ({ children }) => {
   const handleLogout = () => {
     dispatch(logout());
     window.location.reload();
-  }
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const NavLink = ({ to, icon: Icon, children, onClick }) => {
+    const Component = to ? Link : 'button';
+    return (
+      <Component
+        to={to}
+        onClick={onClick}
+        className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700/50 rounded-lg transition-colors duration-200 group relative"
+      >
+        <Icon className="w-6 h-6 mr-4 text-gray-400 group-hover:text-blue-400 transition-colors" />
+        {isSidebarOpen && (
+          <span className="text-sm font-medium group-hover:text-blue-400 transition-colors">
+            {children}
+          </span>
+        )}
+      </Component>
+    );
+  };
+
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-900">
       {/* Sidebar */}
       <div
         className={`${
           isSidebarOpen ? "w-64" : "w-20"
-        } bg-gray-800 text-white transition-all duration-300 relative`}
+        } bg-gray-800/50 backdrop-blur-sm border-r border-gray-700/50 transition-all duration-300 relative flex flex-col`}
       >
-        {/* Profile Image */}
-        <div className="flex items-center justify-center py-6">
-          <img
-            src="https://via.placeholder.com/100" // Replace with your image URL
-            alt="Profile"
-            className={`rounded-full border-4 border-gray-700 ${
-              isSidebarOpen ? "w-20 h-20" : "w-12 h-12"
-            } transition-all duration-300`}
-          />
+        {/* Profile Section */}
+        <div className="flex flex-col items-center py-6 border-b border-gray-700/50">
+          <div className="relative">
+            <img
+              src="https://via.placeholder.com/100"
+              alt="Profile"
+              className={`rounded-full ${
+                isSidebarOpen ? "w-20 h-20" : "w-12 h-12"
+              } transition-all duration-300 ring-2 ring-gray-700 ring-offset-2 ring-offset-gray-800`}
+            />
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full ring-2 ring-gray-800"></div>
+          </div>
+          {isSidebarOpen && (
+            <div className="mt-4 text-center">
+              <h2 className="text-lg font-medium text-gray-200">Admin User</h2>
+              <p className="text-sm text-gray-400">administrator</p>
+            </div>
+          )}
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex-1">
-          <ul className="space-y-4">
-            <li>
-              <Link
-                to="/admin"
-                className="flex items-center px-4 py-2 hover:bg-gray-700"
-              >
-                <FiHome size={24} className="mr-4" />
-                {isSidebarOpen && <span>Dashboard</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/courses"
-                className="flex items-center px-4 py-2 hover:bg-gray-700"
-              >
-                <FiUsers size={24} className="mr-4" />
-                {isSidebarOpen && <span>Courses</span>}
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/admin/student"
-                className="flex items-center px-4 py-2 hover:bg-gray-700"
-              >
-                <FiSettings size={24} className="mr-4" />
-                {isSidebarOpen && <span>Students</span>}
-              </Link>
-            </li>
-            <li>
-              <a
-                href="/admin/login"
-                className="flex items-center px-4 py-2 hover:bg-gray-700"
-                onClick={ handleLogout }
-              >
-                <FiBarChart size={24} className="mr-4" />
-                {isSidebarOpen && <span>Logout</span>}
-              </a>
-            </li>
-          </ul>
+        {/* Navigation */}
+        <nav className="flex-1 px-3 py-4">
+          <div className="space-y-1">
+            <NavLink to="/admin" icon={FiHome}>
+              Dashboard
+            </NavLink>
+            <NavLink to="/admin/courses" icon={FiUsers}>
+              Courses
+            </NavLink>
+            <NavLink to="/admin/student" icon={FiSettings}>
+              Students
+            </NavLink>
+          </div>
+          
+          {/* Logout Section */}
+          <div className="absolute bottom-4 w-full left-0 px-3">
+            <NavLink icon={FiLogOut} onClick={handleLogout}>
+              Logout
+            </NavLink>
+          </div>
         </nav>
 
-        {/* Sidebar Toggle Button */}
+        {/* Sidebar Toggle */}
         <button
           onClick={toggleSidebar}
-          className="absolute top-0 right-0 transform translate-x-8 bg-gray-800 text-white p-1 rounded-s invert shadow-lg"
+          className="absolute -right-3 top-6 transform transition-transform bg-gray-700 text-gray-300 p-1.5 rounded-full shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 focus:ring-offset-gray-800"
         >
-          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          {isSidebarOpen ? (
+            <X className="w-4 h-4" />
+          ) : (
+            <Menu className="w-4 h-4" />
+          )}
         </button>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">{children}</div>
+      <div className="flex-1 overflow-auto bg-gray-900">
+        <div className="container mx-auto p-6">
+          {children}
+        </div>
+      </div>
     </div>
   );
 };
