@@ -223,7 +223,7 @@ const CoursePage = () => {
 
                         <div className="mt-6">
                           {isYouTubeLink(section.content_url) ? (
-                            isPaid ? (
+                            isPaid && paymentType === "online" ? (
                               <YouTube
                                 videoId={extractYouTubeVideoId(section.content_url)}
                                 opts={{
@@ -235,7 +235,7 @@ const CoursePage = () => {
                             ) : (
                               <div className="bg-gray-100 rounded-lg p-8 text-center">
                                 <Lock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                <p className="text-gray-600">Enroll to access this content</p>
+                                <p className="text-gray-600">Enroll online to access this content</p>
                               </div>
                             )
                           ) : (
