@@ -112,6 +112,25 @@ const CoursePage = () => {
     : "Course Details";
 
   return (
+
+    <div className="container mx-auto p-4">
+      <div className="p-4 mb-6 border rounded-lg bg-gray-50">
+        {paymentType === "online" || paymentType === "physical" ? (
+          <div className="text-green-500 font-semibold">You have paid for this course!</div>
+        ) : (
+          <div>
+            <p className="mb-2 text-gray-700">
+              Course Price: <span className="font-bold text-lg">${coursePrice}</span>
+            </p>
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={handleCheckout}
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+        )}
+
     <div className="container mx-auto p-6">
     {courseDetails && (
       <div className="bg-white shadow rounded-lg p-8 mb-10 flex flex-col md:flex-row items-center md:items-start">
@@ -126,6 +145,7 @@ const CoursePage = () => {
             {courseDetails.description}
           </p>
         </div>
+
       </div>
     )}
 
@@ -174,8 +194,17 @@ const CoursePage = () => {
                       <h3 className="text-lg font-semibold text-gray-800">{section.title}</h3>
                       <p className="text-sm text-gray-600">{section.description}</p>
 
+
+                      {paymentType === null ? (
+                        <div className="text-gray-500">
+                          <span>Content locked. Please proceed to checkout to unlock.</span>
+                        </div>
+                      ) : isYouTubeLink(section.content_url) ? (
+                        <div className="text-gray-500">
+
                       {isYouTubeLink(section.content_url) ? (
                         <div className="mt-4">
+
                           {paymentType === "online" ? (
                             <YouTube
                               videoId={extractYouTubeVideoId(section.content_url)}
@@ -202,6 +231,16 @@ const CoursePage = () => {
                     </div>
 
                     <button
+
+                      className={`px-4 py-2 rounded-lg font-semibold ${
+                        paymentType !== "online" || paymentType === null
+                          ? "bg-gray-500 text-white cursor-not-allowed"
+                          : section.mark_as_done === 1
+                          ? "bg-green-100 text-black"
+                          : "bg-blue-100 text-black"
+                      }`}
+                      disabled={paymentType !== "online" || paymentType === null}
+
                       onClick={() =>
                         paymentType === "online" &&
                         handleMarkAsDone(section.id, section.mark_as_done)
