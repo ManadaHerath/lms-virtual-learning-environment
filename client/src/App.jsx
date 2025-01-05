@@ -75,7 +75,6 @@ function App() {
             />
           </Route>
 
-          <Route path="/admin/create-quiz" element={<CreateQuiz />} />
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLog />} />
           {/* Protected Admin Routes */}
@@ -109,6 +108,7 @@ function App() {
                       path="editcourse/:courseId"
                       element={<AdminEditCourse />}
                     />
+                    <Route path="create-quiz" element={<CreateQuiz />} />
                   </Routes>
                 </AdminLayout>
               }
