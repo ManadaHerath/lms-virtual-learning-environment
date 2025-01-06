@@ -3,8 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
 import api from "../redux/api";
 import { Trash2, PlusCircle, AlertCircle } from "lucide-react";
+import { useSnackbar } from "notistack";
 
 const AdminCoursePage = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const { courseId } = useParams();
   const navigate = useNavigate();
 
@@ -20,10 +22,12 @@ const AdminCoursePage = () => {
         throw new Error("Failed to delete section");
       }
       setWeeks(weeks.filter((w) => w.sections.some((s) => s.id !== sectionId)));
-      alert(response.data.message);
+      enqueueSnackbar("Section delete successfull", { variant: "success" })
+      
       window.location.reload();
     } catch (err) {
       setError(err.message);
+      enqueueSnackbar(err.message, { variant: "error" })
     }
   };
 
@@ -33,9 +37,11 @@ const AdminCoursePage = () => {
       if (!response.data.success) {
         throw new Error("Failed to delete course");
       }
-      alert(response.data.message);
+      enqueueSnackbar("Course delete successfull", { variant: "success" })
+      
       navigate("/admin/courses");
     } catch (err) {
+      enqueueSnackbar(err.message, { variant: "error" })
       setError(err.message);
     }
   };
@@ -48,6 +54,7 @@ const AdminCoursePage = () => {
         if (!response.data.success) {
           throw new Error("Failed to fetch course");
         }
+
         setCourseData(response.data.course);
         setLoading(false);
       } catch (err) {
@@ -174,7 +181,7 @@ const AdminCoursePage = () => {
                     <p className="text-gray-400">No sections available for this week.</p>
                   )}
                 </div>
-                <div className="flex flex-row space-x-6">
+                <div>
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -185,16 +192,7 @@ const AdminCoursePage = () => {
                   <PlusCircle className="w-5 h-5 mr-2" />
                   Add Section
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate(`/admin/create_section/${courseId}/${weekId}`);
-                  }}
-                  className="flex items-center mt-4 px-4 py-2 bg-teal-900 text-teal-300 rounded-lg  hover:bg-teal-800 transition-colors"
-                >
-                  <PlusCircle className="w-5 h-5 mr-2" />
-                  Add Quiz
-                </button>
+                
                 </div>
               </div>
             );

@@ -178,6 +178,16 @@ const QuizController = {
       res.status(500).json({ success: false, message: "Failed to fetch quiz info" });
     }
   },
+  getAllQuizes:async(req,res)=>{
+    try {
+      const quizzes=await QuizModel.getAllQuizes();
+      
+      res.status(200).json( {quizzes:quizzes,success:true});
+    } catch (error) {
+      console.error(error);
+    res.status(500).json({ error: 'Failed to fetch quizzes',success:false });
+    }
+  }
   
 };
 

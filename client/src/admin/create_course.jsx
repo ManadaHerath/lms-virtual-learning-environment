@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Upload, Calendar, Book, DollarSign, Clock, Image as ImageIcon } from 'lucide-react';
 import api from '../redux/api';
-
+import { useSnackbar } from "notistack";
 const UploadCourse = () => {
   // State to manage form data
+  const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({
+    
     course_type: '',
     batch: '',
     month: '',
@@ -63,7 +65,8 @@ const UploadCourse = () => {
 
     try {
       const response = await api.post('/admin/upload-course', data);
-      alert('Course uploaded successfully!');
+      enqueueSnackbar("Course uploaded successfully!", { variant: "success" })
+    
       // Optionally, reset the form
       setFormData({
         course_type: '',
@@ -79,7 +82,8 @@ const UploadCourse = () => {
       setImagePreview(null); // Reset image preview
     } catch (error) {
       console.error(error);
-      alert('Error uploading course.');
+      enqueueSnackbar("Error uploading course", { variant: "error" })
+    
     }
   };
 
@@ -164,7 +168,7 @@ const UploadCourse = () => {
                 />
               </div>
 
-           
+
 
               {/* Number of Weeks */}
               <div className="relative">
@@ -175,14 +179,21 @@ const UploadCourse = () => {
                   type="number"
                   name="weeks"
                   placeholder="Number of Weeks"
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const value = Math.max(4, Math.min(5, Number(e.target.value))); // Ensure the value is between 4 and 5
+                    handleChange({ target: { name: "weeks", value } }); // Update formData correctly
+                  }}
                   value={formData.weeks}
+                  min="4" // Minimum value allowed
+                  max="5" // Maximum value allowed
+                  step="1" // Increment/Decrement by 1
                   required
                   className="w-full pl-10 px-4 py-2 bg-gray-800/50 border border-gray-700/50 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent placeholder-gray-500"
                 />
+
               </div>
 
-             
+
             </div>
 
             {/* Right Column */}
@@ -216,7 +227,7 @@ const UploadCourse = () => {
                   className="w-full pl-10 px-4 py-2 bg-gray-800/50 border border-gray-700/50 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent placeholder-gray-500"
                 />
               </div>
-              
+
 
               {/* Start and End Dates */}
               <div className="grid grid-cols-2 gap-4">
@@ -224,20 +235,20 @@ const UploadCourse = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-2">Start Date</label>
                   <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Calendar className="h-5 w-5 text-gray-500" />
-                </div>
-                <input
-                  type="date"
-                  name="started_at"
-                
-                  onChange={handleChange}
-                  value={formData.started_at}
-                  required
-                  className="w-full pl-10 px-4 py-2 bg-gray-800/50 border border-gray-700/50 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent placeholder-gray-500"
-                />
-              </div>
-                  
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Calendar className="h-5 w-5 text-gray-500" />
+                    </div>
+                    <input
+                      type="date"
+                      name="started_at"
+
+                      onChange={handleChange}
+                      value={formData.started_at}
+                      required
+                      className="w-full pl-10 px-4 py-2 bg-gray-800/50 border border-gray-700/50 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-transparent placeholder-gray-500"
+                    />
+                  </div>
+
                 </div>
 
                 {/* End Date */}

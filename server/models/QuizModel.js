@@ -124,8 +124,13 @@ const QuizModel = {
   `;
   const [rows] = await pool.query(query, [nic, quizId]);
   return rows.length > 0;
-}
-
+},
+ getAllQuizes:async()=>{
+  const query=`select id,title,description from Quiz`;
+  const [rows]=await pool.query(query);
+ 
+  return rows;
+ }
   
 };
 
