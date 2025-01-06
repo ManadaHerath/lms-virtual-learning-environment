@@ -96,7 +96,7 @@ const Registration = () => {
                 Student Registration
               </h1>
               <p className="text-gray-600">
-                Please upload your NIC picture with student identification
+                Please upload your picture with holding NIC
               </p>
             </div>
 
