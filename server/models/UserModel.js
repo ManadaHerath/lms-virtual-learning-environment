@@ -406,6 +406,7 @@ const UserModel = {
   },
 
   isEligibleForQuiz: async (nic, courseId) => {
+    
     const query = `
       SELECT 1
       FROM Enrollment e
