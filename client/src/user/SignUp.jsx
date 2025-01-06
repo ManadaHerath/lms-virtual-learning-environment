@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../redux/api";
@@ -8,7 +9,6 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState("");
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     nic: "",
@@ -42,10 +42,7 @@ const Signup = () => {
   const validateFirstStep = () => {
     const newErrors = {};
 
-    if (
-      !formData.nic.match(/^\d{9}[vxVX]|\d{12}$/) &&
-      formData.nic.length > 12
-    ) {
+    if (!formData.nic.match(/^\d{9}[vxVX]|\d{12}$/)) {
       newErrors.nic = "Invalid NIC format.";
     }
     if (!formData.first_name.trim()) {
@@ -58,7 +55,7 @@ const Signup = () => {
       newErrors.email = "Invalid email address.";
     }
     if (formData.password.length < 8) {
-      newErrors.password = "must be at least 8";
+      newErrors.password = "Password must be at least 8 characters.";
     }
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match.";
@@ -68,70 +65,14 @@ const Signup = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateSecondStep = () => {
-    const newErrors = {};
-
-    // Telephone validation
-    if (!formData.telephone.match(/^\d{10}$/)) {
-      newErrors.telephone = "Please enter a valid 10-digit telephone number.";
-    }
-
-    // Required fields validation
-    if (!formData.street_address.trim()) {
-      newErrors.street_address = "Street address is required.";
-    }
-    if (!formData.city.trim()) {
-      newErrors.city = "City is required.";
-    }
-    if (!formData.province.trim()) {
-      newErrors.province = "Province is required.";
-    }
-    if (!formData.postal_code.trim()) {
-      newErrors.postal_code = "Postal code is required.";
-    }
-    if (!formData.date_of_birth) {
-      newErrors.date_of_birth = "Date of birth is required.";
-    }
-    if (!formData.batch.trim()) {
-      newErrors.batch = "Batch is required.";
-    }
-
-    // Add age validation
-    const birthDate = new Date(formData.date_of_birth);
-    const today = new Date();
-    const age = today.getFullYear() - birthDate.getFullYear();
-    if (age < 16) {
-      newErrors.date_of_birth =
-        "You must be at least 16 years old to register.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleNextStep = () => {
-    if (step === 1) {
-      if (validateFirstStep()) {
-        setStep(2);
-      }
-    } else if (step === 2) {
-      if (validateSecondStep()) {
-        // Don't call handleSubmit directly
-        // Let the form's onSubmit handle it
-        return true;
-      }
+    if (validateFirstStep()) {
+      setStep(2);
     }
-    return false;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate based on current step
-    if (step === 1 || !validateSecondStep()) {
-      return;
-    }
-
     setErrors({});
     setSuccessMessage("");
 
@@ -142,7 +83,6 @@ const Signup = () => {
       }
     }
 
-    setIsSubmitting(true);
     try {
       const response = await api.post("/user/signup", data, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -156,9 +96,6 @@ const Signup = () => {
       }
     } catch (err) {
       console.error(err);
-      setErrors({ submit: err.response?.data?.message || "An error occurred" });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -178,8 +115,8 @@ const Signup = () => {
           >
             {step === 1 ? (
               <>
-                {/* First Step Fields */}
-                <div className="mb-8 justify-center flex flex-col items-center">
+                              {/* First Step Fields */}
+                              <div className="mb-8 justify-center flex flex-col items-center">
                   <h1 className="text-6xl font-bold text-white animate-glow">
                     Join Us
                   </h1>
@@ -264,9 +201,6 @@ const Signup = () => {
                       className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
                       required
                     />
-                    {errors.email && (
-                      <div className="text-red-400 text-sm">{errors.email}</div>
-                    )}
                   </div>
 
                   {/* Password */}
@@ -284,11 +218,6 @@ const Signup = () => {
                         className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
                         required
                       />
-                      {errors.password && (
-                        <div className="text-red-400 text-sm">
-                          {errors.password}
-                        </div>
-                      )}
                     </div>
                     <div className="group">
                       <label className="block text-sm font-medium text-indigo-200 mb-1">
@@ -303,11 +232,6 @@ const Signup = () => {
                         className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
                         required
                       />
-                      {errors.confirmPassword && (
-                        <div className="text-red-400 text-sm">
-                          {errors.confirmPassword}
-                        </div>
-                      )}
                     </div>
                     {passwordError && (
                       <div className="text-red-400 text-sm">
@@ -345,11 +269,6 @@ const Signup = () => {
                backdrop-blur-sm transition-all duration-300
                group-hover:border-indigo-400 group-hover:bg-slate-800/70"
                       />
-                      {errors.telephone && (
-                        <div className="text-red-400 text-sm">
-                          {errors.telephone}
-                        </div>
-                      )}
                     </div>
 
                     <div className="group">
@@ -483,22 +402,17 @@ const Signup = () => {
                       </button>
                       <button
                         type="submit"
-                        className={`w-1/2 p-2 relative overflow-hidden rounded-lg transition-all duration-300
-                          bg-gradient-to-r from-indigo-600/80 to-purple-600/80 
-                          hover:from-indigo-500 hover:to-purple-500
-                          text-white font-semibold
-                          before:absolute before:inset-0 before:bg-white/20 
-                          before:translate-x-[150%] before:skew-x-[-45deg] before:transition-transform
-                          hover:before:translate-x-[-150%] before:duration-700
-                          hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]
-                          backdrop-blur-sm
-                          ${
-                            isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
-                        onClick={handleSubmit}
-                        disabled={isSubmitting}
+                        className="w-1/2 p-2 relative overflow-hidden rounded-lg transition-all duration-300
+               bg-gradient-to-r from-indigo-600/80 to-purple-600/80 
+               hover:from-indigo-500 hover:to-purple-500
+               text-white font-semibold
+               before:absolute before:inset-0 before:bg-white/20 
+               before:translate-x-[150%] before:skew-x-[-45deg] before:transition-transform
+               hover:before:translate-x-[-150%] before:duration-700
+               hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]
+               backdrop-blur-sm"
                       >
-                        {isSubmitting ? "Submitting..." : "Complete"}
+                        Complete
                       </button>
                     </div>
                   </div>

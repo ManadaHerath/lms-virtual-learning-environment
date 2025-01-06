@@ -63,4 +63,5 @@ router.post(
   AuthMiddleware(["admin"]), // Only admins can create quizzes
   QuizController.createQuiz
 );
+router.get('/quizzes',AuthMiddleware(['admin']),QuizController.getAllQuizes);
 module.exports = router;
