@@ -17,7 +17,7 @@ const QuizReview = () => {
         const token = localStorage.getItem("authToken");
 
         const reviewResponse=await api.get(`/user/quiz/${quizId}/review/${courseId}`)
-        const detailsResponse=await api.get(`/user/quiz/${quizId}`)
+        const detailsResponse=await api.get(`/user/quiz/${quizId}/${courseId}`)
         
 
         if (!reviewResponse.status === 200 || !detailsResponse.status === 200) {
@@ -25,6 +25,7 @@ const QuizReview = () => {
         }
 
         const reviewData = reviewResponse.data;
+        console.log(reviewData);
         const detailsData = detailsResponse.data;
 
         if (!reviewData.success || !detailsData.success) {
