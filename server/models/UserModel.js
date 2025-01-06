@@ -405,6 +405,18 @@ const UserModel = {
     return rows.length ? rows[0].status : null;
   },
 
+  isEligibleForQuiz: async (nic, courseId) => {
+    const query = `
+      SELECT 1
+      FROM Enrollment e
+      LEFT JOIN Payment p ON e.enrollment_id = p.enrollment_id
+      WHERE e.nic = ? AND e.course_id = ? AND p.payment_id IS NOT NULL
+    `;
+    const [rows] = await pool.execute(query, [nic, courseId]);
+    return rows.length > 0; // Return true if any row exists
+  },
+  
+
 
 };
 
