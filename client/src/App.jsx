@@ -50,18 +50,18 @@ function App() {
                   <Routes>
                     <Route path="/register" element={<Registration />} />
                     <Route
-                      path="/quizdetail/:quizId"
+                      path="/quizdetail/:quizId/:courseId"
                       element={<QuizDetail />}
                     />
                     <Route
-                      path="/quizreview/:quizId"
+                      path="/quizreview/:quizId/:courseId"
                       element={<QuizReview />}
                     />
                     <Route path="/quiz/:quizId" element={<Quiz />} />
                     <Route path="/" element={<CourseList />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route
-                      path="/courses/:courseId"
+                      path="/courses/:courseId/:courseId"
                       element={<CourseDetail />}
                     />
                     <Route path="/cart" element={<CartPage />} />

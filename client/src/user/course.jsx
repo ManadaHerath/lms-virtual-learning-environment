@@ -57,7 +57,7 @@ const CoursePage = () => {
 
   const handleNavigateContent = (section) => {
     if (section.type_id === 3 && section.quiz_id) {
-      navigate(`/quizdetail/${section.quiz_id}?courseId=${courseId}`);
+      navigate(`/quizdetail/${section.quiz_id}/courseId=${courseId}`);
     } else if (!isYouTubeLink(section.content_url)) {
       navigate(section.content_url);
     }
