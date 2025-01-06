@@ -25,7 +25,8 @@ const Dashboard = () => {
         setMyCourses(coursesResponse.data || []);
         setPaymentHistory(paymentsResponse.data.payments || []);
         setRegistered(profileResponse.data.user.status);
-      } catch (err) {
+      }
+      catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
@@ -434,7 +435,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Calendar Days */}
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 gap-1 pb-5">
                   {/* Empty cells for days before the first of the month */}
                   {Array.from({
                     length: new Date(
@@ -461,34 +462,7 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Selected Date Events (placeholder) */}
-              <div className="mt-8 w-full max-w-3xl">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Events for{" "}
-                  {selectedDate.toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </h3>
-                <div className="space-y-3">
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex-shrink-0">
-                        <div className="h-3 w-3 rounded-full bg-blue-500"></div>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          No events scheduled
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Add new events from the course schedule
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
