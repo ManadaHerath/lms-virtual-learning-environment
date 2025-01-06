@@ -164,10 +164,6 @@ const UserLayout = ({ children }) => {
                         <span className="text-sm font-medium">
                           {item.label}
                         </span>
-                        <ChevronRight
-                          size={16}
-                          className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                        />
                       </div>
                     )}
                     {/* Tooltip for small screens */}
