@@ -4,6 +4,7 @@ import { Clock, Calendar, Timer, BookOpen, CheckCircle, AlertTriangle } from "lu
 import api from "../redux/api";
 
 const QuizDetails = () => {
+  const { courseId } = useParams();
   const { quizId } = useParams();
   const navigate = useNavigate();
 
@@ -19,7 +20,7 @@ const QuizDetails = () => {
   useEffect(() => {
     const fetchQuizInfo = async () => {
       try {
-        const response = await api.get(`/user/quiz/${quizId}/info`);
+        const response = await api.get(`/user/quiz/${quizId}/info//${courseId}`);
         if (response.status !== 200) {
           throw new Error("Failed to fetch quiz details");
         }
@@ -66,11 +67,11 @@ const QuizDetails = () => {
     if (openTime > currentTime) {
       return;
     }
-    navigate(`/quiz/${quizId}`);
+    navigate(`/quiz/${quizId}/${courseId}`);
   };
 
   if (hasResponded) {
-    navigate(`/quizreview/${quizId}`);
+    navigate(`/quizreview/${quizId}/${courseId}`);
     return null;
   }
 

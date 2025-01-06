@@ -4,6 +4,7 @@ import { AlertTriangle, BookOpen, CheckCircle } from "lucide-react";
 import api from "../redux/api";
 
 const QuizReview = () => {
+  const { courseId } = useParams();
   const { quizId } = useParams();
   const [reviewData, setReviewData] = useState([]);
   const [quizDetails, setQuizDetails] = useState(null);
@@ -16,7 +17,7 @@ const QuizReview = () => {
         const token = localStorage.getItem("authToken");
 
         const [reviewResponse, detailsResponse] = await Promise.all([
-          api.get(`/user/quiz/${quizId}/review`, {
+          api.get(`/user/quiz/${quizId}/review/${courseId}`, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           }),

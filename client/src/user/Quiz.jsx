@@ -4,6 +4,7 @@ import { Clock, AlertTriangle, CheckCircle, Timer, BookOpen } from "lucide-react
 import api from "../redux/api";
 
 const QuizPage = () => {
+  const { courseId } = useParams();
   const { quizId } = useParams();
   const navigate = useNavigate();
   const [quiz, setQuiz] = useState(null);
@@ -34,7 +35,7 @@ const QuizPage = () => {
   useEffect(() => {
     const fetchQuizInfo = async () => {
       try {
-        const response = await api.get(`/user/quiz/${quizId}/info`);
+        const response = await api.get(`/user/quiz/${quizId}/info/${courseId}`);
         if (response.status !== 200) throw new Error("Failed to fetch quiz details");
         
         const data = response.data;
@@ -73,7 +74,7 @@ const QuizPage = () => {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await api.get(`/user/quiz/${quizId}`);
+        const response = await api.get(`/user/quiz/${quizId}/${courseId}`);
         if (response.data.success) {
           setQuiz(response.data.quiz);
         } else {

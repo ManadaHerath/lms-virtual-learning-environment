@@ -3,14 +3,14 @@ const { isEligibleForQuiz } = require("../models/UserModel");
 const QuizEligibleMiddleware = async (req, res, next) => {
     try {
       const user = req.user; // Use req.user from AuthMiddleware
-      const { quizId } = req.params;
+      const { courseId } = req.params;
   
       if (user.userType === "admin") {
         return next(); // Admins bypass eligibility checks
       }
   
       if (user.userType === "student") {
-        const eligible = await isEligibleForQuiz(user.nic, quizId); // Pass necessary params
+        const eligible = await isEligibleForQuiz(user.nic, courseId); // Pass necessary params
         if (eligible) {
           return next();
         }

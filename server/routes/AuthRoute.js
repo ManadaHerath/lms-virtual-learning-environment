@@ -74,7 +74,7 @@ router.get("/payments", AuthMiddleware(["student", "admin"]), UserController.get
 // Routes for quizzes
 // Student routes
 router.get(
-  "/quiz/:quizId",
+  "/quiz/:quizId/:courseId",
   AuthMiddleware(["student", "admin"]), // Both students and admins can view quiz details
   QuizEligibleMiddleware, // Check if the quiz is available
   QuizController.getQuizDetails
@@ -83,20 +83,19 @@ router.get(
 router.post(
   "/submit-quiz",
   AuthMiddleware(["student"]), // Only students can submit quizzes
-  QuizEligibleMiddleware,
   QuizController.submitQuiz
 );
 
 // Quiz review for students
 router.get(
-  "/quiz/:quizId/review",
+  "/quiz/:quizId/review/:courseId",
   AuthMiddleware(["student"]), // Only students can access quiz reviews
   QuizEligibleMiddleware,
   QuizController.getQuizReview
 );
 
 router.get(
-  "/quiz/:quizId/info",
+  "/quiz/:quizId/info/:courseId",
   AuthMiddleware(["student", "admin"]), // Accessible to both students and admins
   QuizEligibleMiddleware,
   QuizController.getQuizInfoById
