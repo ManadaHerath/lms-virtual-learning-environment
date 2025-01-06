@@ -4,6 +4,7 @@ const upload = require("../config/multer");
 const UserController = require("../controllers/UserController");
 const QuizController = require("../controllers/QuizController");
 const AuthMiddleware = require("../middleware/Authmiddleware");
+const QuizEligibleMiddleware = require("../middleware/QuizEligibleMiddleware");
 const RegistrationController = require("../controllers/RegistrationController");
 const CourseController = require("../controllers/CourseController");
 
@@ -75,12 +76,14 @@ router.get("/payments", AuthMiddleware(["student", "admin"]), UserController.get
 router.get(
   "/quiz/:quizId",
   AuthMiddleware(["student", "admin"]), // Both students and admins can view quiz details
+  QuizEligibleMiddleware, // Check if the quiz is available
   QuizController.getQuizDetails
 );
 
 router.post(
   "/submit-quiz",
   AuthMiddleware(["student"]), // Only students can submit quizzes
+  QuizEligibleMiddleware,
   QuizController.submitQuiz
 );
 
@@ -88,12 +91,14 @@ router.post(
 router.get(
   "/quiz/:quizId/review",
   AuthMiddleware(["student"]), // Only students can access quiz reviews
+  QuizEligibleMiddleware,
   QuizController.getQuizReview
 );
 
 router.get(
   "/quiz/:quizId/info",
   AuthMiddleware(["student", "admin"]), // Accessible to both students and admins
+  QuizEligibleMiddleware,
   QuizController.getQuizInfoById
 );
 
