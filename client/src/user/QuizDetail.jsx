@@ -20,7 +20,7 @@ const QuizDetails = () => {
   useEffect(() => {
     const fetchQuizInfo = async () => {
       try {
-        const response = await api.get(`/user/quiz/${quizId}/info//${courseId}`);
+        const response = await api.get(`/user/quiz/${quizId}/info/${courseId}`);
         if (response.status !== 200) {
           throw new Error("Failed to fetch quiz details");
         }

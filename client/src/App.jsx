@@ -57,11 +57,13 @@ function App() {
                       path="/quizreview/:quizId/:courseId"
                       element={<QuizReview />}
                     />
-                    <Route path="/quiz/:quizId" element={<Quiz />} />
+                    <Route path="/quiz/:quizId/:courseId" element={<Quiz />} />
                     <Route path="/" element={<CourseList />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route
-                      path="/courses/:courseId"
+
+                      path="/courses/:courseId/"
+
                       element={<CourseDetail />}
                     />
                     <Route path="/cart" element={<CartPage />} />
