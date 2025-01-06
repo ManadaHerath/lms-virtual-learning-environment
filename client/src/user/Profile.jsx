@@ -34,7 +34,7 @@ const Profile = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.put('/user/editprofile', formData);
+      const response = await api.put("/user/editprofile", formData);
       if (!response.status === 200) throw new Error("Failed to update profile");
       setUser(formData);
       setEditMode(false);
@@ -106,7 +106,7 @@ const Profile = () => {
                     <Camera className="w-8 h-8 text-white/70" />
                   </div>
                 )}
-                <label 
+                <label
                   className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer transform transition-transform hover:scale-110"
                   onMouseEnter={() => setUploadHover(true)}
                   onMouseLeave={() => setUploadHover(false)}
@@ -119,9 +119,19 @@ const Profile = () => {
                     onChange={(e) => setImageFile(e.target.files[0])}
                   />
                 </label>
+                {user?.image_url && (
+                  <button
+                    onClick={handlePictureRemove}
+                    className="absolute top-0 right-0 bg-white rounded-full p-2 shadow-lg cursor-pointer transform transition-transform hover:scale-110"
+                  >
+                    <X className="w-4 h-4 text-red-600" />
+                  </button>
+                )}
               </div>
               <div className="text-white">
-                <h1 className="text-2xl md:text-3xl font-bold">{user?.first_name} {user?.last_name}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold">
+                  {user?.first_name} {user?.last_name}
+                </h1>
                 <p className="text-blue-100 mt-1">{user?.email}</p>
               </div>
             </div>
@@ -131,15 +141,26 @@ const Profile = () => {
           <div className="p-8">
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
-              {!editMode ? (
-                <button
-                  onClick={() => setEditMode(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" />
-                  Edit Profile
-                </button>
-              ) : null}
+              <div className="flex items-center gap-3">
+                {!editMode && imageFile && (
+                  <button
+                    onClick={handlePictureChange}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Save className="w-4 h-4" />
+                    Upload Picture
+                  </button>
+                )}
+                {!editMode ? (
+                  <button
+                    onClick={() => setEditMode(true)}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                    Edit Profile
+                  </button>
+                ) : null}
+              </div>
             </div>
 
             {!editMode ? (
@@ -165,7 +186,9 @@ const Profile = () => {
                     <MapPin className="w-5 h-5 text-gray-400" />
                     <div>
                       <p className="text-sm font-medium text-gray-500">Location</p>
-                      <p className="text-gray-900">{user?.city}, {user?.province}</p>
+                      <p className="text-gray-900">
+                        {user?.city}, {user?.province}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

@@ -262,10 +262,10 @@ const Dashboard = () => {
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                     >
                       <span className="text-sm font-medium text-gray-900">
-                        {course.name}
+                        {course.month}
                       </span>
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        ${course.price}
+                        Rs.{course.price}
                       </span>
                     </div>
                   ))}

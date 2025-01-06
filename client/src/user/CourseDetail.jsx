@@ -47,7 +47,7 @@ const CourseDetail = () => {
         throw new Error("You have already enrolled");
       }
       const data = await response.data;
-      showToast(data.message, 'success');
+      showToast(data.message, 'error');
       setEnrolled(true);
     } catch (err) {
       showToast(err.message, 'error');
@@ -88,9 +88,9 @@ const CourseDetail = () => {
     setTimeout(() => {
       toast.classList.add('opacity-0', 'translate-y-2');
       setTimeout(() => toast.remove(), 300);
-    }, 4000);
+    }, 2000);
 
-    window.location.reload();
+
   };
 
 
