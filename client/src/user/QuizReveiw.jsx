@@ -16,16 +16,9 @@ const QuizReview = () => {
       try {
         const token = localStorage.getItem("authToken");
 
-        const [reviewResponse, detailsResponse] = await Promise.all([
-          api.get(`/user/quiz/${quizId}/review/${courseId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }),
-          api.get(`/user/quiz/${quizId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          }),
-        ]);
+        const reviewResponse=await api.get(`/user/quiz/${quizId}/review/${courseId}`)
+        const detailsResponse=await api.get(`/user/quiz/${quizId}`)
+        
 
         if (!reviewResponse.status === 200 || !detailsResponse.status === 200) {
           throw new Error("Failed to fetch quiz review or details");

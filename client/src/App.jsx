@@ -64,6 +64,7 @@ function App() {
 
                       path="/courses/:courseId/"
 
+
                       element={<CourseDetail />}
                     />
                     <Route path="/cart" element={<CartPage />} />
