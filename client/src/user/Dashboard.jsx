@@ -266,7 +266,7 @@ const Dashboard = () => {
                         {course.month}
                       </span>
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        Rs.{course.price}
+                        {course.course_type}
                       </span>
                     </div>
                   ))}
