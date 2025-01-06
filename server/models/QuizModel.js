@@ -2,24 +2,42 @@ const pool = require("../config/dbconfig");
 
 const QuizModel = {
   createQuiz: async (quizData) => {
-    const { title, description, open_time, close_time, time_limit_minutes, review_available_time } = quizData;
+    const { title, description, open_time, time_limit_minutes, review_available_time } = quizData;
     const query = `
-      INSERT INTO Quiz (title, description, open_time, close_time, time_limit_minutes, review_available_time)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO Quiz (title, description, open_time, time_limit_minutes, review_available_time)
+      VALUES (?, ?, ?, ?, ?)
     `;
-    const [result] = await pool.query(query, [title, description, open_time, close_time, time_limit_minutes, review_available_time]);
+    const [result] = await pool.query(query, [title, description, open_time, time_limit_minutes, review_available_time]);
     return result.insertId;
   },
 
   addQuestion: async (quizId, questionData) => {
-    const { question_text, question_image_url, question_type, correct_answer } = questionData;
+    const {
+        question_text,
+        question_image_url,
+        question_type,
+        options
+    } = questionData;
+
+    // Determine the correct_answer from options
+    const correctOption = options.find(option => option.is_correct); // Find the correct option
+    const correct_answer = correctOption ? correctOption.option_text : null; // Extract the text or set null
+
+    
+
     const query = `
       INSERT INTO Question (quiz_id, question_text, question_image_url, question_type, correct_answer)
       VALUES (?, ?, ?, ?, ?)
     `;
-    const [result] = await pool.query(query, [quizId, question_text, question_image_url, question_type, correct_answer]);
+    const [result] = await pool.query(query, [
+        quizId,
+        question_text,
+        question_image_url,
+        question_type,
+        correct_answer,
+    ]);
     return result.insertId;
-  },
+},
 
   addMCQOption: async (questionId, optionData) => {
     const { option_text, is_correct } = optionData;

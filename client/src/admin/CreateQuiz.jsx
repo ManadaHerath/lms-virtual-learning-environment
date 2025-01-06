@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import api from "../redux/api";
 import axios from "axios";
 import { useDropzone } from "react-dropzone";
+import { useSnackbar } from "notistack";
 
 const CreateQuiz = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [quiz, setQuiz] = useState({
     title: "",
     description: "",
@@ -24,6 +26,7 @@ const CreateQuiz = () => {
 
   const [currentOption, setCurrentOption] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null); // Track which question is being edited
 
   const handleInputChange = (e) => {
     setQuiz({ ...quiz, [e.target.name]: e.target.value });
@@ -55,7 +58,18 @@ const CreateQuiz = () => {
   };
 
   const addQuestion = () => {
-    setQuiz({ ...quiz, questions: [...quiz.questions, currentQuestion] });
+    if (editingIndex !== null) {
+      // Edit existing question
+      const updatedQuestions = [...quiz.questions];
+      updatedQuestions[editingIndex] = currentQuestion;
+      setQuiz({ ...quiz, questions: updatedQuestions });
+      setEditingIndex(null);
+    } else {
+      // Add new question
+      setQuiz({ ...quiz, questions: [...quiz.questions, currentQuestion] });
+    }
+
+    // Clear current question
     setCurrentQuestion({
       question_text: "",
       question_image_url: "",
@@ -63,6 +77,14 @@ const CreateQuiz = () => {
       options: [],
       correct_answer: "",
     });
+  };
+  const handleEditQuestion = (index) => {
+    setCurrentQuestion(quiz.questions[index]);
+    setEditingIndex(index);
+  };
+  const handleDeleteQuestion = (index) => {
+    const updatedQuestions = quiz.questions.filter((_, i) => i !== index);
+    setQuiz({ ...quiz, questions: updatedQuestions });
   };
 
   const handleImageUpload = async (file) => {
@@ -79,10 +101,12 @@ const CreateQuiz = () => {
       );
       const imageUrl = response.data.secure_url;
       setCurrentQuestion({ ...currentQuestion, question_image_url: imageUrl });
-      alert("Image uploaded successfully!");
+  
+      enqueueSnackbar("Image uploaded successfully", { variant: "success" })
     } catch (error) {
       console.error(error.message);
-      alert("Failed to upload image. Please try again.");
+      enqueueSnackbar("Failed to upload image. Please try again.", { variant: "error" })
+      
     } finally {
       setUploading(false);
     }
@@ -102,12 +126,13 @@ const CreateQuiz = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     try {
       const response = await api.post("/admin/create-quiz", quiz);
       const data = await response.data;
       if (data.success) {
-        alert("Quiz created successfully!");
+        
+        enqueueSnackbar("Quiz created successfully!", { variant: "success" })
         setQuiz({
           title: "",
           description: "",
@@ -118,11 +143,13 @@ const CreateQuiz = () => {
           questions: [],
         });
       } else {
-        alert(data.message || "Failed to create quiz.");
+        enqueueSnackbar(data.message || "Failed to create quiz.", { variant: "error" })
+        
       }
     } catch (error) {
       console.error(error.message);
-      alert("An error occurred. Please try again.");
+      
+      enqueueSnackbar("An error occurred. Please try again.", { variant: "error" })
     }
   };
 
@@ -164,17 +191,7 @@ const CreateQuiz = () => {
             required
           />
         </div>
-        <div>
-          <label htmlFor="close_time" className="block text-sm font-medium mb-1">Close Time:</label>
-          <input
-            type="datetime-local"
-            name="close_time"
-            value={quiz.close_time}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
+        
         <div>
           <label htmlFor="time_limit_minutes" className="block text-sm font-medium mb-1">Time Limit (Minutes):</label>
           <input
@@ -197,6 +214,51 @@ const CreateQuiz = () => {
             className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+        <h2 className="text-xl font-bold mt-6">Added Questions</h2>
+        <div className="space-y-4">
+          {quiz.questions.map((question, index) => (
+            <div
+              key={index}
+              className="p-4 bg-gray-800 rounded-lg border border-gray-700 space-y-2"
+            >
+              <p className="text-sm font-medium">{question.question_text}</p>
+              {question.question_image_url ? <img
+            src={question.question_image_url}
+            alt="question"
+            className="w-16 h-16  object-cover mt-2 rounded-lg"
+          /> :<></>}
+              {question.options.length > 0 && (
+                <ul className="list-disc pl-6 text-gray-400">
+                  {question.options.map((option, i) => (
+                    <li key={i}>
+                      {option.option_text}{" "}
+                      {option.is_correct && (
+                        <span className="text-green-400">(Correct)</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="flex space-x-4">
+                <button
+                  type="button"
+                  onClick={() => handleEditQuestion(index)}
+                  className="text-blue-400 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteQuestion(index)}
+                  className="text-red-400 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
 
         <h2 className="text-xl font-bold mt-6">Add Questions</h2>
         <div>

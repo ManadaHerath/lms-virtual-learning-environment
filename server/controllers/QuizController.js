@@ -3,14 +3,14 @@ const QuizModel = require("../models/QuizModel");
 const QuizController = {
   createQuiz: async (req, res) => {
     try {
-      const { title, description, open_time, close_time, time_limit_minutes, review_available_time, questions } = req.body;
+      const { title, description, open_time,  time_limit_minutes, review_available_time, questions } = req.body;
 
       // Create quiz
       const quizId = await QuizModel.createQuiz({
         title,
         description,
         open_time,
-        close_time,
+        
         time_limit_minutes,
         review_available_time,
       });

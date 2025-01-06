@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { FiHome, FiUsers, FiSettings, FiLogOut } from "react-icons/fi";
+import { IoCreate } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/auth/authSlice";
@@ -75,6 +76,9 @@ const AdminLayout = ({ children }) => {
             </NavLink>
             <NavLink to="/admin/student" icon={FiSettings}>
               Students
+            </NavLink>
+            <NavLink to="/admin/create-quiz" icon={IoCreate}>
+              Quiz
             </NavLink>
           </div>
           
