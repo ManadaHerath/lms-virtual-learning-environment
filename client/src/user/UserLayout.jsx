@@ -131,10 +131,10 @@ const UserLayout = ({ children }) => {
         {/* Premium Sidebar */}
         <aside
           className={`
-            ${isSidebarOpen ? "w-64" : "w-20"}
-            bg-white border-r border-gray-100 transition-all duration-300
-            flex flex-col
-          `}
+      ${isSidebarOpen ? "lg:w-64 w-20" : "w-20"}
+      bg-white border-r border-gray-100 transition-all duration-300
+      flex flex-col
+    `}
         >
           {/* Navigation Items */}
           <nav className="flex-1 p-4">
@@ -150,17 +150,17 @@ const UserLayout = ({ children }) => {
                   <Link
                     to={item.path}
                     className={`
-                      w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-                      text-gray-700 hover:bg-gray-50 hover:text-blue-600
-                      group transition-colors relative
-                    `}
+                w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
+                text-gray-700 hover:bg-gray-50 hover:text-blue-600
+                group transition-colors relative
+              `}
                   >
                     <item.icon
                       size={20}
                       className="group-hover:text-blue-600"
                     />
                     {isSidebarOpen && (
-                      <>
+                      <div className="hidden lg:block">
                         <span className="text-sm font-medium">
                           {item.label}
                         </span>
@@ -168,8 +168,12 @@ const UserLayout = ({ children }) => {
                           size={16}
                           className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                         />
-                      </>
+                      </div>
                     )}
+                    {/* Tooltip for small screens */}
+                    <div className="lg:hidden absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                      {item.label}
+                    </div>
                   </Link>
                 </li>
               ))}
@@ -180,12 +184,18 @@ const UserLayout = ({ children }) => {
           <div className="p-4 border-t border-gray-100">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 group transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 group transition-colors relative"
             >
               <LogOut size={20} className="group-hover:text-red-600" />
               {isSidebarOpen && (
-                <span className="text-sm font-medium">Logout</span>
+                <span className="hidden lg:block text-sm font-medium">
+                  Logout
+                </span>
               )}
+              {/* Tooltip for small screens */}
+              <div className="lg:hidden absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                Logout
+              </div>
             </button>
           </div>
 

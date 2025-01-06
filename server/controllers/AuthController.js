@@ -183,10 +183,7 @@ getEnrolledCourses: async (req, res) => {
 
   try {
     const courses = await UserModel.getEnrolledCourses(nic);
-    
-    if (!courses.length) {
-      return res.status(404).json({ error: "No enrolled courses found" });
-    }
+
     res.status(200).json(courses);
   } catch (err) {
     console.error(err.message);
