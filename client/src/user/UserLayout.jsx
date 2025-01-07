@@ -43,7 +43,7 @@ const UserLayout = ({ children }) => {
     };
     fetchProfile();
     const list = JSON.parse(localStorage.getItem("cart"));
-    setCartItemCount(list.length);
+    setCartItemCount(0);
   }, []);
 
   return (

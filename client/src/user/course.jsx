@@ -209,7 +209,9 @@ const CoursePage = () => {
                           </div>
                           {isPaid && (
                             <button
-                              onClick={() => handleMarkAsDone(section.id, section.mark_as_done)}
+                              onClick={() => {handleMarkAsDone(section.id, section.mark_as_done)
+                                console.log(section.mark_as_done)
+                              }}
                               className={`ml-4 px-4 py-2 rounded-lg font-medium ${
                                 section.mark_as_done === 1
                                   ? 'bg-green-100 text-green-700'
