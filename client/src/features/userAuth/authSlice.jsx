@@ -47,6 +47,7 @@ export const checkAuth = createAsyncThunk(
       const response = await checkAuthAPI();
       return response.user;
     } catch (error) {
+      console.log(error)
       return rejectWithValue(error.message);
     }
   }

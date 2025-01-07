@@ -9,11 +9,11 @@ import {
   Book,
   CreditCard,
   LogOut,
-  ChevronRight,
+  ChevronLeft,
   Settings,
   User,
 } from "lucide-react";
-import { AiOutlineShoppingCart } from "react-icons/ai"; // Icons for navbar
+import { AiOutlineShoppingCart } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/userAuth/authSlice";
 import { Link } from "react-router-dom";
@@ -24,74 +24,69 @@ const UserLayout = ({ children }) => {
   const [error, setError] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [cartItemCount, setCartItemCount] = useState(0); // Example notification count
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   const handleLogout = () => {
     dispatch(logout());
     window.location.reload();
   };
 
+  // Close mobile menu when screen size changes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const response = await api.get("/user/profile");
         if (response.status !== 200) throw new Error("Failed to fetch profile");
-        setImageFile(response.data.user.image_url); // Set image URL directly here
+        setImageFile(response.data.user.image_url);
       } catch (err) {
         setError(err.message);
       }
     };
     fetchProfile();
     const list = JSON.parse(localStorage.getItem("cart"));
-    setCartItemCount(list.length);
+    setCartItemCount(list?.length || 0);
   }, []);
 
-  return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Premium Navigation Bar */}
-      <nav className="bg-white border-b border-gray-100 px-6 py-3 sticky top-0 z-50">
-        <div className="flex items-center justify-between max-w-8xl mx-auto">
-          {/* Brand and Search */}
-          <div className="flex items-center flex-1 gap-8">
-            {/* Logo */}
-            <div className="flex items-center">
-              <img
-                src="lpedu.png" // Replace with your logo URL
-                alt="Logo"
-                className="w-28"
-              />
-            </div>
+  const navigationItems = [
+    { icon: Home, label: "Dashboard", path: "/dashboard" },
+    { icon: Layers, label: "My Courses", path: "/user/mycourse" },
+    { icon: Book, label: "Course Catalog", path: "/" },
+    { icon: CreditCard, label: "Payments", path: "/user/payments" },
+    { icon: Settings, label: "Analyse", path: "/user/analyse" },
+  ];
 
-            {/* Enhanced Search Bar
-            <div className="max-w-xl flex-1 relative">
-              <div
-                className={`
-                relative rounded-lg transition-all duration-200 
-                ${
-                  searchFocused
-                    ? "ring-2 ring-blue-500 bg-white"
-                    : "bg-gray-50 hover:bg-gray-100"
-                }
-              `}
-              >
-                <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={20}
-                />
-                <input
-                  type="text"
-                  placeholder="Search courses, topics, instructors..."
-                  className="w-full pl-10 pr-4 py-2 bg-transparent border-none focus:outline-none text-sm"
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                />
-              </div>
-            </div> */}
+  return (
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Navigation Bar */}
+      <nav className="bg-white border-b border-gray-100 px-4 sm:px-6 py-3 sticky top-0 z-50">
+        <div className="flex items-center justify-between max-w-8xl mx-auto">
+          <div className="flex items-center gap-4 sm:gap-8">
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100"
+            >
+              <Menu size={24} />
+            </button>
+
+            <div className="flex items-center">
+              <img src="lpedu.png" alt="Logo" className="w-20 sm:w-28" />
+            </div>
           </div>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center gap-6">
-            {/* Notification Bell */}
+          <div className="flex items-center gap-4 sm:gap-6">
             <div className="relative">
               <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                 <Link to="/cart" className="hover:text-gray-400">
@@ -105,7 +100,6 @@ const UserLayout = ({ children }) => {
               </button>
             </div>
 
-            {/* User Profile */}
             <Link
               to="/user/profile"
               className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors"
@@ -126,93 +120,114 @@ const UserLayout = ({ children }) => {
         </div>
       </nav>
 
-      {/* Main Layout */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Premium Sidebar */}
+      {/* Main Layout Container */}
+      <div className="flex-1 flex overflow-hidden bg-gray-50">
+        {/* Mobile Sidebar Overlay */}
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity lg:hidden z-40"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
+        {/* Sidebar */}
         <aside
           className={`
-      ${isSidebarOpen ? "lg:w-64 w-20" : "w-20"}
-      bg-white border-r border-gray-100 transition-all duration-300
-      flex flex-col
-    `}
+            ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+            lg:translate-x-0
+            ${isSidebarOpen ? "lg:w-64 w-64" : "lg:w-20 w-64"}
+            fixed top-[57px] left-0 bottom-0
+            bg-white border-r border-gray-100
+            transition-all duration-300
+            flex flex-col
+            z-40
+          `}
         >
-          {/* Navigation Items */}
           <nav className="flex-1 p-4">
             <ul className="space-y-2">
-              {[
-                { icon: Home, label: "Dashboard", path: "/dashboard" },
-                { icon: Layers, label: "My Courses", path: "/user/mycourse" },
-                { icon: Book, label: "Course Catalog", path: "/" },
-                { icon: CreditCard, label: "Payments", path: "/user/payments" },
-                { icon: Settings, label: "Settings", path: "/settings" },
-              ].map((item, index) => (
+              {navigationItems.map((item, index) => (
                 <li key={index}>
                   <Link
                     to={item.path}
-                    className={`
-                w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-                text-gray-700 hover:bg-gray-50 hover:text-blue-600
-                group transition-colors relative
-              `}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-blue-600 group transition-colors relative"
                   >
                     <item.icon
                       size={20}
-                      className="group-hover:text-blue-600"
+                      className="group-hover:text-blue-600 flex-shrink-0"
                     />
-                    {isSidebarOpen && (
-                      <div className="hidden lg:block">
-                        <span className="text-sm font-medium">
-                          {item.label}
-                        </span>
-                      </div>
-                    )}
-                    {/* Tooltip for small screens */}
-                    <div className="lg:hidden absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+                    <span
+                      className={`text-sm font-medium ${
+                        !isSidebarOpen && "lg:hidden"
+                      }`}
+                    >
                       {item.label}
-                    </div>
+                    </span>
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
 
-          {/* Logout Section */}
           <div className="p-4 border-t border-gray-100">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 group transition-colors relative"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 group transition-colors"
             >
-              <LogOut size={20} className="group-hover:text-red-600" />
-              {isSidebarOpen && (
-                <span className="hidden lg:block text-sm font-medium">
-                  Logout
-                </span>
-              )}
-              {/* Tooltip for small screens */}
-              <div className="lg:hidden absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+              <LogOut
+                size={20}
+                className="group-hover:text-red-600 flex-shrink-0"
+              />
+              <span
+                className={`text-sm font-medium ${
+                  !isSidebarOpen && "lg:hidden"
+                }`}
+              >
                 Logout
-              </div>
+              </span>
             </button>
           </div>
 
-          {/* Toggle Button */}
-          <Link
+          {/* Desktop Toggle Button */}
+          <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="absolute -right-3 top-6 p-1.5 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-gray-700 shadow-sm"
+            className="hidden lg:block absolute -right-3 top-4 p-1.5 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-gray-700 hover:bg-gray-50 shadow-sm transition-colors"
           >
-            {isSidebarOpen ? <X size={16} /> : <Menu size={16} />}
-          </Link>
+            {isSidebarOpen ? <ChevronLeft size={16} /> : <Menu size={16} />}
+          </button>
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-auto bg-gray-50 p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              {children}
+        <main
+          className={`flex-1 ${
+            isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
+          } transition-all duration-300`}
+        >
+          <div className="p-4 sm:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+                {children}
+              </div>
             </div>
           </div>
         </main>
       </div>
+
+      {/* Footer */}
+      <footer className="flex items-center justify-center bg-white border-t border-gray-100 py-2 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto flex justify-center lg:justify-end transition-all duration-300">
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-xs sm:text-sm text-gray-600">
+              © {new Date().getFullYear()} Scope
+            </span>
+            <img
+              src="scope.png"
+              alt="Scope Logo"
+              className="w-3 sm:w-4 h-auto"
+            />
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

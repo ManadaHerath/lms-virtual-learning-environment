@@ -98,7 +98,7 @@ const AuthController = {
     const accessToken = jwt.sign(
       { nic: user.nic, email: req.body.email,userType:"student" },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "2h" } // Expires in 15 minutes
+      { expiresIn: "1min" } // Expires in 15 minutes
     );
 
     // Generate Refresh Token (long-lived)

@@ -6,7 +6,9 @@ import { checkAuth } from "../features/userAuth/authSlice";
 
 const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
   const dispatch = useDispatch();
-  const { user, authInitialized, status } = useSelector((state) => state.studentAuth);
+  const { user, authInitialized, status, error } = useSelector(
+    (state) => state.studentAuth
+  );
 
   useEffect(() => {
     // Check auth status only if it hasn't been initialized
@@ -19,6 +21,11 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
   if (!authInitialized || status === "loading") {
     dispatch(checkAuth());
     return <div>Loading...</div>;
+  }
+  if (error) {
+    if (error.status === 403) {
+      return <Navigate to={redirectTo} />;
+    }
   }
 
   // If no user is logged in, redirect to the login page
