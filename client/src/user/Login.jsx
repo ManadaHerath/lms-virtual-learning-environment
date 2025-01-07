@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import api from "../redux/api";
-
+import { useSnackbar } from "notistack";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const { enqueueSnackbar } = useSnackbar();
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
     try {
       const res = await api.post(
@@ -18,9 +19,13 @@ const Login = () => {
       );
 
       if (res.data.success) {
-        window.location.href = "/dashboard"; // Change to your desired route
+        enqueueSnackbar('Login successfull',{variant:"success"})
+        setTimeout(() => {
+          window.location.href = "/dashboard"; // Change to your desired route
+        }, 800);
       } else {
-        prompt(res.data.message);
+        enqueueSnackbar(res.data.message,{variant:"error"})
+        
       }
     } catch (error) {
       console.error("Error logging in:", error);
@@ -190,7 +195,7 @@ const Login = () => {
                          hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]
                          backdrop-blur-sm"
             >
-              Launch
+              Log in
             </button>
           </form>
 

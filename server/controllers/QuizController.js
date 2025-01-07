@@ -123,7 +123,7 @@ const QuizController = {
 
       // Ensure review availability time has passed
       if (quiz.review_available_time && new Date() < new Date(quiz.review_available_time)) {
-        return res.status(403).json({
+        return res.status(600).json({
           success: false,
           message: "Review is not available yet",
         });

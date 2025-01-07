@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import api from "../redux/api";
 import { useSnackbar } from "notistack";
 
-const AddStudentModal = ({ onClose, courseId }) => {
+const AddStudentModal = ({ onClose, courseId,onStudentsUpdated }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -14,10 +14,11 @@ const AddStudentModal = ({ onClose, courseId }) => {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await api.get("/admin/students");
+        const response = await api.get("/admin/students/active");
         setStudents(response.data);
       } catch (error) {
         console.error("Error fetching students:", error);
+        enqueueSnackbar("Error fetching students", { variant: "error" });
       }
     };
     fetchStudents();
@@ -74,13 +75,14 @@ const AddStudentModal = ({ onClose, courseId }) => {
         course_id: courseId,
         medium: medium,
       }));
-
-      await api.post("/admin/student/payment", { enrollments });
+      
+      const respones= await api.post("/admin/student/payment", { enrollments });
+      console.log(respones.data);
       enqueueSnackbar("Students successfully added!", { variant: "success" });
 
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000); // Wait 2 seconds before reloading
+      
+        onStudentsUpdated();
+      // Wait 2 seconds before reloading
       onClose();
     } catch (error) {
       enqueueSnackbar("Failed to add students. Please try again.", {
@@ -184,7 +186,7 @@ const AddStudentModal = ({ onClose, courseId }) => {
             Cancel
           </button>
           <button
-            onClick={() => handleSubmit("PHYSCIAL")}
+            onClick={() => handleSubmit("PHYSiCAL")}
             disabled={selectedUsers.size === 0}
             className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >

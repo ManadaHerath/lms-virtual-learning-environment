@@ -4,8 +4,10 @@ import { fetchEnrolledStudents } from "../features/students/StudentSlice";
 import { useParams } from "react-router-dom";
 import AddStudentModal from "./AddStudentModal"; // Import Modal Component
 import { Search, PlusCircle, AlertCircle, CheckCircle, XCircle, Monitor, User } from "lucide-react";
-
+import { useSnackbar } from "notistack";
+import api from "../redux/api";
 const CourseDetailPage = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const { courseId } = useParams();
   const dispatch = useDispatch();
 
@@ -18,6 +20,11 @@ const CourseDetailPage = () => {
   const [mediumFilter, setMediumFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
+
+  const [confirmUnenroll, setConfirmUnenroll] = useState(false); // Popup visibility state
+  const [targetStudent, setTargetStudent] = useState(null); // Target student for unenroll action
+
+  
 
   useEffect(() => {
     dispatch(fetchEnrolledStudents(courseId));
@@ -33,11 +40,11 @@ const CourseDetailPage = () => {
     .filter((student) =>
       searchQuery
         ? student.first_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          student.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          student.nic.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          student.telephone.includes(searchQuery)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        student.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.nic.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.telephone.includes(searchQuery)
         : true
     );
 
@@ -74,6 +81,17 @@ const CourseDetailPage = () => {
     }
   };
 
+  const getChangeMediumColor = (medium) => {
+    switch (medium) {
+      case "PHYSICAL":
+        return "text-purple-400";
+      case "ONLINE":
+        return "text-blue-400";
+      default:
+        return "text-gray-400";
+    }
+  };
+
   const getMediumIcon = (medium) => {
     switch (medium) {
       case "PHYSICAL":
@@ -85,12 +103,84 @@ const CourseDetailPage = () => {
     }
   };
 
+  const handleUnenroll=async(nic)=>{
+    try {
+      const response=await api.delete(`/admin//course/${courseId}/nic/${nic}`);
+      if(response.data.success){
+        enqueueSnackbar(response.data.message, { variant: "success" });
+        dispatch(fetchEnrolledStudents(courseId));
+      }else{
+        enqueueSnackbar(response.data.message, { variant: "error" });
+      }
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar('Error in unenrolling student', { variant: "error" });
+    }
+    setConfirmUnenroll(false); // Close confirmation popup
+
+  }
+  const handleOpenConfirmation = (student) => {
+    setTargetStudent(student); // Set the target student
+    setConfirmUnenroll(true); // Show confirmation dialog
+  };
+
+  const handleCancelUnenroll = () => {
+    setConfirmUnenroll(false); // Close the confirmation dialog
+    setTargetStudent(null); // Reset the target student
+  };
+
+
+  const handleChangeMedium=async(nic,medium)=>{
+    try {
+      const res=await api.put('/admin/course/nic/medium',{nic:nic,medium:medium,courseId:courseId})
+      if(res.data.success){
+        enqueueSnackbar(res.data.message, { variant: "success" });
+        dispatch(fetchEnrolledStudents(courseId));
+      }else{
+        enqueueSnackbar(res.data.message, { variant: "error" });
+      }
+    } catch (error) {
+      enqueueSnackbar('Error in changing medium', { variant: "error" });
+      console.log(error);
+    }
+
+  }
+
+
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-semibold text-gray-200 mb-6 flex items-center">
         <AlertCircle className="w-6 h-6 mr-2 text-blue-400" />
         Course Detail Page
       </h1>
+
+            {/* Confirmation Popup */}
+            {confirmUnenroll && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-lg font-bold text-gray-800">
+              Are you sure you want to unenroll{" "}
+              <span className="text-red-500">{targetStudent?.first_name} {targetStudent?.last_name}</span>?
+            </h2>
+            <div className="mt-4 flex justify-end gap-3">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                onClick={handleCancelUnenroll}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                onClick={() => handleUnenroll(targetStudent?.nic)}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {status === "loading" && (
         <div className="flex items-center justify-center h-full">
@@ -145,6 +235,7 @@ const CourseDetailPage = () => {
         </button>
         {showModal && (
           <AddStudentModal
+            onStudentsUpdated={() => dispatch(fetchEnrolledStudents(courseId))}
             onClose={() => setShowModal(false)}
             courseId={courseId}
           />
@@ -168,6 +259,13 @@ const CourseDetailPage = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                   Medium
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Change Medium
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Action
+                </th>
+
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700/50">
@@ -193,6 +291,22 @@ const CourseDetailPage = () => {
                       {getMediumIcon(student.medium)}
                       {student.medium}
                     </div>
+                  </td>
+                  <td className="px-6  justify-between py-4 whitespace-nowrap text-sm items-center">
+                    <button 
+                    onClick={()=>{handleChangeMedium(student.nic,student.medium === "PHYSICAL" ? "ONLINE" : student.medium === "ONLINE" ? "PHYSICAL" : "")} }
+                    className={`px-3 w-full py-1 rounded hover:bg-${student.medium === "PHYSICAL" ? "purple" : student.medium === "ONLINE" ? "blue" : "gray"}-500/30 transition-colors ${getChangeMediumColor(student.medium)}`}>
+                        
+                      {student.medium === "PHYSICAL" ? "ONLINE" : student.medium === "ONLINE" ? "PHYSICAL" : ""}
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      onClick={()=>{handleOpenConfirmation(student)}}
+                      className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors"
+                    >
+                      Unenroll
+                    </button>
                   </td>
                 </tr>
               ))}
