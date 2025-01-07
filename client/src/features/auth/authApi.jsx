@@ -1,6 +1,6 @@
 import api from "../../redux/api";
-
 // Login API call
+
 export const loginAPI = async (credentials) => {
   try {
     const response = await api.post("/admin/login", credentials);
@@ -37,6 +37,7 @@ export const logoutAPI = async () => {
 
 // Check authentication API call
 export const checkAuthAPI = async () => {
+
   try {
     const response = await api.get("/admin/check-auth");
     return response.data; // Return the response data (e.g., user details)

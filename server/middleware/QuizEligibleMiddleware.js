@@ -16,7 +16,7 @@ const QuizEligibleMiddleware = async (req, res, next) => {
         }
       }
   
-      return res.status(403).json({
+      return res.status(500).json({
         success: false,
         message: "Forbidden: You are not eligible to take this quiz",
       });

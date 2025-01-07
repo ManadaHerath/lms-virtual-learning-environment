@@ -105,6 +105,15 @@ const AdminModel = {
       throw error;
     }
   },
+  getActiveStudents:async () => {
+    try {
+      const [students] = await pool.query("SELECT * FROM User where status='ACTIVE'");
+      return students;
+    } catch (error) {
+      throw error;
+    }
+  }
+  ,
 
   // Get student by ID
   getStudentById: async (id) => {
@@ -209,7 +218,8 @@ const AdminModel = {
           );
           continue;
         }
-  
+        console.log('Medium:', enrollment.medium);
+
         // If not enrolled, insert into Enrollment and then into Payment
         const [enrollmentResult] = await connection.execute(
           `INSERT INTO Enrollment (nic, course_id, medium) 
@@ -229,7 +239,7 @@ const AdminModel = {
            VALUES (?, ?, ?, CURDATE())`,
           [enrollmentId, "ONLINE", coursePrice]
         );
-  
+        
         console.log(
           `Enrollment and payment added for user ${enrollment.student_id} in course ${enrollment.course_id}.`
         );

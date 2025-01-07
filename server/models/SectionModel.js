@@ -192,16 +192,14 @@ getUpdatedSectionStatus : async (enrollmentId, sectionId) => {
   }
 },
 
-unenrollCourseById: async (enrollmentId) => {
+unenrollCourseById: async (course_id,nic) => {
   const connection = await pool.getConnection();
   try {
     const unenrollQuery = `
-      UPDATE Enrollment
-      SET status = 'unenrolled'
-      WHERE enrollment_id = ?
+      DELETE FROM Enrollment where course_id=? and nic=?
     `;
 
-    const [result] = await connection.execute(unenrollQuery, [enrollmentId]);
+    const [result] = await connection.execute(unenrollQuery, [course_id,nic]);
     return result;
   } catch (error) {
     console.error("Error in unenrollCourseById:", error);
@@ -226,6 +224,20 @@ deleteSectionById: async (sectionId) => {
   } finally {
     connection.release();
   }
+},
+changeMedium:async (courseId,nic,medium)=>{
+  const connection=await pool.getConnection();
+  try {
+     const query='UPDATE Enrollment set medium=? where nic=? and course_id=?';
+     const [result]=await connection.execute(query,[medium,nic,courseId]);
+     return result; 
+  } catch (error) {
+    throw error;    
+  }finally{
+    connection.release();
+  }
+
+
 }
 
 

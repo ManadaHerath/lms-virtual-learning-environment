@@ -37,11 +37,13 @@ router.put('/course/:courseId', AuthMiddleware(['admin']), CourseController.upda
 router.put('/course/:courseId/image', AuthMiddleware(['admin']), upload.single('image'), CourseController.updateCourseImage);
 router.get("/courses",AuthMiddleware(['admin']) ,CourseController.getAllCourses);
 
-
-
+router.delete('/course/:courseId/nic/:nic',AuthMiddleware(['admin']),CourseController.unenrollCourseById);
+router.put('/course/nic/medium',AuthMiddleware(['admin']),AdminController.changeMediumOfCourse);
 // Student Management Routes
 // Get all students
+
 router.get('/students', AuthMiddleware(["admin"]), AdminController.getStudents);
+router.get('/students/active', AuthMiddleware(["admin"]), AdminController.getActiveStudents);
 // Get student by ID
 router.get('/students/:id', AuthMiddleware(["admin"]), AdminController.getStudentById);
 // Update student status by ID

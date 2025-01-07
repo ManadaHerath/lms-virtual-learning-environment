@@ -1,7 +1,7 @@
 const CourseModel = require("../models/CourseModel");
 
 const UserModel = require("../models/UserModel");
-
+const SectionModel=require('../models/SectionModel')
 
 const CourseController={
     createCourse:async(req,res)=>{
@@ -150,7 +150,22 @@ const CourseController={
         console.error(err.message);
         res.status(500).json({ error: "Failed to fetch courses" });
       }
-    }
+    },
+    unenrollCourseById:async(req,res)=>{
+      const {courseId,nic}=req.params;
+      try{
+        const result=await SectionModel.unenrollCourseById(courseId,nic);
+   
+        if(result.affectedRows>0){
+          res.status(200).json({message:"Unenrolled successfully",success:true});
+        }else{
+          req.status(200).json({message:"Unenrolling is unsuccessfull",success:false});
+        }
+        
+      }catch(error){
+        res.status(500).json({error:"Failed to Unenroll student nic:"+nic+" from course with course id:"+courseId,success:false  })    }
+    },
+    
 
 
 

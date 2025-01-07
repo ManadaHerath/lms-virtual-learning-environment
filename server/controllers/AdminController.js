@@ -2,6 +2,8 @@ const AdminModel = require("../models/AdminModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const SectionModel = require("../models/SectionModel");
+
 const AdminController = {
   adminLogin: async (req, res) => {
     try {
@@ -179,6 +181,16 @@ const AdminController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
+  async getActiveStudents(req, res) {
+    try {
+      const students = await AdminModel.getActiveStudents();
+      res.status(200).json({ students });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  ,
 
   // Get student by ID
   async getStudentById(req, res) {
@@ -227,6 +239,8 @@ const AdminController = {
   addPayment: async (req, res) => {
     try {
       const enrollments = req.body.enrollments;
+      
+      
       await AdminModel.addPayment(enrollments);
       res.status(201).json({ message: "Payment added successfully" });
     } catch (error) {
@@ -234,6 +248,20 @@ const AdminController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
+ changeMediumOfCourse:async(req,res)=>{
+  try {
+      const {nic,courseId,medium}=req.body;
+      const result=await SectionModel.changeMedium(courseId,nic,medium);
+      if(result.affectedRows>0){
+        res.status(200).json({message:"Medium changed successfully",success:true})
+      }else{
+        res.status(200).json({message:"Medium change unsuccessfull",success:false})
+      }
+  } catch (error) {
+    res.status(200).json({message:error,success:false})
+  }
+ }
   
 };
+
 module.exports = AdminController;

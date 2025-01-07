@@ -11,7 +11,7 @@ const SectionController = {
         const result = await Section.getSectionsByCourseId(courseId, nic);
 
         if (result.error) {
-            return res.status(403).json({ message: result.error });
+            return res.status(500).json({ message: result.error });
         }
 
         const { enrollment_id, paymentType, sections, price } = result;
@@ -53,7 +53,7 @@ const SectionController = {
   
       if (result.error) {
         
-        return res.status(403).json({ message: result.error });
+        return res.status(500).json({ message: result.error });
       }
   
       const {sections } = result;
