@@ -1,13 +1,7 @@
-CREATE DATABASE  IF NOT EXISTS defaultdb;
+CREATE DATABASE IF NOT EXISTS defaultdb;
 USE `defaultdb`;
 
---
 -- Table structure for table `Address`
---
-
-DROP TABLE IF EXISTS `Address`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Address` (
   `address_id` int NOT NULL AUTO_INCREMENT,
   `street_address` varchar(255) NOT NULL,
@@ -18,15 +12,27 @@ CREATE TABLE `Address` (
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`address_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=67 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
+-- Table structure for table `User`
+CREATE TABLE `User` (
+  `nic` char(12) NOT NULL,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) NOT NULL,
+  `address_id` int DEFAULT NULL,
+  `telephone` varchar(15) DEFAULT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `date_of_birth` date NOT NULL,
+  `batch` varchar(50) DEFAULT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `status` enum('INACTIVE','ACTIVE','PENDING') NOT NULL DEFAULT 'INACTIVE',
+  PRIMARY KEY (`nic`),
+  UNIQUE KEY `email` (`email`),
+  KEY `address_id` (`address_id`),
+  CONSTRAINT `User_ibfk_1` FOREIGN KEY (`address_id`) REFERENCES `Address` (`address_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- Table structure for table `Admin`
---
-
-DROP TABLE IF EXISTS `Admin`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Admin` (
   `nic` char(12) NOT NULL,
   `first_name` varchar(100) NOT NULL,
@@ -37,15 +43,8 @@ CREATE TABLE `Admin` (
   PRIMARY KEY (`nic`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
 -- Table structure for table `Course`
---
-
-DROP TABLE IF EXISTS `Course`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Course` (
   `course_id` int NOT NULL AUTO_INCREMENT,
   `course_type` enum('THEORY','REVISION','PAPER') NOT NULL,
@@ -60,15 +59,8 @@ CREATE TABLE `Course` (
   PRIMARY KEY (`course_id`),
   KEY `image_url_index` (`image_url`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
 -- Table structure for table `Enrollment`
---
-
-DROP TABLE IF EXISTS `Enrollment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Enrollment` (
   `enrollment_id` int NOT NULL AUTO_INCREMENT,
   `nic` char(12) NOT NULL,
@@ -80,33 +72,8 @@ CREATE TABLE `Enrollment` (
   CONSTRAINT `Enrollment_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `Course` (`course_id`) ON DELETE CASCADE,
   CONSTRAINT `Enrollment_ibfk_2` FOREIGN KEY (`nic`) REFERENCES `User` (`nic`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `MCQOption`
---
-
-DROP TABLE IF EXISTS `MCQOption`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `MCQOption` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `question_id` int NOT NULL,
-  `option_text` varchar(255) NOT NULL,
-  `is_correct` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `question_id` (`question_id`),
-  CONSTRAINT `MCQOption_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `Question` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `Payment`
---
-
-DROP TABLE IF EXISTS `Payment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Payment` (
   `payment_id` int NOT NULL AUTO_INCREMENT,
   `enrollment_id` int NOT NULL,
@@ -117,15 +84,21 @@ CREATE TABLE `Payment` (
   KEY `fk_enrollment_id` (`enrollment_id`),
   CONSTRAINT `fk_enrollment_id` FOREIGN KEY (`enrollment_id`) REFERENCES `Enrollment` (`enrollment_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
+-- Table structure for table `Quiz`
+CREATE TABLE `Quiz` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `open_time` datetime NOT NULL,
+  `close_time` datetime NOT NULL,
+  `time_limit_minutes` int NOT NULL,
+  `review_available_time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- Table structure for table `Question`
---
-
-DROP TABLE IF EXISTS `Question`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Question` (
   `id` int NOT NULL AUTO_INCREMENT,
   `quiz_id` int NOT NULL,
@@ -138,35 +111,19 @@ CREATE TABLE `Question` (
   KEY `quiz_id` (`quiz_id`),
   CONSTRAINT `Question_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `Quiz` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `Quiz`
---
-
-DROP TABLE IF EXISTS `Quiz`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Quiz` (
+-- Table structure for table `MCQOption`
+CREATE TABLE `MCQOption` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `description` text,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `open_time` datetime NOT NULL,
-  `close_time` datetime NOT NULL,
-  `time_limit_minutes` int NOT NULL,
-  `review_available_time` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+  `question_id` int NOT NULL,
+  `option_text` varchar(255) NOT NULL,
+  `is_correct` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `question_id` (`question_id`),
+  CONSTRAINT `MCQOption_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `Question` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
 -- Table structure for table `QuizResult`
---
-
-DROP TABLE IF EXISTS `QuizResult`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `QuizResult` (
   `id` int NOT NULL AUTO_INCREMENT,
   `quiz_id` int NOT NULL,
@@ -181,30 +138,23 @@ CREATE TABLE `QuizResult` (
   CONSTRAINT `QuizResult_ibfk_1` FOREIGN KEY (`quiz_id`) REFERENCES `Quiz` (`id`) ON DELETE CASCADE,
   CONSTRAINT `QuizResult_ibfk_2` FOREIGN KEY (`student_nic`) REFERENCES `User` (`nic`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
 -- Table structure for table `Registration`
---
-
-DROP TABLE IF EXISTS `Registration`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Registration` (
   `nic` char(12) NOT NULL,
   `image_url` char(255) NOT NULL,
   PRIMARY KEY (`nic`),
   CONSTRAINT `Registration_ibfk_1` FOREIGN KEY (`nic`) REFERENCES `User` (`nic`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
+-- Table structure for table `Type`
+CREATE TABLE `Type` (
+  `type_id` int NOT NULL AUTO_INCREMENT,
+  `type` varchar(100) NOT NULL,
+  PRIMARY KEY (`type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- Table structure for table `Section`
---
-
-DROP TABLE IF EXISTS `Section`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Section` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
@@ -223,15 +173,8 @@ CREATE TABLE `Section` (
   CONSTRAINT `Section_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `Type` (`type_id`),
   CONSTRAINT `Section_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `Course` (`course_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
 -- Table structure for table `StudentResponse`
---
-
-DROP TABLE IF EXISTS `StudentResponse`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `StudentResponse` (
   `id` int NOT NULL AUTO_INCREMENT,
   `student_nic` char(12) NOT NULL,
@@ -247,55 +190,8 @@ CREATE TABLE `StudentResponse` (
   CONSTRAINT `StudentResponse_ibfk_1` FOREIGN KEY (`student_nic`) REFERENCES `User` (`nic`) ON DELETE CASCADE,
   CONSTRAINT `StudentResponse_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `Question` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `Type`
---
-
-DROP TABLE IF EXISTS `Type`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `Type` (
-  `type_id` int NOT NULL AUTO_INCREMENT,
-  `type` varchar(100) NOT NULL,
-  PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `User`
---
-
-DROP TABLE IF EXISTS `User`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `User` (
-  `nic` char(12) NOT NULL,
-  `first_name` varchar(100) NOT NULL,
-  `last_name` varchar(100) NOT NULL,
-  `address_id` int DEFAULT NULL,
-  `telephone` varchar(15) DEFAULT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `date_of_birth` date NOT NULL,
-  `batch` varchar(50) DEFAULT NULL,
-  `image_url` varchar(255) DEFAULT NULL,
-  `status` enum('INACTIVE','ACTIVE','PENDING') NOT NULL DEFAULT 'INACTIVE',
-  PRIMARY KEY (`nic`),
-  UNIQUE KEY `email` (`email`),
-  KEY `address_id` (`address_id`),
-  CONSTRAINT `User_ibfk_1` FOREIGN KEY (`address_id`) REFERENCES `Address` (`address_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `UserSection`
---
-
-DROP TABLE IF EXISTS `UserSection`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `UserSection` (
   `enrollment_id` int NOT NULL,
   `section_id` int NOT NULL,
@@ -305,4 +201,3 @@ CREATE TABLE `UserSection` (
   CONSTRAINT `fk_enrollment` FOREIGN KEY (`enrollment_id`) REFERENCES `Enrollment` (`enrollment_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_section` FOREIGN KEY (`section_id`) REFERENCES `Section` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-

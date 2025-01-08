@@ -164,19 +164,21 @@ const UserModel = {
       SELECT 
         u.nic, u.first_name, u.last_name, u.email, u.telephone, u.date_of_birth, 
         u.batch, u.image_url, u.status,
-        a.street_address, a.city, a.province, a.postal_code
+        a.street_address, a.city, a.province, a.postal_code,
+        i.index AS student_index
       FROM User u
       LEFT JOIN Address a ON u.address_id = a.address_id
+      LEFT JOIN \`Index\` i ON u.nic = i.nic
       WHERE u.nic = ?
     `;
-
+  
     try {
       const [rows] = await pool.query(query, [nic]);
       return rows.length ? rows[0] : null; // Return the first row or null if not found
     } catch (err) {
       throw err;
     }
-  },
+  },  
 
   updateUserProfile: async (nic, updatedData) => {
     const {

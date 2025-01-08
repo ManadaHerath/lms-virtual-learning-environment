@@ -99,11 +99,24 @@ const AdminModel = {
   // Get all students
   getStudents: async () => {
     try {
-      const [students] = await pool.query("SELECT * FROM User");
+      const query = `
+      SELECT 
+          u.*, 
+          i.index AS student_index, 
+          i.batch
+      FROM 
+          User u
+      LEFT JOIN 
+          \`Index\` i 
+      ON 
+          u.nic = i.nic;
+
+      `;
+      const [students] = await pool.query(query);
       return students;
     } catch (error) {
       throw error;
-    }
+    }  
   },
   getActiveStudents:async () => {
     try {

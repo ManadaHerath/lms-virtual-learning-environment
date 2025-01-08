@@ -133,6 +133,9 @@ const Profile = () => {
                   {user?.first_name} {user?.last_name}
                 </h1>
                 <p className="text-blue-100 mt-1">{user?.email}</p>
+                {user?.student_index && (
+                <p className="text-blue-200 text-sm mt-1">Student Index Number: {user.student_index}</p>
+                )}
               </div>
             </div>
           </div>
