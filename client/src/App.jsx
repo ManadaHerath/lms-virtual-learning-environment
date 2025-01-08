@@ -28,6 +28,8 @@ import Registration from "./user/Registration";
 import CreateQuiz from "./admin/CreateQuiz";
 import ApproveRejectRegitration from "./admin/ApproveRejectRegitration";
 import Dashboard from "./user/Dashboard";
+import PaymentFailure from "./user/PaymentFail"
+import PaymentSuccess from "./user/PaymentSuccess"
 
 import QuizReview from "./user/QuizReveiw";
 
@@ -68,6 +70,8 @@ function App() {
                       element={<CourseDetail />}
                     />
                     <Route path="/cart" element={<CartPage />} />
+                    <Route path="/paymentfail" element={<PaymentFailure />} />
+                    <Route path="/paymentdone" element={<PaymentSuccess />} />
                     <Route path="/course/:courseId" element={<CoursePage />} />
                     <Route path="/user/profile" element={<Profile />} />
                     <Route path="/user/mycourse" element={<MyCourse />} />
