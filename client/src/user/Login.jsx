@@ -24,7 +24,7 @@ const Login = () => {
           window.location.href = "/dashboard"; // Change to your desired route
         }, 800);
 
-        const loginResponse={accessTokenExpiresIn: 5 * 60}
+        const loginResponse={accessTokenExpiresIn: res.data.accessTokenExpiresIn}
         const accessTokenExpiryTime = Date.now() + loginResponse.accessTokenExpiresIn * 1000; // Calculate expiration time
         localStorage.setItem("accessTokenExpiry", accessTokenExpiryTime);
 
