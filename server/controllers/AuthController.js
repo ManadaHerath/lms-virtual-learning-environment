@@ -98,7 +98,7 @@ const AuthController = {
     const accessToken = jwt.sign(
       { nic: user.nic, email: req.body.email,userType:"student" },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1min" } // Expires in 15 minutes
+      { expiresIn: "3h" } // Expires in 15 minutes
     );
 
     // Generate Refresh Token (long-lived)
@@ -115,7 +115,7 @@ const AuthController = {
       maxAge: 2 * 60 * 60 * 1000, // 7 days
       sameSite: "strict",
     });
-    res.cookie("accessToken", accessToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 2 * 60 * 60 * 1000, // 7 days
@@ -125,6 +125,7 @@ const AuthController = {
     res.status(200).json({
       message: "Student Login successful",
       success: true,
+      accessTokenExpiresIn:3*60*60
     });
     } catch (error) {
       res.status(500).send({ message: `Error in login: ${error.message}` });

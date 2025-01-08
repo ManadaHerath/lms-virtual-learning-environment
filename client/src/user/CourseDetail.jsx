@@ -47,7 +47,7 @@ const CourseDetail = () => {
         throw new Error("You have already enrolled");
       }
       const data = await response.data;
-      showToast(data.message, 'error');
+      showToast(data.message, 'success');
       setEnrolled(true);
     } catch (err) {
       showToast(err.message, 'error');

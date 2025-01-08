@@ -14,14 +14,20 @@ const ExtendSessionController={
           
           // Generate a new Access Token
           const accessToken = jwt.sign(
-            { nic: payload.nic, email: payload.email },
+            { nic: payload.nic, email: payload.email,userType:payload.userType },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "15m" } // New short-lived token
+            { expiresIn: "3hm" } // New short-lived token
           );
-      
+          res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 2 * 60 * 60 * 1000, // 7 days
+            sameSite: "strict",
+          });
           res.status(200).json({
             success: true,
-            accessToken,
+            message:"Extend session successfull",
+            accessTokenExpiresIn:30*60
           });
         } catch (error) {
           res.status(403).json({ success: false, message: "Invalid or expired refresh token" });

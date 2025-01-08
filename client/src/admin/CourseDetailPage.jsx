@@ -105,7 +105,7 @@ const CourseDetailPage = () => {
 
   const handleUnenroll=async(nic)=>{
     try {
-      const response=await api.delete(`/admin//course/${courseId}/nic/${nic}`);
+      const response=await api.delete(`/admin/course/${courseId}/nic/${nic}`);
       if(response.data.success){
         enqueueSnackbar(response.data.message, { variant: "success" });
         dispatch(fetchEnrolledStudents(courseId));
