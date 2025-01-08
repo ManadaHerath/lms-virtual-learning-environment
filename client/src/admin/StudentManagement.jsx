@@ -116,81 +116,84 @@ const StudentManagement = () => {
       {/* Table */}
       <div className="overflow-x-auto rounded-lg border border-gray-700/50">
         <table className="w-full">
-          <thead className="bg-gray-800/50 border-b border-gray-700/50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Batch</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-700/50">
-            {Array.isArray(filteredStudents) && filteredStudents.length > 0 ? (
-              filteredStudents.map((student) => (
-                <tr key={student.nic} className="bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{student.nic}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                    {student.first_name + " " + student.last_name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{student.batch}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <span className={`inline-flex items-center ${getStatusColor(student.status)}`}>
-                      {student.status === 'ACTIVE' && <UserCheck className="w-4 h-4 mr-1" />}
-                      {student.status === 'INACTIVE' && <UserX className="w-4 h-4 mr-1" />}
-                      {student.status === 'PENDING' && <UserPlus className="w-4 h-4 mr-1" />}
-                      {student.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex justify-between items-center">
-                      <div className="space-x-2">
-                        {student.status === "PENDING" ? (
-                          <button
-                            onClick={() => navigate(`/admin/student/register/${student.nic}`)}
-                            className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 transition-colors"
-                          >
-                            Review
-                          </button>
-                        ) : (
-                          <>
-                            {student.status !== 'INACTIVE' && (
-                              <button
-                                onClick={() => handleStatus(student.nic, "INACTIVE")}
-                                className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors"
-                              >
-                                Deactivate
-                              </button>
-                            )}
-                            {student.status !== 'ACTIVE' && (
-                              <button
-                                onClick={() => handleStatus(student.nic, "ACTIVE")}
-                                className="px-3 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 transition-colors"
-                              >
-                                Activate
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => handleDelete(student.nic)}
-                        className="px-3 py-1 bg-gray-700/50 text-gray-300 rounded hover:bg-gray-700 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="px-6 py-4 text-center text-gray-400">
-                  No students available
-                </td>
-              </tr>
-            )}
-          </tbody>
+        <thead className="bg-gray-800/50 border-b border-gray-700/50">
+  <tr>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Index</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">ID</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Batch</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+  </tr>
+</thead>
+<tbody className="divide-y divide-gray-700/50">
+  {Array.isArray(filteredStudents) && filteredStudents.length > 0 ? (
+    filteredStudents.map((student) => (
+      <tr key={student.nic} className="bg-gray-800/30 hover:bg-gray-800/50 transition-colors">
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{student.student_index}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{student.nic}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+          {student.first_name + " " + student.last_name}
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{student.batch}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm">
+          <span className={`inline-flex items-center ${getStatusColor(student.status)}`}>
+            {student.status === 'ACTIVE' && <UserCheck className="w-4 h-4 mr-1" />}
+            {student.status === 'INACTIVE' && <UserX className="w-4 h-4 mr-1" />}
+            {student.status === 'PENDING' && <UserPlus className="w-4 h-4 mr-1" />}
+            {student.status}
+          </span>
+        </td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm">
+          <div className="flex justify-between items-center">
+            <div className="space-x-2">
+              {student.status === "PENDING" ? (
+                <button
+                  onClick={() => navigate(`/admin/student/register/${student.nic}`)}
+                  className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 transition-colors"
+                >
+                  Review
+                </button>
+              ) : (
+                <>
+                  {student.status !== 'INACTIVE' && (
+                    <button
+                      onClick={() => handleStatus(student.nic, "INACTIVE")}
+                      className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors"
+                    >
+                      Deactivate
+                    </button>
+                  )}
+                  {student.status !== 'ACTIVE' && (
+                    <button
+                      onClick={() => handleStatus(student.nic, "ACTIVE")}
+                      className="px-3 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 transition-colors"
+                    >
+                      Activate
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+            <button
+              onClick={() => handleDelete(student.nic)}
+              className="px-3 py-1 bg-gray-700/50 text-gray-300 rounded hover:bg-gray-700 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td colSpan="6" className="px-6 py-4 text-center text-gray-400">
+        No students available
+      </td>
+    </tr>
+  )}
+</tbody>
+
         </table>
       </div>
     </div>

@@ -180,7 +180,7 @@ const AdminController = {
       console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }
-  },
+  },  
   async getActiveStudents(req, res) {
     try {
       const students = await AdminModel.getActiveStudents();
