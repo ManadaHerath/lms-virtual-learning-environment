@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
 import api from "../redux/api";
-import { Lock, PlayCircle, CheckCircle, XCircle, Book, FileText } from 'lucide-react';
+import { Lock, PlayCircle, CheckCircle, XCircle, Book, FileText, AlertCircle } from 'lucide-react';
 
 const CoursePage = () => {
   const { courseId } = useParams();
@@ -143,10 +143,12 @@ const CoursePage = () => {
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between">
             <div>
+
               <h3 className="text-lg font-semibold">Payment Status</h3>
               <div className={`mt-2 inline-flex items-center ${isPaid ? 'text-green-600' : 'text-red-600'}`}>
                 {isPaid ? <CheckCircle className="w-5 h-5 mr-2" /> : <XCircle className="w-5 h-5 mr-2" />}
-                <span className="font-medium">{isPaid ? 'Paid' : 'Not Paid'}</span>
+                <span className="font-medium">{isPaid ? 'Paid' : 'Pending Payment'}</span>
+
               </div>
             </div>
             {!isPaid && (
