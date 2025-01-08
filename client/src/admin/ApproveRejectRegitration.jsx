@@ -4,9 +4,11 @@ import { deactivateStudentStatus } from "../features/students/StudentSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import api from "../redux/api";
+import { useSnackbar } from "notistack";
 import { UserCheck, UserX, AlertCircle } from "lucide-react";
 
 const ApproveRejectRegistration = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const { nic } = useParams();
   const [image_url, setImageUrl] = useState("");
@@ -16,10 +18,11 @@ const ApproveRejectRegistration = () => {
     dispatch(deactivateStudentStatus({ id: nic, status }))
       .unwrap()
       .then(() => {
-        alert("Successfully updated status of student: " + nic + " to " + status);
+        enqueueSnackbar("Successfully updated status of student: " + nic + " to " + status,{variant:'success'});
         navigate("/admin/student");
       })
       .catch((error) => {
+        enqueueSnackbar("Error toggling status",{variant:'success'});
         console.error("Error toggling status: " + status, error);
       });
   };
