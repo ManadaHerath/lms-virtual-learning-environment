@@ -4,6 +4,7 @@ const AuthRoute=require('./routes/AuthRoute')
 const AdminAuthRoute=require('./routes/AdminAuthRoute');
 const SectionRoute=require('./routes/sectionRoute');
 const TypeRoute=require('./routes/TypeRoute');
+const PaymentRoute = require("./routes/PaymentRoute");
 const cors = require('cors');
 const app = express();
 const cookieParser = require('cookie-parser');
@@ -29,6 +30,7 @@ app.use('/api/session',ExtendSessionRoute);
 app.use('/api/admin',AdminAuthRoute);
 app.use('/api/course',SectionRoute);
 app.use('/api/type',TypeRoute);
+app.use("/api/payments", PaymentRoute);
 
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
