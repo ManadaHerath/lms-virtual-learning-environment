@@ -20,6 +20,7 @@ const CoursePage = () => {
     const fetchCourseDetails = async () => {
       try {
         const response = await api.get(`/user/courses/${courseId}`);
+        console.log(response);
         if (response.status !== 200) throw new Error("Failed to fetch course details");
         setCourseDetails(response.data);
       } catch (err) {
@@ -142,10 +143,10 @@ const CoursePage = () => {
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold">Enrollment Status</h3>
+              <h3 className="text-lg font-semibold">Payment Status</h3>
               <div className={`mt-2 inline-flex items-center ${isPaid ? 'text-green-600' : 'text-red-600'}`}>
                 {isPaid ? <CheckCircle className="w-5 h-5 mr-2" /> : <XCircle className="w-5 h-5 mr-2" />}
-                <span className="font-medium">{isPaid ? 'Enrolled' : 'Not Enrolled'}</span>
+                <span className="font-medium">{isPaid ? 'Paid' : 'Not Paid'}</span>
               </div>
             </div>
             {!isPaid && (
@@ -155,7 +156,7 @@ const CoursePage = () => {
                   onClick={handleCheckout}
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
-                  Enroll Now
+                  Pay now
                 </button>
               </div>
             )}

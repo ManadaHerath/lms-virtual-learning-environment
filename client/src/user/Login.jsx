@@ -23,6 +23,12 @@ const Login = () => {
         setTimeout(() => {
           window.location.href = "/dashboard"; // Change to your desired route
         }, 800);
+
+        const loginResponse={accessTokenExpiresIn: 5 * 60}
+        const accessTokenExpiryTime = Date.now() + loginResponse.accessTokenExpiresIn * 1000; // Calculate expiration time
+        localStorage.setItem("accessTokenExpiry", accessTokenExpiryTime);
+
+
       } else {
         enqueueSnackbar(res.data.message,{variant:"error"})
         
