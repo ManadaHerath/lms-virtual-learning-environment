@@ -102,7 +102,7 @@ const CourseList = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="sticky -top-6 bg-white/80 backdrop-blur-lg border-b border-gray-200 z-40">
+      <div className="sticky -top-6 bg-white/80 backdrop-blur-lg border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">

@@ -12,7 +12,6 @@ import MyCourse from "./user/mycourse";
 import PaymentHistory from "./user/PaymentHistory";
 import AdminLog from "./admin/AdminLog";
 import AdminLayout from "./admin/AdminLayout";
-import AdminDashboard from "./admin/AdminDashboard";
 import CourseManagement from "./admin/CourseManagement";
 import StudentManagement from "./admin/StudentManagement";
 import store from "./app/store";
@@ -35,6 +34,7 @@ import QuizReview from "./user/QuizReveiw";
 
 import AdminEditCourse from "./admin/AdminEditCourse";
 import UserLayout from "./user/UserLayout";
+import StudentProfile from "./admin/StudentProfile";
 
 function App() {
   return (
@@ -92,7 +92,6 @@ function App() {
               element={
                 <AdminLayout>
                   <Routes>
-                    <Route path="" element={<AdminDashboard />} />
                     <Route path="courses" element={<CourseManagement />} />
                     <Route path="/upload-course" element={<UploadCourse />} />
                     <Route path="student" element={<StudentManagement />} />
@@ -117,6 +116,7 @@ function App() {
                       element={<AdminEditCourse />}
                     />
                     <Route path="create-quiz" element={<CreateQuiz />} />
+                    <Route path="students/:nic" element={<StudentProfile />} />
                   </Routes>
                 </AdminLayout>
               }

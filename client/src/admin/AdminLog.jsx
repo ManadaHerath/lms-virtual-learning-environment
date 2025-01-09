@@ -28,7 +28,7 @@ const AdminLog = () => {
   };
 
   if (status === 'succeeded' && user) {
-    navigate('/admin');
+    navigate('/admin/courses');
   }
 
   return (
@@ -75,7 +75,7 @@ const AdminLog = () => {
         {error && (
           <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-sm text-red-600">Invalid email or password!</p>
               <button
                 onClick={handleClearError}
                 className="ml-4 rounded-full p-1 hover:bg-red-100"

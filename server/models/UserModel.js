@@ -296,6 +296,24 @@ const UserModel = {
     }
   },
 
+  getEnrolledBoughtCourses: async (nic) => {
+    
+    const query = `
+      SELECT c.course_id, c.price, c.course_type, c.batch, c.month, c.image_url, p.payment_date
+      FROM Course c
+      JOIN Enrollment e ON c.course_id = e.course_id
+      RIGHT JOIN Payment p ON e.enrollment_id = p.enrollment_id
+      WHERE e.nic = ? and started_at <= CURDATE() and ended_at >= CURDATE()
+    `;
+    try {
+      const [courses] = await pool.query(query, [nic]);
+      
+      return courses;
+    } catch (err) {
+      throw err;
+    }
+  },
+
 
   enrollCourse: async (nic, courseId) => {
     const connection = await pool.getConnection();

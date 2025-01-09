@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginAPI, registerAPI, logoutAPI, checkAuthAPI } from "./authApi";
+import { loginAPI, registerAPI, logoutAPI, checkAuthAPI, extendSessionAPI } from "./authApi";
 import { toast } from "react-toastify";
 
 // Thunks for authentication actions
 export const login = createAsyncThunk(
-  "auth/login",
+  "studentAuth/login",
   async (credentials, { rejectWithValue }) => {
     try {
       const data = await loginAPI(credentials);
@@ -16,7 +16,7 @@ export const login = createAsyncThunk(
 );
 
 export const register = createAsyncThunk(
-  "auth/register",
+  "studentAuth/register",
   async (userData, { rejectWithValue }) => {
     try {
       const data = await registerAPI(userData);
@@ -28,7 +28,7 @@ export const register = createAsyncThunk(
 );
 
 export const logout = createAsyncThunk(
-  "auth/logout",
+  "studentAuth/logout",
   async (_, { rejectWithValue }) => {
     try {
       const data = await logoutAPI();
@@ -41,13 +41,32 @@ export const logout = createAsyncThunk(
 
 // Convert checkAuth to createAsyncThunk
 export const checkAuth = createAsyncThunk(
-  "auth/checkAuth",
+  "studentAuth/checkAuth",
   async (_, { rejectWithValue }) => {
     try {      
       const response = await checkAuthAPI();
       return response.user;
     } catch (error) {
       console.log(error)
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const extendSession = createAsyncThunk(
+  "studentAuth/extendSession",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await extendSessionAPI();
+      if (response.data.success) {
+        localStorage.setItem(
+          "accessTokenExpiry", 
+          Date.now() + (response.data.accessTokenExpiresIn * 1000)
+        );
+        return response.data;
+      }
+      return rejectWithValue("Failed to extend session");
+    } catch (error) {
       return rejectWithValue(error.message);
     }
   }
@@ -61,7 +80,7 @@ const initialState = {
 };
 
 const studentAuthSlice = createSlice({
-  name: "auth",
+  name: "studentAuth",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -78,7 +97,6 @@ const studentAuthSlice = createSlice({
       state.user = null;
       state.authInitialized = true;
       state.status = "failed";
-      sessionStorage.removeItem("accessToken");
     }
   },
   extraReducers: (builder) => {
@@ -130,7 +148,6 @@ const studentAuthSlice = createSlice({
         state.authInitialized = true;
         state.error = action.payload;
         state.user = null;
-        sessionStorage.removeItem("accessToken");
         toast.error("Session expired. Please log in again.");
       })
       // Logout actions
@@ -139,7 +156,6 @@ const studentAuthSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state) => {
         state.status = "succeeded";
-        sessionStorage.removeItem("accessToken");
         state.user = null;
         state.authInitialized = true;
         toast.success("Logged out successfully.");
@@ -148,6 +164,16 @@ const studentAuthSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
         toast.error("Logout failed. Please try again.");
+      })
+      .addCase(extendSession.fulfilled, (state) => {
+        state.status = "succeeded";
+        toast.success("Session extended successfully");
+      })
+      .addCase(extendSession.rejected, (state) => {
+        state.status = "failed";
+        state.user = null;
+        state.authInitialized = true;
+        toast.error("Session extension failed. Please login again.");
       });
   },
 });
