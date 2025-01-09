@@ -20,7 +20,7 @@ const CoursePage = () => {
     const fetchCourseDetails = async () => {
       try {
         const response = await api.get(`/user/courses/${courseId}`);
-        console.log(response);
+       
         if (response.status !== 200) throw new Error("Failed to fetch course details");
         setCourseDetails(response.data);
       } catch (err) {
@@ -213,7 +213,7 @@ const CoursePage = () => {
                           {isPaid && (
                             <button
                               onClick={() => {handleMarkAsDone(section.id, section.mark_as_done)
-                                console.log(section.mark_as_done)
+                                
                               }}
                               className={`ml-4 px-4 py-2 rounded-lg font-medium ${
                                 section.mark_as_done === 1

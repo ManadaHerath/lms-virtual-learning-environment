@@ -77,7 +77,7 @@ const AddStudentModal = ({ onClose, courseId,onStudentsUpdated }) => {
       }));
       
       const respones= await api.post("/admin/student/payment", { enrollments });
-      console.log(respones.data);
+      
       enqueueSnackbar("Students successfully added!", { variant: "success" });
 
       
