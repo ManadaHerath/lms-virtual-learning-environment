@@ -45,10 +45,15 @@ export const checkAuth = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {      
       const response = await checkAuthAPI();
+      
       return response.user;
     } catch (error) {
-      console.log(error)
-      return rejectWithValue(error.message);
+      
+      if (error.response?.status === 403) {
+        console.log("403 error detected, returning rejectWithValue.");
+        return rejectWithValue({ status: 403, message: "Unauthorized" });
+      }
+      return rejectWithValue(error.message || "Failed to check authentication");
     }
   }
 );
@@ -130,7 +135,7 @@ const studentAuthSlice = createSlice({
         state.authInitialized = true;
         state.error = action.payload;
         state.user = null;
-        sessionStorage.removeItem("accessToken");
+        
         toast.error("Session expired. Please log in again.");
       })
       // Logout actions

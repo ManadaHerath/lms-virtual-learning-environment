@@ -7,6 +7,7 @@ import { checkAuth } from "../features/userAuth/authSlice";
 import api from "../redux/api";
 import ExtendSessionDialog from '../user/ExtendSessionDialog'
 import { useSnackbar } from "notistack";
+import { useLocation } from "react-router-dom";
 const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -46,9 +47,11 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
     const TOKEN_EXPIRY_BUFFER = 2 * 60 * 1000;
     if (accessTokenExpiry) {
       const timeUntilPopup = accessTokenExpiry - Date.now() - TOKEN_EXPIRY_BUFFER;
-  
+      
       if (timeUntilPopup > 0) {
+        
         const timer = setTimeout(() => {
+          
           // Show the popup when token is about to expire
           setShowExtendSessionDialog(true);
         }, timeUntilPopup);
@@ -57,7 +60,16 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
       }
     }
   }, []);
-
+  const location = useLocation();
+  useEffect(() => {
+    // Trigger checkAuth whenever the route changes or on mount
+    try {
+      dispatch(checkAuth());
+    } catch (error) {
+      console.log(error)
+    }
+    
+  }, [dispatch, location]);
 
   useEffect(() => {
     // Check auth status only if it hasn't been initialized
@@ -73,17 +85,21 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
   }
   if (error) {
     if (error.status === 403) {
-      return <Navigate to={redirectTo} />;
+      console.log("403 error detected, navigating to login.");
+    return <Navigate to={redirectTo} replace />;
     }
   }
+  
 
   // If no user is logged in, redirect to the login page
   if (!user) {
+    enqueueSnackbar('Session expired',{variant:'warning'})
     return <Navigate to={redirectTo} />;
   }
 
   // If the user doesn't have the required role, redirect to login
   if (user.userType !== role) {
+    enqueueSnackbar('Session expired',{variant:'warning'})
     return <Navigate to={redirectTo} />;
   }
 

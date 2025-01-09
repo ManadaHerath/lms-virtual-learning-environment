@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import { checkAuth } from "../features/auth/authSlice";
-
+import { useLocation } from "react-router-dom";
 const AdminProtectedRoute = ({ redirectTo = "/admin/login", role = "admin" }) => {
   const dispatch = useDispatch();
   const { user, authInitialized, status } = useSelector((state) => state.auth);
@@ -14,6 +14,18 @@ const AdminProtectedRoute = ({ redirectTo = "/admin/login", role = "admin" }) =>
       dispatch(checkAuth());
     }
   }, [dispatch, authInitialized]);
+
+  const location = useLocation();
+  useEffect(() => {
+    // Trigger checkAuth whenever the route changes or on mount
+    try {
+      dispatch(checkAuth());
+    } catch (error) {
+      console.log(error)
+    }
+    
+  }, [dispatch, location]);
+
 
   // Show loading spinner or message while checking authentication
   if (!authInitialized || status === "loading") {
