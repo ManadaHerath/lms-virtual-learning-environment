@@ -98,7 +98,7 @@ const AuthController = {
     const accessToken = jwt.sign(
       { nic: user.nic, email: req.body.email,userType:"student" },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "3h" } // Expires in 15 minutes
+      { expiresIn: "12h" } // Expires in 15 minutes
     );
 
     // Generate Refresh Token (long-lived)
@@ -140,11 +140,18 @@ const AuthController = {
 
   // Check authentication status
   checkAuth: async (req, res) => {
-    // Error detection
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+    try {
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "User is authenticated",
+          user: req.user,
+        });
+    } catch (error) {
+      res.clearCookie('accessToken');
+      res.status(500).send({ message: `Error in checkAuth: ${error.message}` });
     }
-    res.status(200).json({ success: true, user: req.user });
   },
 
   getAllCourses: async (batch, type) => {
@@ -191,7 +198,6 @@ getEnrolledCourses: async (req, res) => {
     res.status(500).json({ error: "Failed to fetch enrolled courses" });
   }
 },
-
 
  // In AuthController.js
 

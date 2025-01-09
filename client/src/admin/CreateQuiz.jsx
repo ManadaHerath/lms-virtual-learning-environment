@@ -301,18 +301,18 @@ const CreateQuiz = () => {
         </div>
         {currentQuestion.question_type === "mcq" && (
           <>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col-2 items-center space-x-2">
               <input
                 type="text"
                 value={currentOption}
                 onChange={(e) => setCurrentOption(e.target.value)}
                 placeholder="Option Text"
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-3/4 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"
                 onClick={addOption}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-1/4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 Add Option
               </button>

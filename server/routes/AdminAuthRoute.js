@@ -66,4 +66,10 @@ router.post(
   QuizController.createQuiz
 );
 router.get('/quizzes',AuthMiddleware(['admin']),QuizController.getAllQuizes);
+
+// Get Student Details
+router.get('/students/:nic', AuthMiddleware(['admin']), AdminController.getStudentDetails);
+router.get('/students/:nic/courses', AuthMiddleware(['admin']), AdminController.getStudentCourses);
+router.get('/students/${nic}/courses/${courseId}/quizzes', AuthMiddleware(['admin']), QuizController.getStudentQuizzes);
+
 module.exports = router;
