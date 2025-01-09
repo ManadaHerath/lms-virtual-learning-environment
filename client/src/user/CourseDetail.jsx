@@ -23,6 +23,7 @@ const CourseDetail = () => {
           throw new Error("Failed to fetch course details");
         }
         const data = await response.data;
+        console.log(data);
         setCourse(data);
         setEnrolled(data.enrolled);
       } catch (err) {
@@ -64,6 +65,10 @@ const CourseDetail = () => {
     }
 
     const cartItem = {
+      course_id:course.course_id,
+      course_type:course.course_type,
+      batch:course.batch,
+      month:course.month,
       price: course.price,
       image_url: course.image_url,
     };
