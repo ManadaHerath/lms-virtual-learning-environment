@@ -214,7 +214,7 @@ getEnrolledCourses: async (req, res) => {
     const isEnrolled = await UserModel.checkEnrollment(nic, courseId);
 
     if (isEnrolled) {
-      return res.status(400).json({
+      return res.status(200).json({
         success: false,
         message: "You are already enrolled in this course.",
       });
