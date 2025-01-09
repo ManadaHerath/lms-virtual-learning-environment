@@ -61,7 +61,8 @@ const CartPage = () => {
                           </div>
                           <div>
                             <h2 className="text-lg font-semibold text-gray-900">
-                              {item.title}
+                              {item.title} - {item.batch} {item.course_type} (
+                              {item.month})
                             </h2>
                             <p className="text-lg font-medium text-blue-600 mt-1">
                               Rs. {parseFloat(item.price).toFixed(2)}
