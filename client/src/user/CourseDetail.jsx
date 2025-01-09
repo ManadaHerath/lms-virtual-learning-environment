@@ -44,7 +44,7 @@ const CourseDetail = () => {
   const handleEnroll = async () => {
     try {
       const response = await api.post(`/user/enroll/${courseId}`);
-      if (response.status !== 200) {
+      if (response.status == 200) {
         throw new Error("You have already enrolled");
       }
       const data = await response.data;
