@@ -17,7 +17,7 @@ const PaymentCheckout = ({ cart }) => {
     try {
       // Send request to the backend to generate the hash
       const response = await api.post("/payments/generate-hash", orderDetails);
-      console.log(response)
+      
       const { merchant_id, hash } = response.data;
 
       // Create a form and submit it to PayHere

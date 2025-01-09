@@ -16,7 +16,7 @@ const ExtendSessionController={
           const accessToken = jwt.sign(
             { nic: payload.nic, email: payload.email,userType:payload.userType },
             process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "3hm" } // New short-lived token
+            { expiresIn: "3h" } // New short-lived token
           );
           res.cookie("accessToken", accessToken, {
             httpOnly: true,
@@ -27,7 +27,7 @@ const ExtendSessionController={
           res.status(200).json({
             success: true,
             message:"Extend session successfull",
-            accessTokenExpiresIn:30*60
+            accessTokenExpiresIn:3*60*60
           });
         } catch (error) {
           res.status(403).json({ success: false, message: "Invalid or expired refresh token" });

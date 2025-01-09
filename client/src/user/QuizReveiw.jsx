@@ -25,7 +25,7 @@ const QuizReview = () => {
         }
 
         const reviewData = reviewResponse.data;
-        console.log(reviewData);
+       
         const detailsData = detailsResponse.data;
 
         if (!reviewData.success || !detailsData.success) {
