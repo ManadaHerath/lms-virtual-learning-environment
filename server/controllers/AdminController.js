@@ -29,7 +29,7 @@ const AdminController = {
       const accessToken = jwt.sign(
         { nic: admin.nic, email: req.body.email, userType: "admin", name: `${admin.first_name} ${admin.last_name}`},
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "2h" } // Expires in 2 hours
+        { expiresIn: "1d" } // Expires in 2 hours
       );
 
       // Generate Refresh Token (long-lived)

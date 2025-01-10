@@ -23,7 +23,6 @@ const CourseDetail = () => {
           throw new Error("Failed to fetch course details");
         }
         const data = await response.data;
-        console.log(data);
         setCourse(data);
         setEnrolled(data.enrolled);
       } catch (err) {
@@ -55,7 +54,7 @@ const CourseDetail = () => {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart =async () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const courseInCart = cart.find((item) => item.image_url === course.image_url);
 
@@ -64,18 +63,30 @@ const CourseDetail = () => {
       return;
     }
 
-    const cartItem = {
-      course_id:course.course_id,
-      course_type:course.course_type,
-      batch:course.batch,
-      month:course.month,
-      price: course.price,
-      image_url: course.image_url,
-    };
+    try{
+      const response =await api.get(`/user/paid/${courseId}`);
+      if(response.data.isPaid){
 
-    cart.push(cartItem);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    showToast("Course added to cart successfully!", 'success');
+        throw new Error("You have already paid for this course");
+      }else{
+        const cartItem = {
+          course_id:course.course_id,
+          course_type:course.course_type,
+          batch:course.batch,
+          month:course.month,
+          price: course.price,
+          image_url: course.image_url,
+        };
+    
+        cart.push(cartItem);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        showToast("Course added to cart successfully!", 'success');
+        setTimeout(() => window.location.reload(), 2000);
+      }
+    }catch(err){
+      showToast(err.message, 'warning');
+    }
+
   };
 
   const showToast = (message, type) => {

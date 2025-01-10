@@ -98,7 +98,7 @@ const AuthController = {
     const accessToken = jwt.sign(
       { nic: user.nic, email: req.body.email,userType:"student" },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "12h" } // Expires in 15 minutes
+      { expiresIn: "12h" } // Expires in 12h
     );
 
     // Generate Refresh Token (long-lived)
@@ -236,6 +236,20 @@ getEnrolledCourses: async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: "Failed to enroll in course" });
+  }
+},
+
+// Check paid
+checkPaid: async (req, res) => {
+  const { nic } = req.user; // Get user nic from JWT token
+  const { courseId } = req.params;
+
+  try {
+    const isPaid = await UserModel.checkPaid(nic, courseId);
+    res.status(200).json({ isPaid });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Failed to check payment status" });
   }
 },
 

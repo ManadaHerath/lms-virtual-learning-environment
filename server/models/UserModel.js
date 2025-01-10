@@ -296,6 +296,23 @@ const UserModel = {
     }
   },
 
+  // Check whether paid
+  checkPaid: async (nic, courseId) => {
+    const query = `
+      SELECT 1
+      FROM Enrollment e
+      RIGHT JOIN Payment p ON e.enrollment_id = p.enrollment_id
+      WHERE e.nic = ? AND e.course_id = ? AND p.payment_id IS NOT NULL
+    `;
+    try {
+      const [result] = await pool.query(query, [nic, courseId]);
+
+      return result.length > 0; // Return true if any row exists
+    } catch (err) {
+      throw err;
+    }
+  },
+
   getEnrolledBoughtCourses: async (nic) => {
     
     const query = `
