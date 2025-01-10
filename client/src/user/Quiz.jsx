@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Clock, AlertTriangle, CheckCircle, Timer, BookOpen } from "lucide-react";
@@ -26,6 +28,7 @@ const QuizPage = () => {
         formData
       );
       return response.data.secure_url || null;
+
     } catch (error) {
       console.error("Error uploading file:", error.message);
       throw error;
