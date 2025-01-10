@@ -187,6 +187,62 @@ const QuizController = {
       console.error(error);
     res.status(500).json({ error: 'Failed to fetch quizzes',success:false });
     }
+  },
+
+  getStudentQuizzes: async (req, res) => {
+    const { nic, courseId } = req.params;
+
+    try {
+      // Fetch all quizzes for the course
+      const quizzes = await QuizModel.getQuizzesByCourse(courseId);
+      
+      // Fetch student quiz results
+      const studentResults = await QuizModel.getStudentQuizResults(nic, courseId);
+
+      // Map quizzes to include student-specific data
+      const quizzesWithStudentData = quizzes.map((quiz) => {
+        const studentResult = studentResults.find((result) => result.quiz_id === quiz.id);
+
+        return {
+          ...quiz,
+          attempted: !!studentResult,
+          marks: studentResult ? studentResult.total_marks : null,
+          graded: studentResult ? studentResult.graded : null,
+        };
+      });
+
+      res.status(200).json({ success: true, quizzes: quizzesWithStudentData });
+    } catch (error) {
+      console.error('Error fetching quizzes:', error.message);
+      res.status(500).json({ success: false, message: 'Failed to fetch quizzes for the student.' });
+    }
+  },
+
+  getStudentUploadedFiles: async (req, res) => {
+    const { nic, courseId, quizId } = req.params;
+
+    try {
+      // Fetch uploaded files for the student and quiz
+      const uploadedFiles = await QuizModel.getUploadedFiles(nic, courseId, quizId);
+
+      if (!uploadedFiles || uploadedFiles.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'No files found for the specified student, course, and quiz.',
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        files: uploadedFiles,
+      });
+    } catch (error) {
+      console.error('Error fetching uploaded files:', error.message);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch uploaded files.',
+      });
+    }
   }
   
 };

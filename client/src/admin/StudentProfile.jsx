@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Book, User, ChevronDown, ChevronUp, Trophy } from 'lucide-react';
+import { ArrowLeft, Book, User, ChevronDown, ChevronUp, Trophy, FileText, File, Link } from 'lucide-react';
 import api from '../redux/api';
 
 const StudentProfile = () => {
@@ -9,7 +9,9 @@ const StudentProfile = () => {
   const [student, setStudent] = useState(null);
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [quizResults, setQuizResults] = useState([]);
+  const [quizFiles, setQuizFiles] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -36,9 +38,29 @@ const StudentProfile = () => {
   const fetchQuizResults = async (courseId) => {
     try {
       const response = await api.get(`/admin/students/${nic}/courses/${courseId}/quizzes`);
-      setQuizResults(response.data);
+      setQuizResults(response.data.quizzes);
+      
+      // Reset selected quiz when changing courses
+      setSelectedQuiz(null);
+      
+      // Fetch files for each quiz
+      response.data.quizzes.forEach(quiz => {
+        fetchQuizFiles(courseId, quiz.id);
+      });
     } catch (err) {
       console.error("Error fetching quiz results:", err);
+    }
+  };
+
+  const fetchQuizFiles = async (courseId, quizId) => {
+    try {
+      const response = await api.get(`/admin/students/${nic}/courses/${courseId}/quizzes/${quizId}/files`);
+      setQuizFiles(prev => ({
+        ...prev,
+        [quizId]: response.data.files
+      }));
+    } catch (err) {
+      console.error("Error fetching quiz files:", err);
     }
   };
 
@@ -46,10 +68,20 @@ const StudentProfile = () => {
     if (selectedCourse?.course_id === course.course_id) {
       setSelectedCourse(null);
       setQuizResults([]);
+      setQuizFiles({});
+      setSelectedQuiz(null);
     } else {
       setSelectedCourse(course);
       fetchQuizResults(course.course_id);
     }
+  };
+
+  const handleQuizClick = (quiz) => {
+    setSelectedQuiz(selectedQuiz?.id === quiz.id ? null : quiz);
+  };
+
+  const formatDateTime = (dateString) => {
+    return new Date(dateString).toLocaleString();
   };
 
   if (loading) {
@@ -158,21 +190,77 @@ const StudentProfile = () => {
                     {quizResults.length > 0 ? (
                       <div className="space-y-4">
                         {quizResults.map((quiz) => (
-                          <div key={quiz.quiz_id} className="bg-gray-800/30 p-4 rounded-lg">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <h5 className="font-medium text-gray-200">{quiz.title}</h5>
-                                <p className="text-sm text-gray-400">{quiz.description}</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-lg font-semibold text-blue-400">
-                                  {quiz.score}%
-                                </p>
-                                <p className="text-sm text-gray-400">
-                                  Completed: {new Date(quiz.completed_at).toLocaleDateString()}
-                                </p>
+                          <div key={quiz.id}>
+                            <div 
+                              onClick={() => handleQuizClick(quiz)}
+                              className="bg-gray-800/30 p-4 rounded-lg cursor-pointer hover:bg-gray-800/50 transition-colors"
+                            >
+                              <div className="flex justify-between items-start">
+                                <div className="space-y-2">
+                                  <h5 className="font-medium text-gray-200">{quiz.title}</h5>
+                                  <p className="text-sm text-gray-400">{quiz.description}</p>
+                                  <div className="space-y-1">
+                                    <p className="text-sm text-gray-400">
+                                      Open: {formatDateTime(quiz.open_time)}
+                                    </p>
+                                    <p className="text-sm text-gray-400">
+                                      Close: {formatDateTime(quiz.close_time)}
+                                    </p>
+                                    <p className="text-sm text-gray-400">
+                                      Time Limit: {quiz.time_limit_minutes} minutes
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="text-right space-y-2">
+                                  <p className="text-lg font-semibold text-blue-400">
+                                    {quiz.attempted ? (quiz.marks !== null ? `${quiz.marks}/${quiz.graded}` : 'Pending') : 'Not Attempted'}
+                                  </p>
+                                  {quizFiles[quiz.id] && quizFiles[quiz.id].length > 0 && (
+                                    <div className="flex items-center justify-end space-x-2">
+                                      <FileText className="w-4 h-4 text-gray-400" />
+                                      <span className="text-sm text-gray-400">
+                                        {quizFiles[quiz.id].length} file(s)
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
+
+                            {/* Uploaded Files Section */}
+                            {selectedQuiz?.id === quiz.id && quizFiles[quiz.id] && (
+                              <div className="mt-2 ml-4 p-4 bg-gray-800/20 rounded-lg">
+                                <h6 className="flex items-center text-sm font-medium text-gray-200 mb-3">
+                                  <File className="w-4 h-4 mr-2 text-blue-400" />
+                                  Uploaded Files
+                                </h6>
+                                <div className="space-y-2">
+                                  {quizFiles[quiz.id].map((file, index) => (
+                                    <div 
+                                      key={file.response_id}
+                                      className="flex items-center justify-between p-2 bg-gray-800/30 rounded"
+                                    >
+                                      <span className="text-sm text-gray-400">
+                                        Response {index + 1}
+                                      </span>
+                                      {file.uploaded_file_url ? (
+                                        <a
+                                          href={file.uploaded_file_url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center text-blue-400 hover:text-blue-300 text-sm"
+                                        >
+                                          <Link className="w-4 h-4 mr-1" />
+                                          View File
+                                        </a>
+                                      ) : (
+                                        <span className="text-sm text-gray-500">No file uploaded</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
