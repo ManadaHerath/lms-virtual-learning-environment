@@ -45,6 +45,8 @@ router.put("/editprofile", AuthMiddleware(["student", "admin"]), UserController.
 
 // Get enrolled courses for the authenticated user
 router.get("/enrolled", AuthMiddleware(["student", "admin"]), AuthController.getEnrolledCourses);
+// Check whether paid to the course
+router.get("/paid/:courseId", AuthMiddleware(["student"]), AuthController.checkPaid);
 
 
 // Update or remove profile picture
