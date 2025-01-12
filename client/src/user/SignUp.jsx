@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../redux/api";
@@ -9,7 +8,6 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState("");
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
-
   const [formData, setFormData] = useState({
     nic: "",
     first_name: "",
@@ -99,401 +97,272 @@ const Signup = () => {
     }
   };
 
+  const inputClassName = "w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-200 bg-white text-gray-800 placeholder-gray-400";
+  const labelClassName = "block text-sm font-medium text-gray-700 mb-2";
+
   return (
-    <div className="flex h-screen w-full bg-slate-900 p-4">
-      <div className="flex w-full md:w-1/2 items-center justify-center p-6">
-        <div className="w-full max-w-md backdrop-blur-sm bg-white/5 py-3 px-8 rounded-2xl shadow-xl">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl flex bg-white rounded-2xl shadow-2xl overflow-hidden">
+        {/* Form Section */}
+        <div className="w-full lg:w-1/2 p-8">
           {successMessage && (
-            <div className="p-4 mb-4 text-green-300 bg-green-900/50 rounded-lg backdrop-blur-sm">
+            <div className="p-4 mb-4 text-green-700 bg-green-100 rounded-lg">
               {successMessage}
             </div>
           )}
-          <form
-            onSubmit={handleSubmit}
-            encType="multipart/form-data"
-            className="space-y-6"
-          >
+
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Create Your Account</h1>
+            <p className="text-gray-600">Join our learning community today</p>
+          </div>
+
+          <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-6">
             {step === 1 ? (
-              <>
-                              {/* First Step Fields */}
-                              <div className="mb-8 justify-center flex flex-col items-center">
-                  <h1 className="text-6xl font-bold text-white animate-glow">
-                    Join Us
-                  </h1>
-                  <img src="/lll.png" alt="logo" className="w-2/5 mt-2" />
+              <div className="space-y-6">
+                <div>
+                  <label className={labelClassName}>NIC</label>
+                  <input
+                    type="text"
+                    name="nic"
+                    placeholder="Enter your NIC number"
+                    value={formData.nic}
+                    onChange={handleChange}
+                    className={inputClassName}
+                    required
+                  />
+                  {errors.nic && (
+                    <div className="text-red-600 text-sm mt-1">{errors.nic}</div>
+                  )}
                 </div>
-                <div className="space-y-6">
-                  {/* NIC */}
-                  <div className="group">
-                    <label className="block text-sm font-medium text-indigo-200 mb-1">
-                      NIC
-                    </label>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClassName}>First Name</label>
                     <input
                       type="text"
-                      name="nic"
-                      placeholder="Enter your NIC number"
-                      value={formData.nic}
+                      name="first_name"
+                      placeholder="Enter your First Name"
+                      value={formData.first_name}
                       onChange={handleChange}
-                      className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
+                      className={inputClassName}
                       required
                     />
-                    {errors.nic && (
-                      <div className="text-red-400 text-sm">{errors.nic}</div>
+                    {errors.first_name && (
+                      <div className="text-red-600 text-sm mt-1">{errors.first_name}</div>
                     )}
                   </div>
 
-                  {/* Other Fields */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* First Name */}
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        First Name
-                      </label>
-                      <input
-                        type="text"
-                        name="first_name"
-                        placeholder="Enter your First Name"
-                        value={formData.first_name}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                        required
-                      />
-                      {errors.first_name && (
-                        <div className="text-red-400 text-sm">
-                          {errors.first_name}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Last Name */}
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Last Name
-                      </label>
-                      <input
-                        type="text"
-                        name="last_name"
-                        placeholder="Enter your Last Name"
-                        value={formData.last_name}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                        required
-                      />
-                      {errors.last_name && (
-                        <div className="text-red-400 text-sm">
-                          {errors.last_name}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Email */}
-                  <div className="group">
-                    <label className="block text-sm font-medium text-indigo-200 mb-1">
-                      Email
-                    </label>
+                  <div>
+                    <label className={labelClassName}>Last Name</label>
                     <input
-                      type="email"
-                      name="email"
-                      placeholder="Enter your Email"
-                      value={formData.email}
+                      type="text"
+                      name="last_name"
+                      placeholder="Enter your Last Name"
+                      value={formData.last_name}
                       onChange={handleChange}
-                      className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
+                      className={inputClassName}
+                      required
+                    />
+                    {errors.last_name && (
+                      <div className="text-red-600 text-sm mt-1">{errors.last_name}</div>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClassName}>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your Email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={inputClassName}
+                    required
+                  />
+                  {errors.email && (
+                    <div className="text-red-600 text-sm mt-1">{errors.email}</div>
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className={labelClassName}>Password</label>
+                    <input
+                      type="password"
+                      name="password"
+                      placeholder="Enter your password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className={inputClassName}
                       required
                     />
                   </div>
-
-                  {/* Password */}
-                  <div className="space-y-4">
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Password
-                      </label>
-                      <input
-                        type="password"
-                        name="password"
-                        placeholder="Enter your password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                        required
-                      />
-                    </div>
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Confirm Password
-                      </label>
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        placeholder="Confirm your password"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className="w-full p-3 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none backdrop-blur-sm transition-all duration-300 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                        required
-                      />
-                    </div>
-                    {passwordError && (
-                      <div className="text-red-400 text-sm">
-                        {passwordError}
-                      </div>
-                    )}
+                  <div>
+                    <label className={labelClassName}>Confirm Password</label>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      placeholder="Confirm your password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className={inputClassName}
+                      required
+                    />
                   </div>
+                  {passwordError && (
+                    <div className="text-red-600 text-sm">{passwordError}</div>
+                  )}
+                </div>
 
+                <button
+                  type="button"
+                  onClick={handleNextStep}
+                  className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+                >
+                  Continue
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <label className={labelClassName}>Telephone</label>
+                  <input
+                    type="text"
+                    name="telephone"
+                    value={formData.telephone}
+                    onChange={handleChange}
+                    className={inputClassName}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClassName}>Street Address</label>
+                  <input
+                    type="text"
+                    name="street_address"
+                    value={formData.street_address}
+                    onChange={handleChange}
+                    className={inputClassName}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClassName}>City</label>
+                    <input
+                      type="text"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className={inputClassName}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClassName}>Province</label>
+                    <input
+                      type="text"
+                      name="province"
+                      value={formData.province}
+                      onChange={handleChange}
+                      className={inputClassName}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClassName}>Postal Code</label>
+                  <input
+                    type="text"
+                    name="postal_code"
+                    value={formData.postal_code}
+                    onChange={handleChange}
+                    className={inputClassName}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClassName}>Date of Birth</label>
+                  <input
+                    type="date"
+                    name="date_of_birth"
+                    value={formData.date_of_birth}
+                    onChange={handleChange}
+                    className={inputClassName}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClassName}>Batch</label>
+                  <input
+                    type="text"
+                    name="batch"
+                    value={formData.batch}
+                    onChange={handleChange}
+                    className={inputClassName}
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClassName}>Profile Picture</label>
+                  <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all duration-200 bg-white text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                  />
+                </div>
+
+                <div className="flex space-x-4">
                   <button
                     type="button"
-                    onClick={handleNextStep}
-                    className="w-full p-3 relative overflow-hidden rounded-lg transition-all duration-300 bg-gradient-to-r from-indigo-600/80 to-purple-600/80 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold before:absolute before:inset-0 before:bg-white/20 before:translate-x-[150%] before:skew-x-[-45deg] before:transition-transform hover:before:translate-x-[-150%] before:duration-700 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] backdrop-blur-sm"
+                    onClick={() => setStep(1)}
+                    className="w-1/2 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
                   >
-                    Continue
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    className="w-1/2 bg-indigo-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200"
+                  >
+                    Complete
                   </button>
                 </div>
-              </>
-            ) : (
-              <>
-                {/* Second Step Fields */}
-                <>
-                  {/* Second Step Fields */}
-                  <div className="space-y-5">
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Telephone
-                      </label>
-                      <input
-                        type="text"
-                        name="telephone"
-                        value={formData.telephone}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white 
-               placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-               backdrop-blur-sm transition-all duration-300
-               group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                      />
-                    </div>
-
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Street Address
-                      </label>
-                      <input
-                        type="text"
-                        name="street_address"
-                        value={formData.street_address}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white 
-               placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-               backdrop-blur-sm transition-all duration-300
-               group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="group">
-                        <label className="block text-sm font-medium text-indigo-200 mb-1">
-                          City
-                        </label>
-                        <input
-                          type="text"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleChange}
-                          className="w-full p-2 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white 
-                 placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-                 backdrop-blur-sm transition-all duration-300
-                 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                        />
-                      </div>
-                      <div className="group">
-                        <label className="block text-sm font-medium text-indigo-200 mb-1">
-                          Province
-                        </label>
-                        <input
-                          type="text"
-                          name="province"
-                          value={formData.province}
-                          onChange={handleChange}
-                          className="w-full p-2 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white 
-                 placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-                 backdrop-blur-sm transition-all duration-300
-                 group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Postal Code
-                      </label>
-                      <input
-                        type="text"
-                        name="postal_code"
-                        value={formData.postal_code}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white 
-               placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-               backdrop-blur-sm transition-all duration-300
-               group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                      />
-                    </div>
-
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Date of Birth
-                      </label>
-                      <input
-                        type="date"
-                        name="date_of_birth"
-                        value={formData.date_of_birth}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white 
-               placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-               backdrop-blur-sm transition-all duration-300
-               group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                      />
-                    </div>
-
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Batch
-                      </label>
-                      <input
-                        type="text"
-                        name="batch"
-                        value={formData.batch}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white 
-               placeholder-indigo-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none
-               backdrop-blur-sm transition-all duration-300
-               group-hover:border-indigo-400 group-hover:bg-slate-800/70"
-                      />
-                    </div>
-
-                    <div className="group">
-                      <label className="block text-sm font-medium text-indigo-200 mb-1">
-                        Profile Picture
-                      </label>
-                      <input
-                        type="file"
-                        name="image"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="w-full p-2 border border-indigo-500/50 rounded-lg bg-slate-800/50 text-white 
-               file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
-               file:text-sm file:font-semibold file:bg-indigo-600/80 file:text-white
-               hover:file:bg-indigo-500/80 file:cursor-pointer
-               backdrop-blur-sm transition-all duration-300"
-                      />
-                    </div>
-
-                    <div className="flex space-x-4">
-                      <button
-                        type="button"
-                        onClick={() => setStep(1)}
-                        className="w-1/2 p-2 relative overflow-hidden rounded-lg transition-all duration-300
-               bg-gradient-to-r from-gray-600/80 to-gray-700/80 
-               hover:from-gray-500 hover:to-gray-600
-               text-white font-semibold
-               before:absolute before:inset-0 before:bg-white/20 
-               before:translate-x-[150%] before:skew-x-[-45deg] before:transition-transform
-               hover:before:translate-x-[-150%] before:duration-700
-               backdrop-blur-sm"
-                      >
-                        Back
-                      </button>
-                      <button
-                        type="submit"
-                        className="w-1/2 p-2 relative overflow-hidden rounded-lg transition-all duration-300
-               bg-gradient-to-r from-indigo-600/80 to-purple-600/80 
-               hover:from-indigo-500 hover:to-purple-500
-               text-white font-semibold
-               before:absolute before:inset-0 before:bg-white/20 
-               before:translate-x-[150%] before:skew-x-[-45deg] before:transition-transform
-               hover:before:translate-x-[-150%] before:duration-700
-               hover:shadow-[0_0_20px_rgba(99,102,241,0.5)]
-               backdrop-blur-sm"
-                      >
-                        Complete
-                      </button>
-                    </div>
-                  </div>
-                </>
-              </>
+              </div>
             )}
           </form>
 
-          {/* Navigation Link */}
-          <div className="text-center text-sm text-indigo-200 mt-6">
+          <div className="text-center text-sm text-gray-600 mt-6">
             Already have an account?{" "}
             <a
               href="/login"
-              className="text-purple-400 hover:text-purple-300 transition-colors duration-300"
+              className="text-indigo-600 hover:text-indigo-700 font-medium"
             >
               Sign in
             </a>
           </div>
         </div>
-      </div>
 
-      {/* Right Section with Solar System Animation */}
-      <div className="hidden md:flex w-1/2 bg-slate-900 relative overflow-hidden rounded-tl-lg rounded-tr-lg rounded-bl-[200px]">
-        {/* Neptune - Furthest planet */}
-        <div
-          className="absolute w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 
-                      top-20 right-40 animate-float-slow opacity-80"
-        >
-          <div className="absolute inset-0 rounded-full bg-blue-900/30"></div>
-        </div>
-
-        {/* Uranus */}
-        <div
-          className="absolute w-32 h-32 rounded-full bg-gradient-to-br from-cyan-300 to-cyan-500 
-                      bottom-40 left-20 animate-float"
-        >
-          <div className="absolute inset-0 rounded-full bg-cyan-900/20"></div>
-          {/* Uranus rings */}
-          <div
-            className="absolute w-48 h-2 bg-gradient-to-r from-cyan-200 to-transparent 
-                       top-1/2 -left-8 rotate-45 rounded-full"
-          ></div>
-        </div>
-
-        {/* Floating Asteroids */}
-        {[...Array(15)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-gray-400 rounded-full animate-float"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${6 + Math.random() * 4}s`,
-            }}
-          />
-        ))}
-
-        {/* Shooting Stars */}
-        <div
-          className="absolute w-40 h-px bg-gradient-to-r from-white to-transparent 
-                      top-1/4 left-1/4 -rotate-45 animate-shooting-star"
-        ></div>
-        <div
-          className="absolute w-32 h-px bg-gradient-to-r from-white to-transparent 
-                      top-3/4 right-1/4 -rotate-45 animate-shooting-star-delayed"
-        ></div>
-
-        {/* Glowing Background Elements */}
-        <div className="absolute inset-0">
-          {[...Array(50)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full animate-twinkle"
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-              }}
-            />
-          ))}
+        {/* Right Section - Illustration */}
+        <div className="hidden lg:flex w-1/2 bg-indigo-600 p-12 flex-col justify-between items-center">
+          <div className="w-full">
+            <img src="/lll.png" alt="logo" className="w-32 mb-8" />
+            <h2 className="text-white text-4xl font-bold mb-4">Start Your Learning Journey</h2>
+            <p className="text-indigo-200 text-lg">
+              Join thousands of students already learning with us. Get access to premium courses,
+              expert instructors, and a supportive community.
+            </p>
+          </div>
+          
+          {/* Decorative Elements */}
+          <div className="w-full flex justify-center">
+            <div className="w-full max-w-md h-64 bg-indigo-500/20 rounded-2xl backdrop-blur-sm p-6 relative">
+              <div className="absolute top-4 left-4 w-12 h-12 bg-white/20 rounded-lg rotate-12"></div>
+              <div className="absolute bottom-4 right-4 w-20 h-20 bg-white/10 rounded-full"></div>
+              <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-white/15 rounded-xl -rotate-12 transform -translate-x-1/2 -translate-y-1/2"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
