@@ -93,8 +93,8 @@ const Section = {
     
        
         const insertQuery = `
-          INSERT INTO Section (title, description, course_id,week_id, order_id,type_id,content_url )
-          VALUES (?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO Section (title, description, course_id,week_id, order_id,type_id,content_url,quiz_id )
+          VALUES (?, ?, ?, ?, ?, ?, ?,?)
         `;
         const [result]=await connection.execute(insertQuery, [
           sectionData.title,
@@ -103,7 +103,8 @@ const Section = {
   sectionData.weekId,   // Updated to match the property name
   sectionData.orderId,  // Updated to match the property name
   sectionData.typeId,   // Updated to match the property name
-  sectionData.contentUrl
+  sectionData.contentUrl,
+  sectionData.quizId
           
           
         ]);

@@ -17,9 +17,11 @@ const CreateSection = () => {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
     const [isQuiz,setIsQuiz]=useState(false);
-  const handleChooseQuiz = (quizId) => {
+  const handleChooseQuiz =(quizId) => {
     const quiz = quizzes.find((quiz) => quiz.id === parseInt(quizId));
+
     setSelectedQuiz(quiz);
+    
   };
   useEffect(()=>{
     
@@ -88,7 +90,10 @@ const CreateSection = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (typeId === "3" && !selectedQuiz) {
+      enqueueSnackbar("Please select a quiz before submitting.", { variant: "error" });
+      return;
+    }
     
     const sectionData = {
       title,
@@ -102,6 +107,7 @@ const CreateSection = () => {
     };
 
     try {
+      console.log(sectionData);
       const res = await api.post("/admin/section", { sectionData });
       enqueueSnackbar("Section created successfully!", { variant: "success" });
       navigate(`/admin/course/${courseId}`);
