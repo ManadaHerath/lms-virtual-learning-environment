@@ -125,7 +125,7 @@ const AuthController = {
     res.status(200).json({
       message: "Student Login successful",
       success: true,
-      accessTokenExpiresIn:3*60*60
+      accessTokenExpiresIn:12*60*60
     });
     } catch (error) {
       res.status(500).send({ message: `Error in login: ${error.message}` });
@@ -150,6 +150,7 @@ const AuthController = {
         });
     } catch (error) {
       res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
       res.status(500).send({ message: `Error in checkAuth: ${error.message}` });
     }
   },
