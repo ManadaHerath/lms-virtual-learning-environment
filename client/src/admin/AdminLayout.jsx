@@ -11,6 +11,7 @@ const AdminLayout = ({ children }) => {
     // Note: Consider using a more controlled way to handle logout
     // Rather than directly reloading the window
     dispatch(logout());
+    
   };
 
   const toggleSidebar = () => {
