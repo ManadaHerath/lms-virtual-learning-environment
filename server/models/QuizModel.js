@@ -66,12 +66,12 @@ const QuizModel = {
   },
 
   saveQuizResult: async (resultData) => {
-    const { quiz_id, student_nic, total_marks } = resultData;
+    const { quiz_id, student_nic, total_marks,graded } = resultData;
     const query = `
-      INSERT INTO QuizResult (quiz_id, student_nic, total_marks)
-      VALUES (?, ?, ?)
+      INSERT INTO QuizResult (quiz_id, student_nic, total_marks,graded)
+      VALUES (?, ?, ?,?)
     `;
-    await pool.query(query, [quiz_id, student_nic, total_marks]);
+    await pool.query(query, [quiz_id, student_nic, total_marks,graded]);
   },
 
   getQuizById: async (quizId) => {
@@ -130,7 +130,13 @@ const QuizModel = {
   const [rows]=await pool.query(query);
  
   return rows;
- }
+ },
+ getResultOfQuiz:async(quizId)=>{
+  const query=`select u.first_name ,q.student_nic,q.total_marks,q.graded,q.submitted_at from QuizResult q inner join User u on q.student_nic=u.nic where q.quiz_id=?`
+  const [rows] = await pool.query(query, [quizId]);
+  return rows;
+}
+
   
 };
 

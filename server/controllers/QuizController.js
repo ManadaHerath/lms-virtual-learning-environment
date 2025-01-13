@@ -39,7 +39,7 @@ const QuizController = {
       const { quiz_id, responses } = req.body;
       const { nic } = req.user;
       const student_nic = nic;
-
+      let allAutograded=true;
       let totalMarks = 0;
 
       for (const response of responses) {
@@ -50,6 +50,9 @@ const QuizController = {
         const isAutoGraded = response_text ? 1 : 0; // MCQs are auto-graded
         const grade = isAutoGraded ? await QuizModel.autoGrade(question_id, response_text) : null;
 
+        if (!isAutoGraded) {
+          allAutoGraded = false;
+        }
         if (grade) totalMarks += grade;
 
         await QuizModel.saveResponse({
@@ -63,7 +66,7 @@ const QuizController = {
       }
 
       // Save quiz result
-      await QuizModel.saveQuizResult({ quiz_id, student_nic, total_marks: totalMarks });
+      await QuizModel.saveQuizResult({ quiz_id, student_nic, total_marks: totalMarks,graded: allAutoGraded ? 1 : 0 });
 
       res.status(200).json({ success: true, message: "Quiz submitted successfully", totalMarks });
     } catch (error) {
@@ -186,6 +189,15 @@ const QuizController = {
     } catch (error) {
       console.error(error);
     res.status(500).json({ error: 'Failed to fetch quizzes',success:false });
+    }
+  },
+  getQuizResult:async(req,res)=>{
+    try {
+      const quizId=req.params;
+      const rows=QuizModel.getResultOfQuiz(quizId)
+      return res.status(200).json({results:rows,success:true})
+    } catch (error) {
+      res.status(500).json({error:"Failed to fetch quiz results",success:false})
     }
   }
   
