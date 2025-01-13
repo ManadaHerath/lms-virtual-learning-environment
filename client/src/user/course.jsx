@@ -66,8 +66,59 @@ const CoursePage = () => {
     }
   };
 
-  const handleCheckout = () => {
-    navigate(`/checkout?courseId=${courseId}&enrollmentId=${enrollmentId}`);
+  const showToast = (message, type) => {
+    const toast = document.createElement('div');
+    const colors = {
+      success: 'bg-green-500',
+      error: 'bg-red-500',
+      warning: 'bg-yellow-500'
+    };
+    
+    toast.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 z-50`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add('opacity-0', 'translate-y-2');
+      setTimeout(() => toast.remove(), 300);
+    }, 2000);
+
+
+  };
+
+  const handleCheckout =async () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const courseInCart = cart.find((item) => item.image_url === courseDetails.image_url);
+
+    if (courseInCart) {
+      showToast("This course is already in your cart.", 'warning');
+      return;
+    }
+
+    try{
+      const response =await api.get(`/user/paid/${courseId}`);
+      if(response.data.isPaid){
+
+        throw new Error("You have already paid for this course");
+      }else{
+        const cartItem = {
+          course_id:courseDetails.course_id,
+          course_type:courseDetails.course_type,
+          batch:courseDetails.batch,
+          month:courseDetails.month,
+          price: courseDetails.price,
+          image_url: courseDetails.image_url,
+        };
+    
+        cart.push(cartItem);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        showToast("Course added to cart successfully!", 'success');
+        setTimeout(() => window.location.reload(), 2000);
+      }
+    }catch(err){
+      showToast(err.message, 'warning');
+    }
+
   };
 
   const handleMarkAsDone = async (sectionId, currentStatus) => {
@@ -160,7 +211,7 @@ const CoursePage = () => {
                   onClick={handleCheckout}
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
-                  Pay now
+                  Add to Cart
                 </button>
               </div>
             )}

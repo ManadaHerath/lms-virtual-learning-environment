@@ -1,4 +1,5 @@
 const AdminModel = require("../models/AdminModel");
+const UserModel = require("../models/UserModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -28,7 +29,7 @@ const AdminController = {
       const accessToken = jwt.sign(
         { nic: admin.nic, email: req.body.email, userType: "admin", name: `${admin.first_name} ${admin.last_name}`},
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "2h" } // Expires in 2 hours
+        { expiresIn: "1d" } // Expires in 2 hours
       );
 
       // Generate Refresh Token (long-lived)
@@ -260,8 +261,40 @@ const AdminController = {
   } catch (error) {
     res.status(200).json({message:error,success:false})
   }
- }
-  
-};
+ },
 
+ // User Management Controllers
+ getStudentDetails:async(req,res)=>{
+  try {
+    const { nic } = req.params; // Extract NIC from JWT payload (added by AuthMiddleware)
+    const user = await UserModel.getUserProfile(nic);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, user });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ success: false, message: "Failed to fetch user profile" });
+  }
+},
+
+// Get all courses a user has enrolled in
+getStudentCourses: async (req, res) => {
+  const { nic } = req.params; // Get user nic from the request's payload (AuthMiddleware)
+  
+
+  try {
+    const courses = await UserModel.getEnrolledBoughtCourses(nic);
+
+    res.status(200).json(courses);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Failed to fetch enrolled courses" });
+  }
+},
+
+
+};
 module.exports = AdminController;

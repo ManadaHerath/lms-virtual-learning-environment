@@ -131,12 +131,47 @@ const QuizModel = {
  
   return rows;
  },
+
+ getQuizzesByCourse: async (courseId) => {
+  const query = `
+    SELECT q.id, q.title, q.description, q.open_time, q.close_time, q.time_limit_minutes
+    FROM Quiz q
+    JOIN Section s ON q.id = s.quiz_id
+    WHERE s.course_id = ?
+  `;
+  const [quizzes] = await pool.execute(query, [courseId]);
+  return quizzes;
+},
+
+// Get quiz results for a specific student under a course
+getStudentQuizResults: async (nic, courseId) => {
+  const query = `
+    SELECT qr.quiz_id, qr.total_marks, qr.graded
+    FROM QuizResult qr
+    JOIN Section s ON qr.quiz_id = s.quiz_id
+    WHERE qr.student_nic = ? AND s.course_id = ?
+  `;
+  const [results] = await pool.execute(query, [nic, courseId]);
+  return results;
+},
+
+getUploadedFiles: async (nic, courseId, quizId) => {
+  const query = `
+    SELECT sr.id AS response_id, sr.uploaded_file_url
+    FROM StudentResponse sr
+    JOIN Question q ON sr.question_id = q.id
+    JOIN Quiz qu ON q.quiz_id = qu.id
+    JOIN Section s ON qu.id = s.quiz_id
+    WHERE sr.student_nic = ? AND s.course_id = ? AND qu.id = ?
+  `;
+  const [files] = await pool.execute(query, [nic, courseId, quizId]);
+  return files;
+},
  getResultOfQuiz:async(quizId)=>{
   const query=`select u.first_name ,q.student_nic,q.total_marks,q.graded,q.submitted_at from QuizResult q inner join User u on q.student_nic=u.nic where q.quiz_id=?`
   const [rows] = await pool.query(query, [quizId]);
   return rows;
 }
-
   
 };
 

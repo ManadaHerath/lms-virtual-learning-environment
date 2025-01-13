@@ -77,7 +77,6 @@ const authSlice = createSlice({
       state.user = null;
       state.authInitialized = true;
       state.status = "failed";
-      sessionStorage.removeItem("accessToken");
     }
   },
   extraReducers: (builder) => {
@@ -96,6 +95,7 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+        console.log(action.payload);
         toast.error(action.payload);
       })
       // Register actions
@@ -126,10 +126,9 @@ const authSlice = createSlice({
       })
       .addCase(checkAuth.rejected, (state, action) => {
         state.status = "failed";
+        state.user = null;
         state.authInitialized = true;
         state.error = action.payload;
-        state.user = null;
-        sessionStorage.removeItem("accessToken");
         toast.error("Session expired. Please log in again.");
       })
       // Logout actions
@@ -138,7 +137,6 @@ const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state) => {
         state.status = "succeeded";
-        sessionStorage.removeItem("accessToken");
         state.user = null;
         state.authInitialized = true;
         toast.success("Logged out successfully.");

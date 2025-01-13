@@ -64,13 +64,12 @@ const UserLayout = ({ children }) => {
     { icon: Layers, label: "My Courses", path: "/user/mycourse" },
     { icon: Book, label: "Course Catalog", path: "/" },
     { icon: CreditCard, label: "Payments", path: "/user/payments" },
-    { icon: Settings, label: "Analyse", path: "/user/analyse" },
   ];
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Navigation Bar */}
-      <nav className="bg-white border-b border-gray-100 px-4 sm:px-6 py-3 sticky top-0 z-50">
+      <nav className="bg-white border-b border-gray-100 px-4 sm:px-6 py-3  top-0 z-50 fixed w-full">
         <div className="flex items-center justify-between max-w-8xl mx-auto">
           <div className="flex items-center gap-4 sm:gap-8">
             {/* Mobile menu button */}
@@ -215,8 +214,8 @@ const UserLayout = ({ children }) => {
 
       {/* Footer */}
       <footer className="flex items-center justify-center bg-white border-t border-gray-100 py-2 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto flex justify-center lg:justify-end transition-all duration-300">
-          <div className="flex items-center justify-center gap-2">
+        <div className="max-w-7xl mx-auto flex justify-center lg:justify-end transition-all duration-300 w-full">
+          <div className="flex items-center lg:justify-end justify-center gap-2">
             <span className="text-xs sm:text-sm text-gray-600">
               © {new Date().getFullYear()} Scope
             </span>

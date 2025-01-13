@@ -47,3 +47,14 @@ export const checkAuthAPI = async () => {
     throw new Error(error.response?.data?.message || "Failed to check authentication");
   }
 };
+
+// Add this to your authApi.js
+export const extendSessionAPI = async () => {
+  try {
+    const response = await api.post("/user/extend-session");
+    return response.data;
+  } catch (error) {
+    console.error("Error extending session:", error);
+    throw new Error(error.response?.data?.message || "Failed to extend session");
+  }
+};
