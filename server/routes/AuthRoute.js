@@ -30,7 +30,7 @@ router.post("/login", AuthController.loginUser);
 router.get("/logout", AuthMiddleware("student"), AuthController.logoutUser);
 
 // Check authentication status
-router.get("/check-auth", AuthMiddleware("student"), AuthController.checkAuth);
+router.get("/check-auth", AuthMiddleware(["student"]), AuthController.checkAuth);
 
 router.get("/courses",AuthMiddleware(['student','admin']) ,CourseController.userGetAllCourses);
 

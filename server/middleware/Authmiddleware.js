@@ -19,7 +19,7 @@ const AuthMiddleware = (allowedRoles) => {
 
     } catch (error) {
       console.log("Auth error:", error.message);
-      res.status(403).json({ success: false, message: "Token expired or invalid" });
+      res.status(403).json({ success: false, message: "Token expired or invalid "+error.message });
     }
   };
 };
