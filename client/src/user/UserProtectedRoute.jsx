@@ -79,8 +79,12 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
   }, [dispatch, authInitialized]);
 
   // Show loading spinner or message while checking authentication
+  console.log("Auth Initialized:", authInitialized);
+console.log("User:", user);
+console.log("Status:", status);
+
   if (!authInitialized || status === "loading") {
-    dispatch(checkAuth());
+    //dispatch(checkAuth());
     return <div>Loading...</div>;
   }
   if (error) {
