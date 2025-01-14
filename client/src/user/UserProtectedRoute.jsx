@@ -44,23 +44,6 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
   };
 
   useEffect(() => {
-    // Set timeout for session expiry when user is logged in
-    if (user) {
-      // Set timeout for 15 minutes (900000 ms) - match this with your cookie expiry
-      const sessionTimeout = setTimeout(() => {
-        dispatch(logout());
-        enqueueSnackbar("Session expired. Please login again.", { 
-          variant: "info" 
-        });
-        <Navigate to={redirectTo} />;
-      }, 43200000); // 15 minutes
-
-      // Cleanup timeout on unmount or when user changes
-      return () => clearTimeout(sessionTimeout);
-    }
-  }, [user, dispatch, redirectTo, enqueueSnackbar]);
-
-  useEffect(() => {
     const accessTokenExpiry = localStorage.getItem("accessTokenExpiry");
     const TOKEN_EXPIRY_BUFFER = 2 * 60 * 1000;
     if (accessTokenExpiry) {
@@ -100,13 +83,13 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
 
   // If no user is logged in, redirect to the login page
   if (!user) {
-    enqueueSnackbar('Session expired',{variant:'warning'})
+    enqueueSnackbar('Session expired no user',{variant:'warning'})
     return <Navigate to={redirectTo} />;
   }
 
   // If the user doesn't have the required role, redirect to login
   if (user.userType !== role) {
-    enqueueSnackbar('Session expired',{variant:'warning'})
+    enqueueSnackbar('Session expired no role',{variant:'warning'})
     return <Navigate to={redirectTo} />;
   }
 
