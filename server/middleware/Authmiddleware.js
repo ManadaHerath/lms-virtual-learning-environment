@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const AuthMiddleware = (allowedRoles) => {
   return (req, res, next) => {
     const token = req.cookies.accessToken;
-
+    console.log(token);
     try {
       const payload = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
       
