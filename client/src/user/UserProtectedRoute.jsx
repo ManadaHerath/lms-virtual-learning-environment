@@ -8,6 +8,7 @@ import api from "../redux/api";
 import ExtendSessionDialog from "../user/ExtendSessionDialog";
 import { useSnackbar } from "notistack";
 
+
 const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
@@ -20,6 +21,15 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
     // Clear tokens and redirect to login page
     setShowExtendSessionDialog(false);
   };
+
+  useEffect(() => {
+    const accessTokenExpiry = localStorage.getItem("accessTokenExpiry");
+    if (!accessTokenExpiry || Date.now() >= accessTokenExpiry) {
+      dispatch(logout());
+      return <Navigate to="/login" />;
+    }
+  }, []);
+  
 
   const handleExtendSession = async () => {
     try {

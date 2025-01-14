@@ -40,6 +40,7 @@ export const checkAuthAPI = async () => {
   
   try {
     const response = await api.get("/user/check-auth");
+    console.log("checkAuthAPI response:", response.data);
     return response.data; // Return the response data (e.g., user details)
   } catch (error) {
     
