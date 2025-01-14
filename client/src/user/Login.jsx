@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Mail, Lock, Loader2 } from "lucide-react";
 import api from "../redux/api";
+import { useNavigate } from 'react-router-dom'
 import { useSnackbar } from "notistack";
 
 const Login = () => {
@@ -8,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-
+  const navigate=useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -18,18 +19,21 @@ const Login = () => {
         { email, password },
         { withCredentials: true }
       );
-
+      console.log(res);
       if (res.data.success) {
+        
         enqueueSnackbar("Welcome back!", { variant: "success" });
         const loginResponse = {
           accessTokenExpiresIn: res.data.accessTokenExpiresIn,
         };
+        console.log(loginResponse)
         const accessTokenExpiryTime =
           Date.now() + loginResponse.accessTokenExpiresIn * 1000;
         localStorage.setItem("accessTokenExpiry", accessTokenExpiryTime);
-
+        console.log(accessTokenExpiryTime);
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          navigate('/dashboard')
+          
         }, 800);
       } else {
         enqueueSnackbar(res.data.message, { variant: "error" });

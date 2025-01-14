@@ -62,18 +62,21 @@ const UserProtectedRoute = ({ redirectTo = "/login", role = "student" }) => {
 
   useEffect(() => {
     const accessTokenExpiry = localStorage.getItem("accessTokenExpiry");
+    
     const TOKEN_EXPIRY_BUFFER = 2 * 60 * 1000;
     if (accessTokenExpiry) {
-      const timeUntilPopup = accessTokenExpiry - Date.now() - TOKEN_EXPIRY_BUFFER;
+      const timeUntilPopup = 12*60*1000 - Date.now() - TOKEN_EXPIRY_BUFFER;
       if (timeUntilPopup > 0) {
+        console.log(timeUntilPopup);
         
         const timer = setTimeout(() => {
           
           // Show the popup when token is about to expire
+          
           setShowExtendSessionDialog(true);
         }, timeUntilPopup);
-
-        return () => clearTimeout(timer); // Cleanup timeout on unmount
+        
+        //return () => clearTimeout(timer); // Cleanup timeout on unmount
       }
     }
   }, []);
