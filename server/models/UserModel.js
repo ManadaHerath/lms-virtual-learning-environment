@@ -162,7 +162,7 @@ const UserModel = {
   getUserProfile: async (nic) => {
     const query = `
       SELECT 
-        u.nic, u.first_name, u.last_name, u.email, u.telephone, u.date_of_birth, 
+        u.nic, u.first_name, u.last_name, u.email, u.telephone, 
         u.batch, u.image_url, u.status,
         a.street_address, a.city, a.province, a.postal_code,
         i.index AS student_index
