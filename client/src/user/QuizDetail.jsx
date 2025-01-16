@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Clock, Calendar, Timer, BookOpen, CheckCircle, AlertTriangle } from "lucide-react";
 import api from "../redux/api";
-
+import moment from "moment-timezone";
 const QuizDetails = () => {
   const { courseId } = useParams();
   const { quizId } = useParams();
@@ -32,9 +32,13 @@ const QuizDetails = () => {
         setHasResponded(data.hasResponded);
         const openTime = new Date(data.quizInfo.open_time).getTime();
         const closeTime = new Date(data.quizInfo.close_time).getTime();
+        const open_time = moment.utc(data.quizInfo.open_time).tz("Asia/Colombo").valueOf();
+        const close_time = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
+        const currentTime = moment().tz("Asia/Colombo").valueOf();
+
         setOpenTime(openTime);
         setCloseTime(closeTime);
-        const currentTime = Date.now();
+
         setCurrentTime(currentTime);
         setTimeRemaining(openTime - currentTime);
         setLoading(false);
@@ -45,6 +49,14 @@ const QuizDetails = () => {
     };
     fetchQuizInfo();
   }, [quizId]);
+  const formatLocalTime = (utcDateString) => {
+    return moment.utc(utcDateString).tz("Asia/Colombo").format("YYYY-MM-DD HH:mm:ss");
+  };
+  
+  // Example:
+  console.log("Open Time:", formatLocalTime(quizInfo.open_time));
+  console.log("Review Time:", formatLocalTime(quizInfo.review_available_time));
+  
 
   useEffect(() => {
     if (timeRemaining > 0) {
