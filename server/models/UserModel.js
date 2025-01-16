@@ -96,7 +96,7 @@ const UserModel = {
 
 
   getAllCourses: async (batch, type) => {
-    let query = "SELECT course_id,price, CONCAT(course_type, ' ', batch) AS name, image_url FROM Course";
+    let query = "SELECT course_id, price, CONCAT(course_type, ' ', batch) AS name, image_url, month FROM Course";
     const queryParams = [];
   
     if (batch || type) {
@@ -119,6 +119,7 @@ const UserModel = {
       throw err;
     }
   },
+  
   userGetAllCourses: async (batch, type) => {
     let query = "SELECT course_id,price, course_type, batch, month, description, image_url FROM Course where started_at <= CURDATE() and ended_at >= CURDATE() ";
     const queryParams = [];
