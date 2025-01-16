@@ -21,6 +21,11 @@ const Section = {
 
         const { enrollment_id } = userResult[0];
 
+        const MediumQuery='SELECT medium from Enrollment where enrollment_id=?';
+        const [MediumStatus]= await connection.execute(MediumQuery,[enrollment_id]);
+        const Medium = MediumStatus.length > 0 ? MediumStatus[0].medium : null;
+
+
         // Check if the user has paid and fetch payment type
         const paymentQuery = `
             SELECT payment_type
@@ -50,6 +55,7 @@ const Section = {
         const [sections] = await connection.execute(sectionsQuery, [courseId]);
 
         return {
+            Medium,
             enrollment_id,
             paymentType,
             price,
