@@ -36,6 +36,10 @@ import AdminEditCourse from "./admin/AdminEditCourse";
 import UserLayout from "./user/UserLayout";
 import StudentProfile from "./admin/StudentProfile";
 
+import RefundPolicy from "./user/RefundPolicy";
+import PrivacyPolicy from "./user/PrivacyPolicy";
+import TermsAndConditions from "./user/TermsAndConditions";
+
 function App() {
   return (
     <Provider store={store}>
@@ -43,6 +47,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
           <Route element={<UserProtectedRoute />}>
             <Route
