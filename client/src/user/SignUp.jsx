@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../redux/api";
 import { useSnackbar } from "notistack";
-import { Link } from "react-router-dom";
 
 const Signup = () => {
   const navigate = useNavigate();
