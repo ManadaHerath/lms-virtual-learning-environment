@@ -4,8 +4,10 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Clock, AlertTriangle, CheckCircle, Timer, BookOpen } from "lucide-react";
 import api from "../redux/api";
+import { useSnackbar } from "notistack";
 
 const QuizPage = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const { courseId } = useParams();
   const { quizId } = useParams();
   const navigate = useNavigate();
@@ -60,7 +62,8 @@ const QuizPage = () => {
         }
 
         if (open_time > currentTime) {
-          alert("Quiz has not started");
+          
+          enqueueSnackbar('Quiz has not started',{variant:'info'})
           navigate(`/user/mycourse`);
         }
 
@@ -134,7 +137,8 @@ const QuizPage = () => {
 
       const response = await api.post("/user/submit-quiz", payload);
       if (response.data.success) {
-        alert(`Quiz submitted successfully! Total Marks: ${response.data.totalMarks}`);
+        // alert(`Quiz submitted successfully! Total Marks: ${response.data.totalMarks}`);
+        enqueueSnackbar('Quiz submitted successfully!',{variant:'success'})
       } else {
         setError(response.data.message || "Failed to submit quiz");
       }

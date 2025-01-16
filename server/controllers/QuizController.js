@@ -39,7 +39,7 @@ const QuizController = {
       const { quiz_id, responses } = req.body;
       const { nic } = req.user;
       const student_nic = nic;
-      let allAutograded=true;
+      let allAutoGraded=true;
       let totalMarks = 0;
 
       for (const response of responses) {

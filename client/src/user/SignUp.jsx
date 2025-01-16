@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../redux/api";
-
+import { useSnackbar } from "notistack";
 const Signup = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [passwordError, setPasswordError] = useState("");
@@ -87,7 +88,8 @@ const Signup = () => {
       });
       if (response.data.success) {
         setSuccessMessage(response.data.message);
-        alert(response.data.message);
+ 
+        enqueueSnackbar(response.data.message,{variant:'success'})
         navigate("/login");
       } else {
         setErrors(response.data.errors || {});
