@@ -5,6 +5,7 @@ import {
   deactivateStudentStatus,
 } from "../features/students/StudentSlice";
 import { useNavigate } from "react-router-dom";
+import { useSnackbar } from "notistack";
 import {
   Users,
   UserCheck,
@@ -16,6 +17,7 @@ import {
 import api from "../redux/api";
 
 const StudentManagement = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { list, status, error } = useSelector((state) => state.students);
@@ -85,7 +87,8 @@ const StudentManagement = () => {
       const response = await api.delete("/admin/students", {
         data: { nic: nic },
       });
-      alert(response.data.message);
+      
+      enqueueSnackbar(response.data.message,{variant:'success'})
       dispatch(fetchStudents());
     } catch (error) {
       console.error(error);
