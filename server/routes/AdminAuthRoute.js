@@ -66,7 +66,9 @@ router.post(
   QuizController.createQuiz
 );
 router.get('/quizzes',AuthMiddleware(['admin']),QuizController.getAllQuizes);
-
+router.get('/quiz/:quizId',AuthMiddleware('admin'),QuizController.getQuizDetails)
+router.put('/quiz/:id',AuthMiddleware(['admin']),QuizController.updateQuiz);
+router.delete('/quiz/:quizId',AuthMiddleware(['admin']),QuizController.deleteQuiz);
 // Get Student Details
 router.get('/students/:nic', AuthMiddleware(['admin']), AdminController.getStudentDetails);
 router.get('/students/:nic/courses', AuthMiddleware(['admin']), AdminController.getStudentCourses);

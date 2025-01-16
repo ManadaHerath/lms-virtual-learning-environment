@@ -2,60 +2,98 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Book, Clock, PlusCircle, Calendar, Edit, Trash } from "lucide-react";
 import api from "../redux/api";
+import { useSnackbar } from "notistack";
+import moment from "moment-timezone";
 
 const QuizManagement = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [quizzes, setQuizzes] = useState([]);
+  const [filteredQuizzes, setFilteredQuizzes] = useState([]);
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchQuizzes();
-  }, [status]);
+  }, []);
+
+  useEffect(() => {
+    filterQuizzes();
+  }, [status, quizzes]); // Re-filter when status or quizzes change
 
   const fetchQuizzes = async () => {
     try {
-      const response = await api.get("/admin/quizzes", {
-        params: { status },
-      });
-      setQuizzes(response.data);
+      const res = await api.get("/admin/quizzes");
+      if (!res.data.success) {
+        throw new Error("Failed to load quizzes");
+      }
+      setQuizzes(res.data.quizzes);
+      setFilteredQuizzes(res.data.quizzes); // Initialize with all quizzes
     } catch (error) {
-      console.error("Error fetching quizzes:", error);
+      enqueueSnackbar(error.message, { variant: "error" });
     }
+  };
+
+  const filterQuizzes = () => {
+    if (!status) {
+      setFilteredQuizzes(quizzes);
+      return;
+    }
+
+    const now = moment().tz("Asia/Colombo").valueOf();
+
+    const filtered = quizzes.filter((quiz) => {
+      const open = moment.utc(quiz.open_time).tz("Asia/Colombo").valueOf();
+      const close = moment.utc(quiz.close_time).tz("Asia/Colombo").valueOf();
+
+      if (status === "upcoming") return now < open;
+      if (status === "active") return now >= open && now <= close;
+      if (status === "closed") return now > close;
+
+      return true;
+    });
+
+    setFilteredQuizzes(filtered);
   };
 
   const handleDelete = async (quizId) => {
     if (window.confirm("Are you sure you want to delete this quiz?")) {
       try {
-        await api.delete(`/admin/quizzes/${quizId}`);
+        const res = await api.delete(`/admin/quiz/${quizId}`);
+        if (res.data.success) {
+          enqueueSnackbar(res.data.message, { variant: "success" });
+        } else {
+          enqueueSnackbar(res.data.message, { variant: "error" });
+        }
         fetchQuizzes();
       } catch (error) {
+        enqueueSnackbar("Error deleting quiz:", { variant: "error" });
         console.error("Error deleting quiz:", error);
       }
     }
   };
 
   const getQuizStatusColor = (openTime, closeTime) => {
-    const now = new Date();
-    const open = new Date(openTime);
-    const close = new Date(closeTime);
+    const now = moment().tz("Asia/Colombo").valueOf();
+    const open = moment.utc(openTime).tz("Asia/Colombo").valueOf();
+    const close = moment.utc(closeTime).tz("Asia/Colombo").valueOf();
 
-    if (now < open) return 'bg-yellow-500/20 text-yellow-400'; // Upcoming
-    if (now > close) return 'bg-red-500/20 text-red-400'; // Closed
-    return 'bg-green-500/20 text-green-400'; // Active
+    if (now < open) return "bg-yellow-500/20 text-yellow-400"; // Upcoming
+    if (now > close) return "bg-red-500/20 text-red-400"; // Closed
+    return "bg-green-500/20 text-green-400"; // Active
   };
 
   const getQuizStatus = (openTime, closeTime) => {
-    const now = new Date();
-    const open = new Date(openTime);
-    const close = new Date(closeTime);
+    const now = moment().tz("Asia/Colombo").valueOf();
+    const open = moment.utc(openTime).tz("Asia/Colombo").valueOf();
+    const close = moment.utc(closeTime).tz("Asia/Colombo").valueOf();
 
-    if (now < open) return 'Upcoming';
-    if (now > close) return 'Closed';
-    return 'Active';
+    if (now < open) return "Upcoming";
+    if (now > close) return "Closed";
+    return "Active";
   };
 
   const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString();
+    return moment.utc(dateString).tz("Asia/Colombo").format("YYYY-MM-DD HH:mm:ss");
   };
 
   return (
@@ -94,8 +132,8 @@ const QuizManagement = () => {
 
       {/* Quiz Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {quizzes.length > 0 ? (
-          quizzes.map((quiz) => (
+        {filteredQuizzes.length > 0 ? (
+          filteredQuizzes.map((quiz) => (
             <div
               key={quiz.id}
               className="group bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-lg overflow-hidden hover:border-gray-600/50 transition-all duration-200"
@@ -105,7 +143,12 @@ const QuizManagement = () => {
                   <h2 className="text-xl font-semibold text-gray-200 group-hover:text-blue-400 transition-colors">
                     {quiz.title}
                   </h2>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getQuizStatusColor(quiz.open_time, quiz.close_time)}`}>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getQuizStatusColor(
+                      quiz.open_time,
+                      quiz.close_time
+                    )}`}
+                  >
                     {getQuizStatus(quiz.open_time, quiz.close_time)}
                   </span>
                 </div>

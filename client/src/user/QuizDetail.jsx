@@ -32,10 +32,8 @@ const QuizDetails = () => {
         }
         setQuizInfo(data.quizInfo);
         setHasResponded(data.hasResponded);
-        const openTime = new Date(data.quizInfo.open_time).getTime();
-        const closeTime = new Date(data.quizInfo.close_time).getTime();
-        const open_time = moment.utc(data.quizInfo.open_time).tz("Asia/Colombo").valueOf();
-        const close_time = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
+        const openTime = moment.utc(data.quizInfo.open_time).tz("Asia/Colombo").valueOf();
+        const closeTime = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
         const currentTime = moment().tz("Asia/Colombo").valueOf();
 
         setOpenTime(openTime);
