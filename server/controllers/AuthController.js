@@ -122,6 +122,7 @@ const AuthController = {
       sameSite: "strict",
     });
     // Send Access Token to client
+    
     res.status(200).json({
       message: "Student Login successful",
       success: true,
