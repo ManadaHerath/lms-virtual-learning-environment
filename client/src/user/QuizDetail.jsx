@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Clock, Calendar, Timer, BookOpen, CheckCircle, AlertTriangle } from "lucide-react";
 import api from "../redux/api";
 import moment from "moment-timezone";
+
 const QuizDetails = () => {
   const { courseId } = useParams();
   const { quizId } = useParams();
