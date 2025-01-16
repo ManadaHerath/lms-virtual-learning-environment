@@ -14,7 +14,7 @@ const SectionController = {
             return res.status(500).json({ message: result.error });
         }
 
-        const { enrollment_id, paymentType, sections, price } = result;
+        const { enrollment_id, paymentType, sections, price, Medium } = result;
 
         // Group sections by week and apply locked state based on payment type
         const weeks = sections.reduce((acc, section) => {
@@ -25,7 +25,7 @@ const SectionController = {
 
             // Lock YouTube videos if payment type is 'physical'
             const isYouTube = rest.content_url && rest.content_url.includes("youtube.com");
-            const locked = paymentType === "physical" && isYouTube;
+            const locked = Medium === "PHYSICAL" && isYouTube;
 
             acc[week_id].sections.push({ ...rest, locked });
             return acc;
@@ -33,6 +33,7 @@ const SectionController = {
 
         // Send response with enrollment details, payment status, course price, and sections grouped by weeks
         res.status(200).json({
+            Medium,
             enrollment_id,
             paymentType,
             price,
