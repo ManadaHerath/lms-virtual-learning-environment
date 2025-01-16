@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Clock, AlertTriangle, CheckCircle, Timer, BookOpen, Loader } from "lucide-react";
 import api from "../redux/api";
 import { useSnackbar } from "notistack";
+import moment from "moment-timezone"; // Install with: npm install moment-timezone
 
 const QuizPage = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -49,9 +50,13 @@ const QuizPage = () => {
         setQuizInfo(data.quizInfo);
         setHasResponded(data.hasResponded);
         
-        const open_time = new Date(data.quizInfo.open_time).getTime();
-        const close_time = new Date(data.quizInfo.close_time).getTime();
-        const currentTime = Date.now();
+        // const open_time = new Date(data.quizInfo.open_time).getTime();
+        // const close_time = new Date(data.quizInfo.close_time).getTime();
+        // const currentTime = Date.now();
+        const open_time = moment.utc(data.quizInfo.open_time).tz("Asia/Colombo").valueOf();
+const close_time = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
+const currentTime = moment().tz("Asia/Colombo").valueOf();
+
 
         if ((close_time - currentTime) <= 0 && !hasSubmitted) {
           setHasSubmitted(true);
