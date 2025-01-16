@@ -1,7 +1,8 @@
 import React from "react";
 import api from "../redux/api";// Import your API client
-
+import { useSnackbar } from "notistack";
 const PaymentCheckout = ({ cart }) => {
+  const { enqueueSnackbar } = useSnackbar();
   const handleCheckout = async () => {
     // Ensure cart exists and calculate the total amount
     const totalAmount = cart?.reduce((total, item) => {
@@ -58,7 +59,8 @@ const PaymentCheckout = ({ cart }) => {
       form.submit();
     } catch (error) {
       console.error("Error generating hash:", error);
-      alert("Failed to proceed to payment. Please try again.");
+      
+      enqueueSnackbar('Failed to proceed to payment. Please try again',{variant:'error'})
     }
   };
 
