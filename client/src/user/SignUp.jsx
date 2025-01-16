@@ -9,6 +9,7 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState("");
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({
     nic: "",
@@ -26,7 +27,6 @@ const Signup = () => {
     image: null,
   });
   const [isAccepted, setIsAccepted] = useState(false);
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -108,10 +108,17 @@ const Signup = () => {
     }
 
     if (!isAccepted) {
-      enqueueSnackbar("Please accept the terms and conditions to proceed.", {variant: "warning"});
+      enqueueSnackbar("Please accept the terms and conditions to proceed.", {
+        variant: "warning",
+      });
       return;
     }
 
+    if (isSubmitting) {
+      return; // Prevent multiple submissions
+    }
+
+    setIsSubmitting(true);
     setErrors({}); // Only clear errors if validation passed
     setSuccessMessage("");
 
@@ -156,6 +163,8 @@ const Signup = () => {
           : "An error occurred during signup",
         { variant: "error" }
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
   const inputClassName =
@@ -462,15 +471,20 @@ const Signup = () => {
                   </button>
                   <button
                     type="submit"
-                    className="relative w-1/2 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white py-3 px-6 rounded-xl font-medium 
-                    hover:from-gray-700 hover:to-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900
-                    transition-all duration-200 overflow-hidden group"
+                    disabled={isSubmitting}
+                    className={`relative w-1/2 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white py-3 px-6 rounded-xl font-medium 
+    ${
+      !isSubmitting
+        ? "hover:from-gray-700 hover:to-gray-600"
+        : "opacity-75 cursor-not-allowed"
+    } focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900
+    transition-all duration-200 overflow-hidden group`}
                   >
                     {/* Glass shine effect */}
                     <div className="absolute inset-0 flex transform translate-x-[-50%] group-hover:translate-x-[100%] transition-all duration-1000">
                       <div className="h-full w-20 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg]" />
                     </div>
-                    <span>Complete</span>
+                    <span>{isSubmitting ? "Submitting..." : "Complete"}</span>
                   </button>
                 </div>
               </div>
