@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../redux/api";
+import Loader from "../Loader";
 
 const Dashboard = () => {
   const [profile, setProfile] = useState(null);
@@ -38,13 +39,14 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-pulse flex space-x-4">
-          <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-          <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-          <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-        </div>
-      </div>
+      // <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      //   <div className="animate-pulse flex space-x-4">
+      //     <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+      //     <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+      //     <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+      //   </div>
+      // </div>
+      <Loader />
     );
   }
 

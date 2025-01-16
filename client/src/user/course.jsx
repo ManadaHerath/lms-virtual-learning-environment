@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
 import api from "../redux/api";
 import { Lock, PlayCircle, CheckCircle, XCircle, Book, FileText, AlertCircle } from 'lucide-react';
+import Loader from "../Loader";
 
 const CoursePage = () => {
   const { courseId } = useParams();
@@ -11,6 +12,7 @@ const CoursePage = () => {
   const [courseDetails, setCourseDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [paymentType, setPaymentType] = useState(null);
+  const [Medium, setMedium] = useState(null);
   const [enrollmentId, setEnrollmentId] = useState(null);
   const [coursePrice, setCoursePrice] = useState(0);
   const [error, setError] = useState(null);
@@ -32,7 +34,8 @@ const CoursePage = () => {
       try {
         const response = await api.get(`/course/${courseId}/sections`);
         if (response.status !== 200) throw new Error("Failed to fetch course sections");
-        const { weeks, paymentType, enrollment_id, price } = response.data;
+        const { weeks, paymentType, enrollment_id, price,Medium } = response.data;
+        setMedium(Medium);
         setWeeks(weeks);
         setPaymentType(paymentType);
         setEnrollmentId(enrollment_id);
@@ -57,14 +60,18 @@ const CoursePage = () => {
   };
 
   const handleNavigateContent = (section) => {
-    
     if (section.type_id === 3 && section.quiz_id) {
-      
+      // Navigate to quiz details page
       navigate(`/quizdetail/${section.quiz_id}/${courseId}`);
+    } else if (section.type_id === 2 && section.content_url) {
+      // Open the URL in a new window
+      window.open(section.content_url, "_blank");
     } else if (!isYouTubeLink(section.content_url)) {
+      // Navigate to the content URL
       navigate(section.content_url);
     }
   };
+  
 
   const showToast = (message, type) => {
     const toast = document.createElement('div');
@@ -159,14 +166,20 @@ const CoursePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-blue-600 text-lg">Loading course content...</div>
-      </div>
+      // <div className="min-h-screen flex items-center justify-center">
+      //   <div className="text-blue-600 text-lg">Loading course content...</div>
+      // </div>
+      <Loader />
     );
   }
 
   const isPaid = paymentType === "online" || paymentType === "physical";
-  const courseTitle = courseDetails ? `${courseDetails.course_type} ${courseDetails.batch}` : "Course Details";
+  const M=Medium==="ONLINE";
+  
+  const courseTitle = courseDetails 
+  ? `${courseDetails.course_type} ${courseDetails.batch} (${courseDetails.month})` 
+  : "Course Details";
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -263,25 +276,12 @@ const CoursePage = () => {
                             </h3>
                             <p className="text-gray-600">{section.description}</p>
                           </div>
-                          {isPaid && (
-                            <button
-                              onClick={() => {handleMarkAsDone(section.id, section.mark_as_done)
-                                
-                              }}
-                              className={`ml-4 px-4 py-2 rounded-lg font-medium ${
-                                section.mark_as_done === 1
-                                  ? 'bg-green-100 text-green-700'
-                                  : 'bg-gray-100 text-gray-700'
-                              }`}
-                            >
-                              {section.mark_as_done === 1 ? 'Completed' : 'Mark Complete'}
-                            </button>
-                          )}
                         </div>
 
                         <div className="mt-6">
                           {isYouTubeLink(section.content_url) ? (
-                            isPaid && paymentType === "online" ? (
+                            isPaid && M
+                            ? (
                               <YouTube
                                 videoId={extractYouTubeVideoId(section.content_url)}
                                 opts={{

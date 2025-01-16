@@ -34,7 +34,7 @@ const AuthController = {
     try {
       const {
         nic, first_name, last_name, email, password, telephone, street_address,
-        city, province, postal_code, date_of_birth, batch
+        city, province, postal_code, batch
       } = req.body;
   
       console.log("Request body received:", req.body);
@@ -42,6 +42,7 @@ const AuthController = {
       // Check if email is already registered
       const existingUser = await UserModel.findByEmail(email);
       if (existingUser.success) {
+        console.log("User is already been registered!")
         return res.status(400).json({
           success: false,
           errors: { email: "Email has already been registered" },
@@ -57,7 +58,7 @@ const AuthController = {
       console.log("Creating user in the database...");
       const newUser = {
         nic, first_name, last_name, email, password: hashedPassword, telephone,
-        street_address, city, province, postal_code, date_of_birth,
+        street_address, city, province, postal_code,
         batch,  image_url
       };
   

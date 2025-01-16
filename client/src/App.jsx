@@ -36,6 +36,12 @@ import AdminEditCourse from "./admin/AdminEditCourse";
 import UserLayout from "./user/UserLayout";
 import StudentProfile from "./admin/StudentProfile";
 
+import RefundPolicy from "./user/RefundPolicy";
+import PrivacyPolicy from "./user/PrivacyPolicy";
+import TermsAndConditions from "./user/TermsAndConditions";
+import EditQuiz from "./admin/EditQuiz";
+import QuizManagement from "./admin/QuizManagement";
+
 function App() {
   return (
     <Provider store={store}>
@@ -43,6 +49,9 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/refund-policy" element={<RefundPolicy />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
           <Route element={<UserProtectedRoute />}>
             <Route
@@ -76,7 +85,6 @@ function App() {
                     <Route path="/user/profile" element={<Profile />} />
                     <Route path="/user/mycourse" element={<MyCourse />} />
                     <Route path="/user/payments" element={<PaymentHistory />} />
-                    <Route path="/user/analyse" element={<PaymentHistory />} />
                   </Routes>
                 </UserLayout>
               }
@@ -116,6 +124,8 @@ function App() {
                       element={<AdminEditCourse />}
                     />
                     <Route path="create-quiz" element={<CreateQuiz />} />
+                    <Route path="edit-quiz" element={<EditQuiz />} />
+                    <Route path="quiz-list" element={<QuizManagement />} />
                     <Route path="students/:nic" element={<StudentProfile />} />
                   </Routes>
                 </AdminLayout>

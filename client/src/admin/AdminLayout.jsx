@@ -72,7 +72,7 @@ const AdminLayout = ({ children }) => {
             <NavLink to="/admin/student" icon={Users}>
               Students
             </NavLink>
-            <NavLink to="/admin/create-quiz" icon={PlusSquare}>
+            <NavLink to="/admin/quiz-list" icon={PlusSquare}>
               Quiz
             </NavLink>
           </div>

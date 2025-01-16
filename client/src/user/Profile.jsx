@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Camera, Edit2, Save, X, Mail, Phone, MapPin, Home } from "lucide-react";
 import api from "../redux/api";
+import Loader from "../Loader";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -69,9 +70,10 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
+      // <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      //   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      // </div>
+      <Loader />
     );
   }
 

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import api from "../redux/api";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchEnrolledStudents } from "../features/students/StudentSlice";
+import Loader from "../Loader";
 
 const CourseDetail = () => {
   const dispatch = useDispatch();
@@ -113,13 +114,14 @@ const CourseDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex space-x-2">
-          <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce"></div>
-          <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce delay-100"></div>
-          <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce delay-200"></div>
-        </div>
-      </div>
+      // <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      //   <div className="flex space-x-2">
+      //     <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce"></div>
+      //     <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce delay-100"></div>
+      //     <div className="w-4 h-4 bg-blue-600 rounded-full animate-bounce delay-200"></div>
+      //   </div>
+      // </div>
+      <Loader />
     );
   }
 

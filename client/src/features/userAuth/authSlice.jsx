@@ -32,6 +32,7 @@ export const logout = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const data = await logoutAPI();
+      localStorage.removeItem("cart");
       return data;
     } catch (error) {
       return rejectWithValue(error.message);
