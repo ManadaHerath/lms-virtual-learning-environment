@@ -39,6 +39,8 @@ import StudentProfile from "./admin/StudentProfile";
 import RefundPolicy from "./user/RefundPolicy";
 import PrivacyPolicy from "./user/PrivacyPolicy";
 import TermsAndConditions from "./user/TermsAndConditions";
+import EditQuiz from "./admin/EditQuiz";
+import QuizManagement from "./admin/QuizManagement";
 
 function App() {
   return (
@@ -83,7 +85,6 @@ function App() {
                     <Route path="/user/profile" element={<Profile />} />
                     <Route path="/user/mycourse" element={<MyCourse />} />
                     <Route path="/user/payments" element={<PaymentHistory />} />
-                    <Route path="/user/analyse" element={<PaymentHistory />} />
                   </Routes>
                 </UserLayout>
               }
@@ -123,6 +124,8 @@ function App() {
                       element={<AdminEditCourse />}
                     />
                     <Route path="create-quiz" element={<CreateQuiz />} />
+                    <Route path="edit-quiz" element={<EditQuiz />} />
+                    <Route path="quiz-list" element={<QuizManagement />} />
                     <Route path="students/:nic" element={<StudentProfile />} />
                   </Routes>
                 </AdminLayout>

@@ -2,7 +2,7 @@ import axios from "axios";
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Clock, AlertTriangle, CheckCircle, Timer, BookOpen } from "lucide-react";
+import { Clock, AlertTriangle, CheckCircle, Timer, BookOpen, Loader } from "lucide-react";
 import api from "../redux/api";
 import { useSnackbar } from "notistack";
 import moment from "moment-timezone"; // Install with: npm install moment-timezone
@@ -154,21 +154,22 @@ const currentTime = moment().tz("Asia/Colombo").valueOf();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8" />
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
-              <div className="space-y-4">
-                {[1, 2, 3].map((n) => (
-                  <div key={n} className="h-4 bg-gray-200 rounded w-full" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      // <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-8">
+      //   <div className="max-w-4xl mx-auto">
+      //     <div className="animate-pulse">
+      //       <div className="h-8 bg-gray-200 rounded w-1/4 mb-8" />
+      //       <div className="bg-white rounded-xl shadow-lg p-6">
+      //         <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
+      //         <div className="space-y-4">
+      //           {[1, 2, 3].map((n) => (
+      //             <div key={n} className="h-4 bg-gray-200 rounded w-full" />
+      //           ))}
+      //         </div>
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div>
+      <Loader />
     );
   }
 

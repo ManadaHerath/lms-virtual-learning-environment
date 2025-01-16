@@ -37,8 +37,6 @@ const UserModel = {
       city,
       province,
       postal_code,
-      
-      date_of_birth,
       batch,
       
       image_url,
@@ -70,8 +68,8 @@ const UserModel = {
 
       // Insert into User table
       const userSql = `
-        INSERT INTO User (nic, first_name, last_name, address_id, telephone, email, password, date_of_birth, batch, image_url)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO User (nic, first_name, last_name, address_id, telephone, email, password, batch, image_url)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       const [userResult] = await connection.query(userSql, [
         nic,
@@ -81,7 +79,6 @@ const UserModel = {
         telephone,
         email,
         password,
-        date_of_birth,
         batch,
         image_url,
         
@@ -162,7 +159,7 @@ const UserModel = {
   getUserProfile: async (nic) => {
     const query = `
       SELECT 
-        u.nic, u.first_name, u.last_name, u.email, u.telephone, 
+        u.nic, u.first_name, u.last_name, u.email, u.telephone,
         u.batch, u.image_url, u.status,
         a.street_address, a.city, a.province, a.postal_code,
         i.index AS student_index

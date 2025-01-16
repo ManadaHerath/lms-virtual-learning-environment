@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../redux/api';
 import { Camera, Upload, Loader2 } from 'lucide-react';
+import Loader from '../Loader';
 
 const Registration = () => {
   const [image, setImage] = useState(null);
@@ -81,7 +82,7 @@ const Registration = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+        <Loader />
       </div>
     );
   }

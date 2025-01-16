@@ -12,15 +12,18 @@ import {
   ChevronLeft,
   Settings,
   User,
+  ArrowLeft,
 } from "lucide-react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/userAuth/authSlice";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../redux/api";
 
 const UserLayout = ({ children }) => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -69,7 +72,7 @@ const UserLayout = ({ children }) => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Navigation Bar */}
-      <nav className="bg-white border-b border-gray-100 px-4 sm:px-6 py-3  top-0 z-50 fixed w-full">
+      <nav className="bg-white border-b border-gray-100 px-4 sm:px-6 py-3 top-0 z-50 fixed w-full">
         <div className="flex items-center justify-between max-w-8xl mx-auto">
           <div className="flex items-center gap-4 sm:gap-8">
             {/* Mobile menu button */}
@@ -80,8 +83,23 @@ const UserLayout = ({ children }) => {
               <Menu size={24} />
             </button>
 
+            {/* Back button */}
+            <button
+              onClick={() => navigate(-1)}
+              className="rounded-md text-gray-500 hover:bg-gray-100 flex items-center"
+            >
+              <ArrowLeft size={20} />
+            </button>
+
             <div className="flex items-center">
-              <img src="lpedu.png" alt="Logo" className="w-20 sm:w-28" />
+              <img 
+                src="/lpedu.png" 
+                alt="Logo" 
+                className="w-20 sm:w-28"
+                onError={(e) => {
+                  e.target.src = '../assets/lpedu.png';
+                }}
+              />
             </div>
           </div>
 
@@ -139,7 +157,7 @@ const UserLayout = ({ children }) => {
             bg-white border-r border-gray-100
             transition-all duration-300
             flex flex-col
-            z-40
+            z-40 pt-5
           `}
         >
           <nav className="flex-1 p-4">
@@ -149,11 +167,16 @@ const UserLayout = ({ children }) => {
                   <Link
                     to={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-blue-600 group transition-colors relative"
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-blue-600 group transition-colors relative
+                      ${location.pathname === item.path ? 
+                        'bg-blue-50 text-blue-600 border-l-4 border-blue-600' : ''
+                      }`}
                   >
                     <item.icon
                       size={20}
-                      className="group-hover:text-blue-600 flex-shrink-0"
+                      className={`flex-shrink-0 ${
+                        location.pathname === item.path ? 'text-blue-600' : 'group-hover:text-blue-600'
+                      }`}
                     />
                     <span
                       className={`text-sm font-medium ${
@@ -220,9 +243,12 @@ const UserLayout = ({ children }) => {
               © {new Date().getFullYear()} Scope
             </span>
             <img
-              src="scope.png"
+              src="/scope.png"
               alt="Scope Logo"
               className="w-3 sm:w-4 h-auto"
+              onError={(e) => {
+                e.target.src = '../assets/scope.png';
+              }}
             />
           </div>
         </div>

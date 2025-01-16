@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../redux/api";
 import { useSnackbar } from "notistack";
+
 const Signup = () => {
-  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [passwordError, setPasswordError] = useState("");
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
+  const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({
     nic: "",
     first_name: "",
@@ -21,10 +22,11 @@ const Signup = () => {
     city: "",
     province: "",
     postal_code: "",
-    date_of_birth: "",
     batch: "",
     image: null,
   });
+  const [isAccepted, setIsAccepted] = useState(false);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +34,8 @@ const Signup = () => {
     if (name === "password" || name === "confirmPassword") {
       setPasswordError("");
     }
+    const newValue = e.target.checked;
+    setIsAccepted(newValue);
   };
 
   const handleFileChange = (e) => {
@@ -41,7 +45,7 @@ const Signup = () => {
   const validateFirstStep = () => {
     const newErrors = {};
 
-    if (!formData.nic.match(/^\d{9}[vxVX]|\d{12}$/)) {
+    if (!formData.nic.match(/^(\d{9}[vxVX]|\d{12})$/)) {
       newErrors.nic = "Invalid NIC format.";
     }
     if (!formData.first_name.trim()) {
@@ -64,6 +68,32 @@ const Signup = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateSecondStep = () => {
+    const newErrors = {};
+
+    if (formData.telephone && !formData.telephone.match(/^\d{10}$/)) {
+      newErrors.telephone = "Invalid telephone number.";
+    }
+    if (!formData.telephone.trim()) {
+      newErrors.telephone = "Mobile no. is required.";
+    }
+    if (!formData.batch.trim()) {
+      newErrors.batch = "Batch is required.";
+    }
+    if (!formData.street_address.trim()) {
+      newErrors.street_address = "Street address is required.";
+    }
+    if (!formData.city.trim()) {
+      newErrors.city = "City is required.";
+    }
+    if (!formData.province.trim()) {
+      newErrors.province = "Province is required.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleNextStep = () => {
     if (validateFirstStep()) {
       setStep(2);
@@ -72,7 +102,17 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({});
+
+    if (!validateSecondStep()) {
+      return; // Validation failed, errors will be set by validateSecondStep
+    }
+
+    if (!isAccepted) {
+      enqueueSnackbar("Please accept the terms and conditions to proceed.", {variant: "warning"});
+      return;
+    }
+
+    setErrors({}); // Only clear errors if validation passed
     setSuccessMessage("");
 
     const data = new FormData();
@@ -88,17 +128,38 @@ const Signup = () => {
       });
       if (response.data.success) {
         setSuccessMessage(response.data.message);
- 
-        enqueueSnackbar(response.data.message,{variant:'success'})
+        enqueueSnackbar(response.data.message, { variant: "success" });
         navigate("/login");
       } else {
         setErrors(response.data.errors || {});
       }
     } catch (err) {
-      console.error(err);
+      const errorData = err.response?.data?.errors;
+      const errorMessage =
+        errorData?.email || errorData || "An error occurred during signup";
+
+      // Alert for email-specific or general errors
+      if (typeof errorMessage === "string") {
+        enqueueSnackbar(errorMessage, { variant: "error" });
+      } else if (errorMessage.email) {
+        enqueueSnackbar(errorMessage.email, { variant: "error" });
+      } else {
+        enqueueSnackbar("An error occurred during signup", {
+          variant: "error",
+        });
+      }
+
+      // Enqueue snackbar message
+      enqueueSnackbar(
+        typeof errorMessage === "string"
+          ? errorMessage
+          : "An error occurred during signup",
+        { variant: "error" }
+      );
     }
   };
-  const inputClassName = "w-full pl-4 pr-4 py-3 rounded-xl border border-gray-700 focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none transition-all duration-200 bg-gray-800/50 text-white placeholder-gray-500";
+  const inputClassName =
+    "w-full pl-4 pr-4 py-3 rounded-xl border border-gray-700 focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none transition-all duration-200 bg-gray-800/50 text-white placeholder-gray-500";
   const labelClassName = "block text-sm font-medium text-gray-300 mb-2";
 
   return (
@@ -113,11 +174,17 @@ const Signup = () => {
           )}
 
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">Create Your Account</h1>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Create Your Account
+            </h1>
             <p className="text-gray-400">Join our learning community today</p>
           </div>
 
-          <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+            className="space-y-6"
+          >
             {step === 1 ? (
               <div className="space-y-6">
                 <div>
@@ -132,7 +199,9 @@ const Signup = () => {
                     required
                   />
                   {errors.nic && (
-                    <div className="text-red-400 text-sm mt-1">{errors.nic}</div>
+                    <div className="text-red-400 text-sm mt-1">
+                      {errors.nic}
+                    </div>
                   )}
                 </div>
 
@@ -149,7 +218,9 @@ const Signup = () => {
                       required
                     />
                     {errors.first_name && (
-                      <div className="text-red-400 text-sm mt-1">{errors.first_name}</div>
+                      <div className="text-red-400 text-sm mt-1">
+                        {errors.first_name}
+                      </div>
                     )}
                   </div>
 
@@ -165,12 +236,12 @@ const Signup = () => {
                       required
                     />
                     {errors.last_name && (
-                      <div className="text-red-400 text-sm mt-1">{errors.last_name}</div>
+                      <div className="text-red-400 text-sm mt-1">
+                        {errors.last_name}
+                      </div>
                     )}
                   </div>
                 </div>
-
-                {/* ... Similar styling for other step 1 fields ... */}
                 <div>
                   <label className={labelClassName}>Email</label>
                   <input
@@ -183,7 +254,9 @@ const Signup = () => {
                     required
                   />
                   {errors.email && (
-                    <div className="text-red-400 text-sm mt-1">{errors.email}</div>
+                    <div className="text-red-400 text-sm mt-1">
+                      {errors.email}
+                    </div>
                   )}
                 </div>
 
@@ -199,6 +272,11 @@ const Signup = () => {
                       className={inputClassName}
                       required
                     />
+                    {errors.password && (
+                      <div className="text-red-400 text-sm mt-1">
+                        {errors.password}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className={labelClassName}>Confirm Password</label>
@@ -211,6 +289,11 @@ const Signup = () => {
                       className={inputClassName}
                       required
                     />
+                    {errors.confirmPassword && (
+                      <div className="text-red-400 text-sm mt-1">
+                        {errors.confirmPassword}
+                      </div>
+                    )}
                   </div>
                   {passwordError && (
                     <div className="text-red-400 text-sm">{passwordError}</div>
@@ -234,15 +317,39 @@ const Signup = () => {
             ) : (
               <div className="space-y-6">
                 {/* Step 2 Fields */}
-                <div>
-                  <label className={labelClassName}>Telephone</label>
-                  <input
-                    type="text"
-                    name="telephone"
-                    value={formData.telephone}
-                    onChange={handleChange}
-                    className={inputClassName}
-                  />
+                <div className="grid grid-cols-2 gap-10 ">
+                  <div>
+                    <label className={labelClassName}>Telephone</label>
+                    <input
+                      type="text"
+                      name="telephone"
+                      placeholder="enter your Mobile no."
+                      value={formData.telephone}
+                      onChange={handleChange}
+                      className={inputClassName}
+                    />
+                    {errors.telephone && (
+                      <div className="text-red-400 text-sm mt-1">
+                        {errors.telephone}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className={labelClassName}>Batch</label>
+                    <input
+                      type="text"
+                      name="batch"
+                      placeholder="enter your batch"
+                      value={formData.batch}
+                      onChange={handleChange}
+                      className={inputClassName}
+                    />
+                    {errors.batch && (
+                      <div className="text-red-400 text-sm mt-1">
+                        {errors.batch}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div>
@@ -250,10 +357,16 @@ const Signup = () => {
                   <input
                     type="text"
                     name="street_address"
+                    placeholder="enter your Address"
                     value={formData.street_address}
                     onChange={handleChange}
                     className={inputClassName}
                   />
+                  {errors.street_address && (
+                    <div className="text-red-400 text-sm mt-1">
+                      {errors.street_address}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -262,24 +375,35 @@ const Signup = () => {
                     <input
                       type="text"
                       name="city"
+                      placeholder="enter your city"
                       value={formData.city}
                       onChange={handleChange}
                       className={inputClassName}
                     />
+                    {errors.city && (
+                      <div className="text-red-400 text-sm mt-1">
+                        {errors.city}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className={labelClassName}>Province</label>
                     <input
                       type="text"
                       name="province"
+                      placeholder="enter your province"
                       value={formData.province}
                       onChange={handleChange}
                       className={inputClassName}
                     />
+                    {errors.province && (
+                      <div className="text-red-400 text-sm mt-1">
+                        {errors.province}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* ... Other step 2 fields with same styling ... */}
                 <div>
                   <label className={labelClassName}>Profile Picture</label>
                   <input
@@ -289,6 +413,43 @@ const Signup = () => {
                     onChange={handleFileChange}
                     className="w-full px-4 py-3 rounded-xl border border-gray-700 focus:ring-2 focus:ring-gray-400 focus:border-gray-400 outline-none transition-all duration-200 bg-gray-800/50 text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-300 hover:file:bg-gray-600"
                   />
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={isAccepted}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-500 border-gray-300 rounded focus:ring-blue-400"
+                  />
+                  <label className="text-gray-300">
+                    Accept our{" "}
+                    <a
+                      href="/refund-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 underline"
+                    >
+                      refund policy
+                    </a>
+                    ,{" "}
+                    <a
+                      href="/privacy-policy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 underline"
+                    >
+                      privacy policy
+                    </a>
+                    , and{" "}
+                    <a
+                      href="/terms-and-conditions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:text-blue-300 underline"
+                    >
+                      terms & conditions
+                    </a>
+                  </label>
                 </div>
 
                 <div className="flex space-x-4">
@@ -330,19 +491,17 @@ const Signup = () => {
         {/* Right Section - Illustration */}
         <div className="hidden lg:flex w-1/2 bg-black relative p-12 flex-col justify-between items-center">
           <div className="absolute inset-0 bg-gradient-to-br from-black/90 to-gray-900/90" />
-          <img
-            src="/lll.png"
-            alt="logo"
-            className="w-32 mb-8 relative z-10"
-          />
+          <img src="/lll.png" alt="logo" className="w-32 mb-8 relative z-10" />
           <div className="relative z-10">
-            <h2 className="text-white text-4xl font-bold mb-4">Start Your Learning Journey</h2>
+            <h2 className="text-white text-4xl font-bold mb-4">
+              Start Your Learning Journey
+            </h2>
             <p className="text-gray-400 text-lg">
-              Join thousands of students already learning with us. Get access to premium courses,
-              expert instructors, and a supportive community.
+              Join thousands of students already learning with us. Get access to
+              premium courses, expert instructors, and a supportive community.
             </p>
           </div>
-          
+
           {/* Decorative Elements */}
           <div className="relative z-10 w-full flex justify-center">
             <div className="w-full max-w-md h-64 bg-gray-800/20 rounded-2xl backdrop-blur-sm p-6 relative">
