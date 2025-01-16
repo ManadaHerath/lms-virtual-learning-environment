@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import YouTube from "react-youtube";
 import api from "../redux/api";
 import { Lock, PlayCircle, CheckCircle, XCircle, Book, FileText, AlertCircle } from 'lucide-react';
+import Loader from "../Loader";
 
 const CoursePage = () => {
   const { courseId } = useParams();
@@ -21,7 +22,6 @@ const CoursePage = () => {
     const fetchCourseDetails = async () => {
       try {
         const response = await api.get(`/user/courses/${courseId}`);
-        console.log(response.data);
        
         if (response.status !== 200) throw new Error("Failed to fetch course details");
         setCourseDetails(response.data);
@@ -166,9 +166,10 @@ const CoursePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-blue-600 text-lg">Loading course content...</div>
-      </div>
+      // <div className="min-h-screen flex items-center justify-center">
+      //   <div className="text-blue-600 text-lg">Loading course content...</div>
+      // </div>
+      <Loader />
     );
   }
 

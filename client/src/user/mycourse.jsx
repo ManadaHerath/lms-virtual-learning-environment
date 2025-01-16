@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Users, TrendingUp } from "lucide-react";
 import api from "../redux/api";
+import Loader from "../Loader";
 
 const EnrolledCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -17,7 +18,24 @@ const EnrolledCourses = () => {
           throw new Error("Failed to fetch enrolled courses");
         }
         const data = await response.data;
-        setCourses(data || []);
+        
+        // Sort courses by date (newest first)
+        const sortedCourses = [...(data || [])].sort((a, b) => {
+          const [yearA, monthA] = a.month.split(' ');
+          const [yearB, monthB] = b.month.split(' ');
+          
+          // Compare years first
+          if (yearA !== yearB) {
+            return parseInt(yearB) - parseInt(yearA);
+          }
+          
+          // If years are same, compare months
+          const months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 
+                         'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+          return months.indexOf(monthB) - months.indexOf(monthA);
+        });
+
+        setCourses(sortedCourses);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -34,24 +52,25 @@ const EnrolledCourses = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[1, 2, 3].map((n) => (
-            <div
-              key={n}
-              className="bg-white rounded-xl overflow-hidden shadow-md"
-            >
-              <div className="animate-pulse">
-                <div className="bg-gray-200 h-48" />
-                <div className="p-6">
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      // <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-4">
+      //   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      //     {[1, 2, 3].map((n) => (
+      //       <div
+      //         key={n}
+      //         className="bg-white rounded-xl overflow-hidden shadow-md"
+      //       >
+      //         <div className="animate-pulse">
+      //           <div className="bg-gray-200 h-48" />
+      //           <div className="p-6">
+      //             <div className="h-4 bg-gray-200 rounded w-3/4 mb-4" />
+      //             <div className="h-4 bg-gray-200 rounded w-1/2" />
+      //           </div>
+      //         </div>
+      //       </div>
+      //     ))}
+      //   </div>
+      // </div>
+      <Loader />
     );
   }
 
