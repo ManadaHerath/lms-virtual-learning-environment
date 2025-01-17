@@ -235,6 +235,7 @@ const QuizPage = () => {
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Question {index + 1}: {question.question_text}
               </h3>
+              <img src={question.question_image_url} alt="Question Illustration" className="w-full h-48 object-cover rounded-lg mb-4" />
               {question.question_type === "mcq" ? (
                 <div className="space-y-4">
                   {question.options.map((option) => (
