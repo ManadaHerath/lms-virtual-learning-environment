@@ -35,7 +35,7 @@ const QuizDetails = () => {
         const openTime = moment.utc(data.quizInfo.open_time).tz("Asia/Colombo").valueOf();
         const closeTime = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
         const currentTime = moment().tz("Asia/Colombo").valueOf();
-
+        
         setOpenTime(openTime);
         setCloseTime(closeTime);
 
@@ -53,10 +53,7 @@ const QuizDetails = () => {
     return moment.utc(utcDateString).tz("Asia/Colombo").format("YYYY-MM-DD HH:mm:ss");
   };
   
-  // Example:
-  console.log("Open Time:", formatLocalTime(quizInfo.open_time));
-  console.log("Review Time:", formatLocalTime(quizInfo.review_available_time));
-  
+
 
   useEffect(() => {
     if (timeRemaining > 0) {
