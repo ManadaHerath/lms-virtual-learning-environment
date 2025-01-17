@@ -59,7 +59,7 @@ const EditQuiz = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(quiz);
+    
     try {
       const response = await api.put(`/admin/quiz/${quizId}`, quiz);
       const data = response.data;
