@@ -1,7 +1,14 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Clock, AlertTriangle, CheckCircle, Timer, BookOpen, Loader } from "lucide-react";
+import {
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  Timer,
+  BookOpen,
+  Loader,
+} from "lucide-react";
 import api from "../redux/api";
 import { useSnackbar } from "notistack";
 import moment from "moment-timezone";
@@ -41,29 +48,36 @@ const QuizPage = () => {
     const fetchQuizInfo = async () => {
       try {
         const response = await api.get(`/user/quiz/${quizId}/info/${courseId}`);
-        if (response.status !== 200) throw new Error("Failed to fetch quiz details");
-        
+        if (response.status !== 200)
+          throw new Error("Failed to fetch quiz details");
+
         const data = response.data;
         if (!data.success) throw new Error(data.message || "Quiz not found");
-        
+
         setQuizInfo(data.quizInfo);
         setHasResponded(data.hasResponded);
-        
-        const open_time = moment.utc(data.quizInfo.open_time).tz("Asia/Colombo").valueOf();
-        const close_time = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
+
+        const open_time = moment
+          .utc(data.quizInfo.open_time)
+          .tz("Asia/Colombo")
+          .valueOf();
+        const close_time = moment
+          .utc(data.quizInfo.close_time)
+          .tz("Asia/Colombo")
+          .valueOf();
         const currentTime = moment().tz("Asia/Colombo").valueOf();
 
-        if ((close_time - currentTime) <= 0 && !hasSubmitted) {
+        if (close_time - currentTime <= 0 && !hasSubmitted) {
           setHasSubmitted(true);
           setHasResponded(true);
           handleSubmit();
-        } else if ((close_time - currentTime) <= 0 && hasSubmitted) {
-          navigate('/user/mycourse');
+        } else if (close_time - currentTime <= 0 && hasSubmitted) {
+          navigate("/user/mycourse");
         }
 
         if (open_time > currentTime) {
-          enqueueSnackbar('Quiz has not started', {variant: 'info'});
-          navigate('/user/mycourse');
+          enqueueSnackbar("Quiz has not started", { variant: "info" });
+          navigate("/user/mycourse");
         }
 
         setTimeRemaining(close_time - currentTime);
@@ -99,11 +113,13 @@ const QuizPage = () => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const handleChange = (questionId, value) => {
-    setResponses(prev => ({
+    setResponses((prev) => ({
       ...prev,
       [questionId]: value,
     }));
@@ -111,10 +127,10 @@ const QuizPage = () => {
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
-    
+
     try {
       setIsSubmitting(true);
-      
+
       const responsesWithFileUrls = await Promise.all(
         Object.entries(responses).map(async ([questionId, response]) => {
           if (response instanceof File) {
@@ -140,7 +156,7 @@ const QuizPage = () => {
 
       const response = await api.post("/user/submit-quiz", payload);
       if (response.data.success) {
-        enqueueSnackbar('Quiz submitted successfully!', {variant: 'success'});
+        enqueueSnackbar("Quiz submitted successfully!", { variant: "success" });
         setHasResponded(true);
       } else {
         setError(response.data.message || "Failed to submit quiz");
@@ -189,7 +205,9 @@ const QuizPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <h1 className="text-5xl font-bold mb-4">{quiz.title}</h1>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto">{quiz.description}</p>
+            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+              {quiz.description}
+            </p>
           </div>
         </div>
       </div>
@@ -229,25 +247,51 @@ const QuizPage = () => {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-8">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="space-y-8"
+        >
           {quiz.questions.map((question, index) => (
-            <div key={question.id} className="bg-white rounded-xl shadow-lg p-6">
+            <div
+              key={question.id}
+              className="bg-white rounded-xl shadow-lg p-6"
+            >
               <h3 className="text-xl font-semibold text-gray-900 mb-4">
                 Question {index + 1}: {question.question_text}
               </h3>
-              <img src={question.question_image_url} alt="Question Illustration" className="w-full h-48 object-cover rounded-lg mb-4" />
+              {question.question_image_url && (
+                <div className="relative w-full mb-6">
+                  <div className="aspect-w-16 aspect-h-9">
+                    <img
+                      src={question.question_image_url}
+                      alt="Question Illustration"
+                      className="w-full h-full object-contain rounded-lg"
+                    />
+                  </div>
+                </div>
+              )}
               {question.question_type === "mcq" ? (
                 <div className="space-y-4">
                   {question.options.map((option) => (
-                    <label key={option.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                    <label
+                      key={option.id}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                    >
                       <input
                         type="radio"
                         name={`question_${question.id}`}
                         value={option.option_text}
-                        onChange={(e) => handleChange(question.id, e.target.value)}
+                        onChange={(e) =>
+                          handleChange(question.id, e.target.value)
+                        }
                         className="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500"
                       />
-                      <span className="text-gray-700">{option.option_text}</span>
+                      <span className="text-gray-700">
+                        {option.option_text}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -256,25 +300,26 @@ const QuizPage = () => {
                   <input
                     type="file"
                     accept="application/pdf"
-                    onChange={(e) => handleChange(question.id, e.target.files[0])}
+                    onChange={(e) =>
+                      handleChange(question.id, e.target.files[0])
+                    }
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
                 </div>
               ) : null}
             </div>
           ))}
-          
           <div className="flex justify-end">
             <button
               type="submit"
               disabled={isSubmitting}
               className={`${
-                isSubmitting 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-blue-600 hover:bg-blue-700'
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
               } text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Quiz'}
+              {isSubmitting ? "Submitting..." : "Submit Quiz"}
             </button>
           </div>
         </form>
