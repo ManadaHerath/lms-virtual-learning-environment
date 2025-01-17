@@ -1,11 +1,10 @@
 import axios from "axios";
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Clock, AlertTriangle, CheckCircle, Timer, BookOpen, Loader } from "lucide-react";
 import api from "../redux/api";
 import { useSnackbar } from "notistack";
-import moment from "moment-timezone"; // Install with: npm install moment-timezone
+import moment from "moment-timezone";
 
 const QuizPage = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -20,6 +19,7 @@ const QuizPage = () => {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [hasResponded, setHasResponded] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const uploadFileToCloudinary = async (file) => {
     try {
@@ -31,7 +31,6 @@ const QuizPage = () => {
         formData
       );
       return response.data.secure_url || null;
-
     } catch (error) {
       console.error("Error uploading file:", error.message);
       throw error;
@@ -50,13 +49,9 @@ const QuizPage = () => {
         setQuizInfo(data.quizInfo);
         setHasResponded(data.hasResponded);
         
-        // const open_time = new Date(data.quizInfo.open_time).getTime();
-        // const close_time = new Date(data.quizInfo.close_time).getTime();
-        // const currentTime = Date.now();
         const open_time = moment.utc(data.quizInfo.open_time).tz("Asia/Colombo").valueOf();
-const close_time = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
-const currentTime = moment().tz("Asia/Colombo").valueOf();
-
+        const close_time = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
+        const currentTime = moment().tz("Asia/Colombo").valueOf();
 
         if ((close_time - currentTime) <= 0 && !hasSubmitted) {
           setHasSubmitted(true);
@@ -67,9 +62,8 @@ const currentTime = moment().tz("Asia/Colombo").valueOf();
         }
 
         if (open_time > currentTime) {
-          
-          enqueueSnackbar('Quiz has not started',{variant:'info'})
-          navigate(`/user/mycourse`);
+          enqueueSnackbar('Quiz has not started', {variant: 'info'});
+          navigate('/user/mycourse');
         }
 
         setTimeRemaining(close_time - currentTime);
@@ -116,7 +110,11 @@ const currentTime = moment().tz("Asia/Colombo").valueOf();
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+    
     try {
+      setIsSubmitting(true);
+      
       const responsesWithFileUrls = await Promise.all(
         Object.entries(responses).map(async ([questionId, response]) => {
           if (response instanceof File) {
@@ -142,35 +140,19 @@ const currentTime = moment().tz("Asia/Colombo").valueOf();
 
       const response = await api.post("/user/submit-quiz", payload);
       if (response.data.success) {
-        // alert(`Quiz submitted successfully! Total Marks: ${response.data.totalMarks}`);
-        enqueueSnackbar('Quiz submitted successfully!',{variant:'success'})
+        enqueueSnackbar('Quiz submitted successfully!', {variant: 'success'});
+        setHasResponded(true);
       } else {
         setError(response.data.message || "Failed to submit quiz");
       }
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred");
+      setIsSubmitting(false);
     }
   };
 
   if (loading) {
-    return (
-      // <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white p-8">
-      //   <div className="max-w-4xl mx-auto">
-      //     <div className="animate-pulse">
-      //       <div className="h-8 bg-gray-200 rounded w-1/4 mb-8" />
-      //       <div className="bg-white rounded-xl shadow-lg p-6">
-      //         <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
-      //         <div className="space-y-4">
-      //           {[1, 2, 3].map((n) => (
-      //             <div key={n} className="h-4 bg-gray-200 rounded w-full" />
-      //           ))}
-      //         </div>
-      //       </div>
-      //     </div>
-      //   </div>
-      // </div>
-      <Loader />
-    );
+    return <Loader />;
   }
 
   if (error) {
@@ -284,9 +266,14 @@ const currentTime = moment().tz("Asia/Colombo").valueOf();
           <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              disabled={isSubmitting}
+              className={`${
+                isSubmitting 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-blue-600 hover:bg-blue-700'
+              } text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
             >
-              Submit Quiz
+              {isSubmitting ? 'Submitting...' : 'Submit Quiz'}
             </button>
           </div>
         </form>
