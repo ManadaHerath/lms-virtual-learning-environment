@@ -15,7 +15,6 @@ const CourseDetail = () => {
   const [enrolledStudents, setEnrolledStudents] = useState(0);
   const { list, status } = useSelector((state) => state.students);
 
-
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
@@ -44,16 +43,34 @@ const CourseDetail = () => {
   const handleEnroll = async () => {
     try {
       const response = await api.post(`/user/enroll/${courseId}`);
-      if (response.status == 200) {
-        throw new Error("You have already enrolled");
+      if (response.status === 201) {
+        const data = response.data;
+        showToast(data.message, 'success');
+        setEnrolled(true);
+      } else {
+        // Handle unexpected non-success responses
+        showToast('An unexpected response occurred.', 'error');
       }
-      const data = await response.data;
-      showToast(data.message, 'success');
-      setEnrolled(true);
     } catch (err) {
-      showToast(err.message, 'error');
+      if (err.response) {
+        const { status, data } = err.response;
+        if (status === 404) {
+          showToast('Course not found.', 'error');
+        } else if (status === 401) {
+          showToast('Your account is not active. Please contact support.', 'error');
+        } else if (status === 409) {
+          showToast('You are already enrolled in this course.', 'error');
+        } else if (status === 500) {
+          showToast(data.message || 'Failed to enroll in course.', 'error');
+        } else {
+          showToast('An unknown error occurred.', 'error');
+        }
+      } else {
+        showToast(err.message || 'Network error. Please try again later.', 'error');
+      }
     }
   };
+  
 
   const handleAddToCart =async () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
