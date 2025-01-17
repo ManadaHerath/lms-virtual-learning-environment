@@ -79,18 +79,59 @@ const SectionController = {
   }
   ,
   
-  createSection:async(req,res)=>{
-    
-    const sectionData=req.body.sectionData;
+  createSection: async (req, res) => {
     try {
-      const id =await Section.createSectionByCourseId(sectionData);
-      
-      res.status(200).json({sectionId:id});
+      // If you sent everything via FormData, 
+      // you'll find them in req.body and the file in req.file
+      const {
+        title,
+        description,
+        courseId,
+        weekId,
+        orderId,
+        typeId,
+        quizId
+      } = req.body;
+
+      // If a file was uploaded, Cloudinary URL will be in req.file.path
+      let contentUrl = "";
+      if (req.file) {
+        // Multer + Cloudinary returns the uploaded file's URL in req.file.path
+        contentUrl = req.file.path;
+      } else {
+        // If no file uploaded, use the contentUrl (e.g., if type is Video)
+        contentUrl = req.body.contentUrl || "";
+      }
+
+      const sectionData = {
+        title,
+        description,
+        courseId,
+        weekId,
+        orderId,
+        typeId,
+        contentUrl,
+        quizId: quizId || null,
+      };
+
+      // Now insert the record into the DB
+      const id = await Section.createSectionByCourseId(sectionData);
+
+      return res.status(200).json({
+        success: true,
+        message: "Section created successfully",
+        sectionId: id,
+      });
     } catch (error) {
-      console.log(error)
-      res.status(400);
+      console.log("Error in createSection:", error);
+      return res.status(400).json({
+        success: false,
+        message: "Failed to create section",
+      });
     }
   },
+
+
   deleteSection:async(req,res)=>{
     const {sectionId}=req.params;
     try {
