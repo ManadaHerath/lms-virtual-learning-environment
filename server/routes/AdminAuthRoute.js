@@ -24,7 +24,12 @@ router.post('/upload-course', AuthMiddleware(['admin']), upload.single('image'),
   next(); // Pass control to AdminController.uploadCourse
 }, CourseController.createCourse);
 
-router.post('/upload-section', AuthMiddleware(["admin"]), SectionController.createSection);
+router.post(
+  '/upload-section',
+  AuthMiddleware(["admin"]),
+  upload.single('document'),  // <-- This must match the FormData key
+  SectionController.createSection
+);
 router.get('/course/:courseId/sections', AuthMiddleware(['admin']), SectionController.getSectionsForAdmin);
 router.get('/course/:courseId/:weekId/maxorder', AuthMiddleware(['admin']), SectionController.getMaxOrderByCourseId);
 router.post('/section', AuthMiddleware(['admin']), SectionController.createSection)
