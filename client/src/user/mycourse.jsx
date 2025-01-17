@@ -15,7 +15,7 @@ const EnrolledCourses = () => {
     const isActive = async () => {
       try {
         const response = await api.get("/user/isactive");
-        if (response == 200) {
+        if (response.status == 200) {
           setStatus(true);
         }
       } catch (err) {
