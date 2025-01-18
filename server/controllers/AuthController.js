@@ -132,7 +132,7 @@ const AuthController = {
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 2 * 60 * 60 * 1000, // 7 days
+        maxAge: 12 * 60 * 60 * 1000, // 7 days
         sameSite: "strict",
       });
       res.cookie("refreshToken", refreshToken, {
