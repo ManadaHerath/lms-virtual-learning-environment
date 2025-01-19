@@ -65,7 +65,7 @@ const PaymentCheckout = ({ cart }) => {
   };
 
   return (
-    <button onClick={handleCheckout} className="bg-blue-500 text-white p-4 rounded">
+    <button onClick={handleCheckout} className="bg-gray-500 text-white p-4 rounded" disabled={true}>
       Proceed to Payment
     </button>
   );
