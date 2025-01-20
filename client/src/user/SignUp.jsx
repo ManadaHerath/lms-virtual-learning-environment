@@ -79,6 +79,12 @@ const Signup = () => {
     if (!formData.street_address.trim()) {
       newErrors.street_address = "Street address is required.";
     }
+    if (!formData.batch.trim() ) {
+      newErrors.batch = "Batch is required.";
+    }
+    if (!/^\d{2}$/.test(formData.batch.trim())) {
+      newErrors.batch = "Batch must be exactly 2 digits.";
+    }    
     if (!formData.city.trim()) {
       newErrors.city = "City is required.";
     }
@@ -287,10 +293,14 @@ const Signup = () => {
           <input
             type="text"
             name="batch"
+            placeholder="Enter your batch(26,27,...)"
             value={formData.batch}
             onChange={handleChange}
             className={inputClassName}
           />
+           {errors.batch && (
+            <div className="text-red-400 text-sm mt-1">{errors.batch}</div>
+          )}
         </div>
       </div>
 
