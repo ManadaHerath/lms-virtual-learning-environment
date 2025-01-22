@@ -10,6 +10,23 @@ const QuizModel = {
     const [result] = await pool.query(query, [title, description, open_time, time_limit_minutes, review_available_time]);
     return result.insertId;
   },
+  updateQuizById:async (quizData)=>{
+    const { title, description, open_time, time_limit_minutes, review_available_time,id } = quizData;
+    const query=`UPDATE Quiz set title=?,description=?,open_time=?,time_limit_minutes=?,review_available_time=? WHERE (id = ?);`
+    const [result]=await pool.query(query,[title, description, open_time, time_limit_minutes, review_available_time,id]);
+    return result;
+  },
+  deleteQuizById:async (quizId)=>{
+    const query=`DELETE FROM Quiz WHERE (id = ?);`
+    const [result]=await pool.query(query,[quizId]);
+    if(result.affectedRows>0){
+      return result;
+    }else{
+      throw new Error("Quiz deletion unsuccessfull");
+    }
+    
+  }
+  ,
 
   addQuestion: async (quizId, questionData) => {
     const {
@@ -126,7 +143,7 @@ const QuizModel = {
   return rows.length > 0;
 },
  getAllQuizes:async()=>{
-  const query=`select id,title,description from Quiz`;
+  const query=`select id,title,description,open_time,close_time,time_limit_minutes,review_available_time from Quiz`;
   const [rows]=await pool.query(query);
  
   return rows;

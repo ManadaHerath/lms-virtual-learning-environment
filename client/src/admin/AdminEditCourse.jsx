@@ -116,10 +116,12 @@ const AdminEditCourse = () => {
       if (!response.data.success) {
         throw new Error("Failed to update course");
       }
-      alert("Course updated successfully!");
+
+      enqueueSnackbar('Course updated successfully!',{variant:'success'})
       navigate(`/admin/editcourse/${courseId}`);
     } catch (err) {
-      alert(err.message);
+     
+      enqueueSnackbar(err.message,{variant:'error'})
     }
   };
 

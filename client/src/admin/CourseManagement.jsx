@@ -101,9 +101,14 @@ const CourseManagement = () => {
               </div>
 
               <div className="p-4 space-y-4">
-                <h2 className="text-xl font-semibold text-gray-200 group-hover:text-blue-400 transition-colors">
-                  {course.name}
-                </h2>
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-semibold text-gray-200 group-hover:text-blue-400 transition-colors">
+                    {course.name}
+                  </h2>
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400">
+                    {course.month}
+                  </span>
+                </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-gray-400">

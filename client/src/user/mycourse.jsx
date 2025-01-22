@@ -8,9 +8,20 @@ const EnrolledCourses = () => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const[status, setStatus] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const isActive = async () => {
+      try {
+        const response = await api.get("/user/isactive");
+        if (response.status == 200) {
+          setStatus(true);
+        }
+      } catch (err) {
+        setStatus(false);
+      }
+    };
     const fetchEnrolledCourses = async () => {
       try {
         const response = await api.get("/user/enrolled");
@@ -43,7 +54,9 @@ const EnrolledCourses = () => {
       }
     };
 
+    isActive();
     fetchEnrolledCourses();
+
   }, []);
 
   const handleCourseClick = (courseId) => {
@@ -117,7 +130,7 @@ const EnrolledCourses = () => {
             <div className="flex items-center justify-center gap-3">
               <Users className="h-6 w-6 text-blue-600" />
               <div>
-                <div className="text-2xl font-bold text-gray-900">Active</div>
+                <div className="text-2xl font-bold text-gray-900">{status ? ("Active"):("InActive")}</div>
                 <div className="text-sm text-gray-600">Student Status</div>
               </div>
             </div>

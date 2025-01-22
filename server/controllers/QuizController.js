@@ -33,13 +33,46 @@ const QuizController = {
       res.status(500).json({ success: false, message: "Failed to create quiz" });
     }
   },
+  updateQuiz:async(req,res)=>{
+    try {
+      const { title, description, open_time,  time_limit_minutes, review_available_time } = req.body;
+      const { id } = req.params;
+      const result=await QuizModel.updateQuizById({
+        title,
+        description,
+        open_time,
+        
+        time_limit_minutes,
+        review_available_time,
+        id
+      });
+      res.status(200).json({success:true,message:result});
+
+    } catch (error) {
+      res.status(500).json({success:false,error:error});
+    }
+  }
+  ,
+  deleteQuiz:async(req,res)=>{
+    try {
+      const { quizId } = req.params;
+      const result=await QuizModel.deleteQuizById(quizId);
+      if(result){
+        res.status(200).json({success:true,message:'Quiz deleted successfully'});
+      }
+    
+    } catch (error) {
+      res.status(500).json({success:false,message:error.message});
+    }
+  }
+  ,
 
   submitQuiz: async (req, res) => {
     try {
       const { quiz_id, responses } = req.body;
       const { nic } = req.user;
       const student_nic = nic;
-      let allAutograded=true;
+      let allAutoGraded=true;
       let totalMarks = 0;
 
       for (const response of responses) {

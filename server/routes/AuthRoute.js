@@ -31,6 +31,8 @@ router.get("/logout", AuthMiddleware("student"), AuthController.logoutUser);
 
 // Check authentication status
 router.get("/check-auth", AuthMiddleware("student"), AuthController.checkAuth);
+// Check is active
+router.get("/isactive", AuthMiddleware("student"), AuthController.isActive);
 
 router.get("/courses",AuthMiddleware(['student','admin']) ,CourseController.userGetAllCourses);
 
@@ -49,6 +51,7 @@ router.get("/enrolled", AuthMiddleware(["student", "admin"]), AuthController.get
 router.get("/paid/:courseId", AuthMiddleware(["student"]), AuthController.checkPaid);
 
 
+
 // Update or remove profile picture
 router.put(
   "/profile/picture",
@@ -60,10 +63,7 @@ router.put(
 
 // Enroll in a course
 router.post("/enroll/:courseId", AuthMiddleware(["student", "admin"]), (req, res, next) => {
-  // Log the incoming request details for the /enroll/:courseId route
-  console.log(`Incoming request to enroll in course with ID: ${req.params.courseId}`);
-  console.log(`Request body:`, req.body);
-  
+  // Log the incoming request details for the /enroll/:courseId route 
   
   // Call the next handler (which will be the AuthController.enrollCourse)
   next();

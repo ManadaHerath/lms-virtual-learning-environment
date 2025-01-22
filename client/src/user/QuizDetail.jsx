@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Clock, Calendar, Timer, BookOpen, CheckCircle, AlertTriangle } from "lucide-react";
 import api from "../redux/api";
 import Loader from "../Loader";
+import moment from "moment-timezone";
 
 const QuizDetails = () => {
   const { courseId } = useParams();
@@ -31,11 +32,16 @@ const QuizDetails = () => {
         }
         setQuizInfo(data.quizInfo);
         setHasResponded(data.hasResponded);
+        // const openTime = moment.utc(data.quizInfo.open_time).tz("Asia/Colombo").valueOf();
+        // const closeTime = moment.utc(data.quizInfo.close_time).tz("Asia/Colombo").valueOf();
+        // const currentTime = moment().tz("Asia/Colombo").valueOf();
         const openTime = new Date(data.quizInfo.open_time).getTime();
         const closeTime = new Date(data.quizInfo.close_time).getTime();
+        const currentTime = Date.now();
+        
         setOpenTime(openTime);
         setCloseTime(closeTime);
-        const currentTime = Date.now();
+
         setCurrentTime(currentTime);
         setTimeRemaining(openTime - currentTime);
         setLoading(false);
@@ -46,6 +52,11 @@ const QuizDetails = () => {
     };
     fetchQuizInfo();
   }, [quizId]);
+  const formatLocalTime = (utcDateString) => {
+    return moment.utc(utcDateString).tz("Asia/Colombo").format("YYYY-MM-DD HH:mm:ss");
+  };
+  
+
 
   useEffect(() => {
     if (timeRemaining > 0) {

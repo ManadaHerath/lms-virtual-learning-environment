@@ -124,7 +124,7 @@ function App() {
                       element={<AdminEditCourse />}
                     />
                     <Route path="create-quiz" element={<CreateQuiz />} />
-                    <Route path="edit-quiz" element={<EditQuiz />} />
+                    <Route path="edit-quiz/:quizId" element={<EditQuiz />} />
                     <Route path="quiz-list" element={<QuizManagement />} />
                     <Route path="students/:nic" element={<StudentProfile />} />
                   </Routes>

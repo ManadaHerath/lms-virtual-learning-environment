@@ -1,14 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Trash2, ShoppingCart, AlertCircle } from "lucide-react";
 import PaymentCheckout from "./PaymentCheckout"; // Import the PaymentCheckout component
+import SlipCheckout from "./SlipCheckout";
+import SlipUploadButton from "./SlipCheckout";
+import api from "../redux/api";
+import { useSnackbar } from "notistack";
 
 const CartPage = () => {
   const [cart, setCart] = useState([]);
+  const [user, setUser] = useState({});
   const reverseCart = [...cart].reverse();
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(storedCart);
+    const getUser = async () => {
+      try {
+        const response = await api.get("/user/profile");
+        const data = await response.data.user;
+        setUser(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+    getUser();
   }, []);
 
   const removeFromCart = (image_url) => {
@@ -85,7 +101,9 @@ const CartPage = () => {
               <div className="lg:col-span-1">
                 <div className="bg-white rounded-xl shadow-md">
                   <div className="p-6">
-                    <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
+                    <h2 className="text-xl font-semibold mb-6">
+                      Order Summary
+                    </h2>
                     <div className="space-y-4">
                       <div className="flex justify-between text-gray-600">
                         <span>Subtotal</span>
@@ -107,6 +125,13 @@ const CartPage = () => {
                       <div className="mt-8">
                         {/* Add the PaymentCheckout component here */}
                         <PaymentCheckout cart={cart} />
+                      </div>
+                      <div className="mt-4">
+                        {/* Upload the slip */}
+                        <SlipUploadButton
+                          cartItems={cart}
+                          user={user}
+                        />
                       </div>
                     </div>
                   </div>
